@@ -45,9 +45,9 @@ DirectX::XMMATRIX CreateWorldMatrix(float &angle)
 DirectX::XMMATRIX CreateViewMatrix()
 {
 	using namespace DirectX;
-	XMVECTOR eyePosition = XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f);
-	XMVECTOR focusPosition = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	XMVECTOR upDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR eyePosition = XMVectorSet(0.0f, 0.0f, -5.0f, 1.0f);
+	XMVECTOR focusPosition = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	XMVECTOR upDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 	return XMMatrixLookAtLH(eyePosition, focusPosition, upDirection);
 }
 

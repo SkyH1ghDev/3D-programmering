@@ -18,7 +18,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 
 	float4 lightPosition = {0.0f, 0.0f, -10.0f, 1.0f};
 	float4 lightDirection = normalize(lightPosition - input.worldPosition);
-	float diffuseIntensity = max(dot(input.normal.xyz, lightDirection.xyz), 0.0f);
+	float diffuseIntensity = max(dot(input.normal, lightDirection), 0.0f);
 	float4 diffuseComponent = lightColour * diffuseIntensity;
 
 	// BLINN-PHONG
