@@ -26,11 +26,11 @@ void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 	immediateContext->IASetInputLayout(inputLayout);
 	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	immediateContext->VSSetShader(vShader, nullptr, 0);
-	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetShader(pShader, nullptr, 0);
-	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
+	immediateContext->RSSetViewports(1, &viewport);
 	immediateContext->PSSetShaderResources(0, 1, &textureSRV);
 	immediateContext->PSSetSamplers(0, 1, &samplerState);
+	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
 	immediateContext->Draw(6, 0);
 }
 

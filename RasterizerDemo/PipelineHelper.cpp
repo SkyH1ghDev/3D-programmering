@@ -12,7 +12,7 @@ bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11Pixel
 {
 	std::string shaderData;
 	std::ifstream reader;
-	reader.open(R"(VertexShader.cso)", std::ios::binary | std::ios::ate);
+	reader.open("VertexShader.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
 	{
 		std::cerr << "Could not open VS file!" << std::endl;
@@ -76,13 +76,13 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 {
 	SimpleVertex quad[] =
 	{
-		{ {-0.5f, 0.5f, 0.0f}, {0, 0, 1}, {0, 0} },
-		{ {0.5f, -0.5f, 0.0f}, {0, 0, 1}, {1, 1}},
-		{ {-0.5f, -0.5f, 0.0f}, {0, 0, 1}, {0, 1}},
+		{ {-0.5f, 0.5f, 0.0f}, {0, 0, -1}, {0, 0} },
+		{ {0.5f, -0.5f, 0.0f}, {0, 0, -1}, {1, 1}},
+		{ {-0.5f, -0.5f, 0.0f}, {0, 0, -1}, {0, 1}},
 
-		{{0.5f, -0.5f, 0.0f}, {0, 0, 1}, {1, 1}},
-		{{-0.5f, 0.5f, 0.0f}, {0, 0, 1}, {0, 0}},
-		{{0.5f, 0.5f, 0.0f}, {0, 0, 1}, {1, 0}}
+		{{0.5f, -0.5f, 0.0f}, {0, 0, -1}, {1, 1}},
+		{{-0.5f, 0.5f, 0.0f}, {0, 0, -1}, {0, 0}},
+		{{0.5f, 0.5f, 0.0f}, {0, 0, -1}, {1, 0}}
 	};
 
 	D3D11_BUFFER_DESC bufferDesc;
@@ -148,7 +148,7 @@ bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11Shader
 	if (FAILED(device->CreateTexture2D(&texture2DDesc, &texture2DData, &texture)))
 	{
 		std::cerr << "Failed to Create Texture2D" << std::endl;
-		return -1;
+		return false;
 	}
 	
 	HRESULT hr = device->CreateShaderResourceView(texture, nullptr, &textureSRV);
@@ -164,7 +164,6 @@ bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& samplerState)
     	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
     	samplerDesc.MipLODBias = 0;
     	samplerDesc.MaxAnisotropy = 16;
-    	samplerDesc.ComparisonFunc = D3D11_COMPARISON_EQUAL;
     	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
     	samplerDesc.MinLOD = 0;
     	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
