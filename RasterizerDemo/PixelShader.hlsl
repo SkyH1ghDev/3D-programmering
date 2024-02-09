@@ -1,6 +1,14 @@
 Texture2D testTexture: register(t0);
 SamplerState testSampler;
 
+cbuffer ConstBuffer: register(b0)
+{
+	float4 lightColour;
+	float4 lightPosition;
+	float4 eyePosition;
+	float ambientLightIntensity;
+}
+
 struct PixelShaderInput
 {
 	float4 position : SV_POSITION;
@@ -11,13 +19,8 @@ struct PixelShaderInput
 
 float4 main(PixelShaderInput input) : SV_TARGET
 {
-	float ambientLightIntensity = 0.1f;
-	float4 lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
-	
 	float4 ambientComponent = lightColour * ambientLightIntensity;
 
-	float4 lightPosition = {0.0f, 0.0f, -5.0f, 1.0f};
-	float4 eyePosition = {0.0f, 0.0f, -5.0f, 1.0f};
 	float4 lightDirection = normalize(lightPosition - input.worldPosition);
 	float4 vectorToEye = normalize(eyePosition - input.worldPosition);
 	float diffuseIntensity = max(dot(input.normal, lightDirection), 0.0f);

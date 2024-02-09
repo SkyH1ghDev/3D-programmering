@@ -45,7 +45,7 @@ DirectX::XMMATRIX CreateWorldMatrix(float &angle)
 DirectX::XMMATRIX CreateViewMatrix()
 {
 	using namespace DirectX;
-	XMVECTOR eyePosition = XMVectorSet(0.0f, 0.0f, -5.0f, 1.0f);
+	XMVECTOR eyePosition = XMVectorSet(0.0f, 0.0f, -3.0f, 1.0f);
 	XMVECTOR focusPosition = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	XMVECTOR upDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 	return XMMatrixLookAtLH(eyePosition, focusPosition, upDirection);
@@ -128,34 +128,75 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	XMFLOAT4X4 viewProjectionMatrixFloat4x4;
 	XMStoreFloat4x4(&viewProjectionMatrixFloat4x4, viewProjectionMatrix);
 
-	// Create Constant Buffer Of Matrices
+	// Create Constant Buffer Of Matrices For VS
 	
 	XMFLOAT4X4 matrixArr[] = {worldMatrixFloat4x4, viewProjectionMatrixFloat4x4};
 
-	D3D11_BUFFER_DESC constantBuffer;
-	constantBuffer.ByteWidth = sizeof(worldMatrixFloat4x4) + sizeof(viewProjectionMatrixFloat4x4);
-	constantBuffer.Usage = D3D11_USAGE_DYNAMIC;
-	constantBuffer.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	constantBuffer.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	constantBuffer.MiscFlags = 0;
-	constantBuffer.StructureByteStride = 0;
+	D3D11_BUFFER_DESC vsConstBuffer;
+	vsConstBuffer.ByteWidth = sizeof(worldMatrixFloat4x4) + sizeof(viewProjectionMatrixFloat4x4);
+	vsConstBuffer.Usage = D3D11_USAGE_DYNAMIC;
+	vsConstBuffer.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	vsConstBuffer.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	vsConstBuffer.MiscFlags = 0;
+	vsConstBuffer.StructureByteStride = 0;
 
-	D3D11_SUBRESOURCE_DATA constantBufferSubResource;
-	constantBufferSubResource.pSysMem = matrixArr;
-	constantBufferSubResource.SysMemPitch = 0;
-	constantBufferSubResource.SysMemSlicePitch = 0;
+	D3D11_SUBRESOURCE_DATA vsConstBufferSubResource;
+	vsConstBufferSubResource.pSysMem = matrixArr;
+	vsConstBufferSubResource.SysMemPitch = 0;
+	vsConstBufferSubResource.SysMemSlicePitch = 0;
+
+	// Checks if byteWidth is a multiple of 16
+	static_assert(sizeof(matrixArr) % 16 == 0);
 	
 	ID3D11Buffer* vertexShaderConstantBuffer;
-	HRESULT hr = device->CreateBuffer(&constantBuffer, &constantBufferSubResource, &vertexShaderConstantBuffer);
+	HRESULT hr = device->CreateBuffer(&vsConstBuffer, &vsConstBufferSubResource, &vertexShaderConstantBuffer);
+	
+	if (FAILED(hr))
+	{
+		std::cerr << "Create vsBuffer Failed" << std::endl;
+		return -1;
+	}
+	
+	// Create Constant Buffer For PS
+
+	struct psStruct
+	{
+		XMFLOAT4 lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
+		XMFLOAT4 lightPosition = {0.0f, 1.0f, -5.0f, 1.0f};
+		XMFLOAT4 eyePosition = {0.0f, 0.0f, -3.0f, 1.0f};
+		float ambientLightIntensity = 0.1f;
+		char padding[12];
+	};
+
+	psStruct psValues;
+	
+	D3D11_BUFFER_DESC psConstBuffer;
+	psConstBuffer.ByteWidth = sizeof(psStruct);
+	psConstBuffer.Usage = D3D11_USAGE_IMMUTABLE;
+	psConstBuffer.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	psConstBuffer.CPUAccessFlags = 0;
+	psConstBuffer.MiscFlags = 0;
+	psConstBuffer.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA psConstBufferSubResource;
+	psConstBufferSubResource.pSysMem = &psValues;
+	psConstBufferSubResource.SysMemPitch = 0;
+	psConstBufferSubResource.SysMemSlicePitch = 0;
+
+	// Check if byteWidth is a multiple of 16
+	static_assert(sizeof(psStruct) % 16 == 0);
+
+	ID3D11Buffer* pixelShaderConstantBuffer;
+	hr = device->CreateBuffer(&psConstBuffer, &psConstBufferSubResource, &pixelShaderConstantBuffer);
 
 	if (FAILED(hr))
 	{
-		std::cerr << "Create Buffer Failed" << std::endl;
+		std::cerr << "Create psBuffer Failed" << std::endl;
 		return -1;
 	}
 
 	immediateContext->VSSetConstantBuffers(0, 1, &vertexShaderConstantBuffer);
-
+	immediateContext->PSSetConstantBuffers(0, 1, &pixelShaderConstantBuffer);
 	
 
 	float rotationalSpeed = 1.0f;
@@ -192,6 +233,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		initialAngle -= rotationalSpeed * deltaTime;
 	}
 	
+	pixelShaderConstantBuffer->Release();
 	vertexShaderConstantBuffer->Release();
 	samplerState->Release();
 	textureSRV->Release();
