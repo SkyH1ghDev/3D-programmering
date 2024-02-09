@@ -7,6 +7,7 @@ cbuffer ConstBuffer: register(b0)
 	float4 lightPosition;
 	float4 eyePosition;
 	float ambientLightIntensity;
+	float shininess;
 }
 
 struct PixelShaderInput
@@ -37,7 +38,6 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	*/
 	
 	float4 reflection = reflect(-lightDirection, input.normal);
-	float shininess = 10000.0f;
 	float specularIntensity = pow(max(dot(vectorToEye, reflection), 0.0f), shininess);
 	float4 specularComponent = lightColour * specularIntensity;
 	

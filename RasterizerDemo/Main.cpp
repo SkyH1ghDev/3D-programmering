@@ -165,7 +165,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		XMFLOAT4 lightPosition = {0.0f, 1.0f, -5.0f, 1.0f};
 		XMFLOAT4 eyePosition = {0.0f, 0.0f, -3.0f, 1.0f};
 		float ambientLightIntensity = 0.1f;
-		char padding[12];
+		float shininess = 10000.0f;
+		char padding[8];
 	};
 
 	psStruct psValues;
