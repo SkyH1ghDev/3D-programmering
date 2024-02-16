@@ -23,7 +23,6 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	float4 ambientComponent = lightColour * ambientLightIntensity;
 
 	float4 lightDirection = normalize(lightPosition - input.worldPosition);
-	float4 vectorToEye = normalize(eyePosition - input.worldPosition);
 	float diffuseIntensity = max(dot(input.normal, lightDirection), 0.0f);
 	float4 diffuseComponent = lightColour * diffuseIntensity;
 
@@ -38,6 +37,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	*/
 	
 	float4 reflection = reflect(-lightDirection, input.normal);
+	float4 vectorToEye = normalize(eyePosition - input.worldPosition);
 	float specularIntensity = pow(max(dot(vectorToEye, reflection), 0.0f), shininess);
 	float4 specularComponent = lightColour * specularIntensity;
 	
