@@ -1,28 +1,45 @@
-﻿#include "IFileParser.hpp"
-#include <string>
-#include <sstream>
+﻿#include "OBJParser.hpp"
 #include <fstream>
+#include <iostream>
+#include <vector>
+#include <stdexcept>
 
-class OBJParser : public IFileParser
+std::vector<std::vector<std::string>> OBJParser::ReadFile(const std::string& filename) const
 {
-public: 
-    static void IFileParser::ReadFile(std::string filename)
+    std::ifstream inFile;
+
+    std::string filepath = "OBJ- and MTL-files/" + filename;
+    
+    inFile.open(filepath);
+
+    if (!inFile.good())
     {
-        std::fstream inFile;
-        inFile.open(filename);
-
-        std::string line;
-        while(std::getline(inFile, line))
-        {
-            
-        }
-
-        inFile.close();
+        std::cerr << "Failed to open file";
+        exit(-1);
     }
 
-    OBJParser();
-    ~OBJParser();
-    
-private:
-    
-};
+    std::vector<std::vector<std::string>> lineVector;
+    std::string line;
+
+    // Gets line from file
+    while(std::getline(inFile, line))
+    {
+        int start, end;
+        start = end = 0;
+
+        std::vector<std::string> tokenVector;
+        
+        // For each token in a line
+        while ((start = line.find_first_not_of(' ', end)) != line.npos)
+        {
+            end = line.find(' ', start);
+
+            tokenVector.push_back(line.substr(start, end - start));
+        }
+
+        lineVector.push_back(tokenVector);
+    }
+
+    inFile.close();
+    return lineVector;
+}

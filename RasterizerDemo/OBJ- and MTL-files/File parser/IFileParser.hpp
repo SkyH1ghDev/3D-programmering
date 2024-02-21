@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include <string>
+#include <vector>
+
 class IFileParser
 {
 public:
@@ -7,5 +10,5 @@ public:
     virtual ~IFileParser() = default;
     
 protected:
-    virtual void ReadFile() = 0;
+    virtual std::vector<std::vector<std::string>> ReadFile(const std::string& filename) const = 0;
 };

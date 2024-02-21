@@ -11,6 +11,7 @@
 #include "PipelineHelper.h"
 #include "DirectXMath.h"
 #include "stb_image.h"
+#include "OBJ- and MTL-files/File parser/OBJParser.hpp"
 
 void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 			ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport, ID3D11VertexShader* vShader,
@@ -62,6 +63,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
+
+	OBJParser objParser = OBJParser();
+	std::vector<std::vector<std::string>> test = objParser.ReadFile("teapot.obj");
+	for (auto obj : test)
+	{
+		for (auto obj2 : obj)
+		{
+			std::cout << obj2 << "\n";
+		}
+
+		std::cout << std::endl;
+	}
+
+
+	
 	using namespace DirectX;
 	
 	const UINT WIDTH = 1280;

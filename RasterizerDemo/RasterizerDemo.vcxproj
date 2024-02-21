@@ -182,9 +182,13 @@
   <ItemGroup>
     <ClInclude Include="D3D11Helper.h" />
     <ClInclude Include="OBJ- and MTL-files\File parser\IFileParser.hpp" />
+    <ClInclude Include="OBJ- and MTL-files\File parser\OBJParser.hpp" />
     <ClInclude Include="PipelineHelper.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="WindowHelper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OBJ- and MTL-files\teapot.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
