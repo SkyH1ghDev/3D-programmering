@@ -3,15 +3,14 @@
 #include <Windows.h>
 #include <iostream>
 #include <d3d11.h>
-#include <thread>
 #include <chrono>
 
-#include "WindowHelper.h"
-#include "D3D11Helper.h"
-#include "PipelineHelper.h"
+#include "Window/WindowHelper.h"
+#include "D3D11/D3D11Helper.h"
+#include "Pipeline/PipelineHelper.h"
 #include "DirectXMath.h"
 #include "stb_image.h"
-#include "OBJ- and MTL-files/File parser/OBJParser.hpp"
+#include "File parser/OBJParser.hpp"
 
 void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 			ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport, ID3D11VertexShader* vShader,
