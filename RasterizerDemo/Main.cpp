@@ -3,7 +3,6 @@
 #include <Windows.h>
 #include <iostream>
 #include <d3d11.h>
-#include <thread>
 #include <chrono>
 
 #include "WindowHelper.h"
@@ -11,11 +10,11 @@
 #include "PipelineHelper.h"
 #include "DirectXMath.h"
 #include "stb_image.h"
-#include "OBJ- and MTL-files/File parser/OBJParser.hpp"
+#include "OBJParser.hpp"
 
 void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
-			ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport, ID3D11VertexShader* vShader,
-			ID3D11PixelShader* pShader, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer, ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* samplerState)
+            ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport, ID3D11VertexShader* vShader,
+            ID3D11PixelShader* pShader, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer, ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* samplerState)
 {
 	float clearColour[4] = { 0, 0, 0, 0 };
 	immediateContext->ClearRenderTargetView(rtv, clearColour);

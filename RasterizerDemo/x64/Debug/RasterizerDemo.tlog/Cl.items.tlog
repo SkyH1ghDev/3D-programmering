@@ -1,5 +1,5 @@
-C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\D3D11Helper.cpp;C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\x64\Debug\D3D11Helper.obj
-C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\Main.cpp;C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\x64\Debug\Main.obj
-C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\OBJ- and MTL-files\File parser\OBJParser.cpp;C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\x64\Debug\OBJParser.obj
-C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\PipelineHelper.cpp;C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\x64\Debug\PipelineHelper.obj
-C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\WindowHelper.cpp;C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\x64\Debug\WindowHelper.obj
+D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Helpers\D3D11\D3D11Helper.cpp;D:\School\3D-programmering\Inlämning 2\RasterizerDemo\x64\Debug\D3D11Helper.obj
+D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Helpers\Pipeline\PipelineHelper.cpp;D:\School\3D-programmering\Inlämning 2\RasterizerDemo\x64\Debug\PipelineHelper.obj
+D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Helpers\Window\WindowHelper.cpp;D:\School\3D-programmering\Inlämning 2\RasterizerDemo\x64\Debug\WindowHelper.obj
+D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Main.cpp;D:\School\3D-programmering\Inlämning 2\RasterizerDemo\x64\Debug\Main.obj
+D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Source\FileReader\OBJParser.cpp;D:\School\3D-programmering\Inlämning 2\RasterizerDemo\x64\Debug\OBJParser.obj

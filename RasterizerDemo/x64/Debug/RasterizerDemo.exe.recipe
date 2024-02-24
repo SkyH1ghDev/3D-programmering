@@ -2,15 +2,15 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\RasterizerDemo.exe</FullPath>
+      <FullPath>D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Build\RasterizerDemo.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\PixelShader.cso</FullPath>
+      <FullPath>D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Build\PixelShader.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\VertexShader.cso</FullPath>
+      <FullPath>D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Build\VertexShader.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />
