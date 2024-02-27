@@ -104,8 +104,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>Src\Helpers\Window;
- Src\Helpers\D3D11; Src\Helpers\Pipeline;
+      <AdditionalIncludeDirectories>
+        Src\Helpers\Window;
+        Src\Helpers\D3D11; 
+        Src\Helpers\Pipeline;
         Src\FileReader
       </AdditionalIncludeDirectories>
     </ClCompile>
@@ -240,7 +242,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PixelShader.hlsl">
-      <ObjectFileOutput>D:\School\3D-programmering\Inlämning 2\\RasterizerDemo\Build\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput>$(SolutionDir)RasterizerDemo\Build\%(Filename).cso</ObjectFileOutput>
       <TrackerLogDirectory>x64\Debug\RasterizerDemo.tlog\</TrackerLogDirectory>
       <EntryPointName>main</EntryPointName>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -251,7 +253,7 @@
       <ShaderType>Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shaders\VertexShader.hlsl">
-      <ObjectFileOutput>D:\School\3D-programmering\Inlämning 2\\RasterizerDemo\Build\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput>$(SolutionDir)RasterizerDemo\Build\%(Filename).cso</ObjectFileOutput>
       <TrackerLogDirectory>x64\Debug\RasterizerDemo.tlog\</TrackerLogDirectory>
       <EntryPointName>main</EntryPointName>
       <SuppressStartupBanner>true</SuppressStartupBanner>
