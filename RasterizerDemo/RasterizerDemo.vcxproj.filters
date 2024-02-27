@@ -18,32 +18,40 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WindowHelper.cpp">
+    <ClCompile Include="Src\FileReader\OBJParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11Helper.cpp">
+    <ClCompile Include="Src\Helpers\D3D11\D3D11Helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PipelineHelper.cpp">
+    <ClCompile Include="Src\Helpers\Pipeline\PipelineHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helpers\Window\WindowHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="VertexShader.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="PixelShader.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
+    <FxCompile Include="Shaders\PixelShader.hlsl" />
+    <FxCompile Include="Shaders\VertexShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WindowHelper.h">
+    <ClInclude Include="Resources\Libraries\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11Helper.h">
+    <ClInclude Include="Src\FileReader\IFileParser.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PipelineHelper.h">
+    <ClInclude Include="Src\FileReader\OBJParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helpers\D3D11\D3D11Helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helpers\Pipeline\PipelineHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helpers\Window\WindowHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

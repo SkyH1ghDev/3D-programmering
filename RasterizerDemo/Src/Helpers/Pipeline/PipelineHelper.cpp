@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../../stb_image.h"
+#include "stb_image.h"
 
 
 bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11PixelShader*& pShader, std::string& vShaderByteCode)

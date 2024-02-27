@@ -106,9 +106,10 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>
         Src\Helpers\Window;
-        Src\Helpers\D3D11; 
+        Src\Helpers\D3D11;
         Src\Helpers\Pipeline;
-        Src\FileReader
+        Src\FileReader;
+        Resources\Libraries
       </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -117,7 +118,8 @@
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command></Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <FxCompile>
       <AdditionalIncludeDirectories>Shaders\</AdditionalIncludeDirectories>
@@ -160,7 +162,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="Src\FileReader\OBJParser.cpp" />
+    <ClCompile Include="Src\Helpers\D3D11\D3D11Helper.cpp" />
+    <ClCompile Include="Src\Helpers\Pipeline\PipelineHelper.cpp" />
+    <ClCompile Include="Src\Helpers\Window\WindowHelper.cpp" />
+    <ClCompile Include="Src\Main.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -232,13 +238,15 @@
       <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>Helpers\Window; Helpers\D3D11; Helpers\Pipeline</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+        Src\Helpers\Window; 
+        Src\Helpers\D3D11;
+        Src\Helpers\Pipeline;
+        Src\FileReader;
+        Resources\Libraries
+      </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="Src\FileReader\OBJParser.cpp" />
-    <ClCompile Include="Src\Helpers\D3D11\D3D11Helper.cpp" />
-    <ClCompile Include="Src\Helpers\Pipeline\PipelineHelper.cpp" />
-    <ClCompile Include="Src\Helpers\Window\WindowHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PixelShader.hlsl">
