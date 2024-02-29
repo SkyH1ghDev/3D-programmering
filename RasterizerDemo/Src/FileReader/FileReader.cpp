@@ -21,19 +21,17 @@ std::vector<Vertex> FileReader::ReadFile(const std::string& filename) const
     const std::string fileExtension = GetFileExtension(filename);
     std::vector<Vertex> vertices; 
     
-    switch(fileExtension)
+    if (fileExtension == "obj")
     {
-    case "obj":
         vertices = _objParserPtr->GetVerticesFromFile(filename);
-        break;
-        
-    case "mat":
-        _matParserPtr->ReadContentsOfFile(filename);
-        break;
-        
-    default:
+    }
+    else if (fileExtension == "mat")
+    {
+        // _matParserPtr->ReadContentsOfFile(filename);
+    }
+    else
+    {
         std::cerr << "Invalid file-type" << "\n";
-        break;
     }
     
     return vertices;

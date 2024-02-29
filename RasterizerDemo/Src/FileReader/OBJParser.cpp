@@ -47,5 +47,7 @@ std::vector<Vertex> OBJParser::GetVerticesFromFile(const std::string& filename) 
 {
     std::vector<std::vector<std::string>> fileTokens = ReadContentsOfFile(filename);
 
+    
+
     return std::vector<Vertex>();
 }
