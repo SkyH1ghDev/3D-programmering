@@ -1,9 +1,8 @@
-﻿#include "OBJParser.hpp"
-#include <fstream>
+﻿#include "MTLParser.hpp"
 #include <iostream>
-#include <stdexcept>
+#include <fstream>
 
-std::vector<std::vector<std::string>> OBJParser::ReadContentsOfFile(const std::string& filename) const
+std::vector<std::vector<std::string>> MTLParser::ReadContentsOfFile(const std::string& filename) const
 {
     std::ifstream inFile;
 
@@ -29,7 +28,7 @@ std::vector<std::vector<std::string>> OBJParser::ReadContentsOfFile(const std::s
         std::vector<std::string> tokenVector;
         
         // For each token in a line
-        while ((start = line.find_first_not_of(' ', end)) != std::string::npos)
+        while ((start = line.find_first_not_of(' ', end)) != line.npos)
         {
             end = line.find(' ', start);
 
@@ -41,11 +40,4 @@ std::vector<std::vector<std::string>> OBJParser::ReadContentsOfFile(const std::s
 
     inFile.close();
     return lineVector;
-}
-
-std::vector<Vertex> OBJParser::GetVerticesFromFile(const std::string& filename) const
-{
-    std::vector<std::vector<std::string>> fileTokens = ReadContentsOfFile(filename);
-
-    return std::vector<Vertex>();
 }

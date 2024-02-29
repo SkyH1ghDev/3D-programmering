@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "Vertex.hpp"
 
 class IFileParser
 {
@@ -10,6 +11,5 @@ public:
     virtual ~IFileParser() = default;
     
 protected:
-    virtual 
-    virtual std::vector<std::vector<std::string>> ReadFile(const std::string& filename) const = 0;
+    virtual std::vector<std::vector<std::string>> ReadContentsOfFile(const std::string& filename) const = 0;
 };
