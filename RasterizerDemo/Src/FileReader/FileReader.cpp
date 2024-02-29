@@ -6,7 +6,7 @@
 // CONSTRUCTORS 
 FileReader::FileReader()
 {
-    _matParserPtr = std::make_unique<MTLParser>();
+    _mtlParserPtr = std::make_unique<MTLParser>();
     _objParserPtr = std::make_unique<OBJParser>();
 }
 
@@ -16,25 +16,27 @@ FileReader::FileReader(const FileReader& other)
 }
 
 // FUNCTIONS
-std::vector<Vertex> FileReader::ReadFile(const std::string& filename) const
+int FileReader::ReadFile(const std::string& filename) const
 {
     const std::string fileExtension = GetFileExtension(filename);
-    std::vector<Vertex> vertices; 
     
     if (fileExtension == "obj")
     {
-        vertices = _objParserPtr->GetVerticesFromFile(filename);
+        if (_objParserPtr->GetVerticesFromFile(filename) == -1)
+        {
+            return -1;
+        }
     }
-    else if (fileExtension == "mat")
+    else if (fileExtension == "mtl")
     {
-        // _matParserPtr->ReadContentsOfFile(filename);
+        // _mtlParserPtr->ReadContentsOfFile(filename);
     }
     else
     {
         std::cerr << "Invalid file-type" << "\n";
     }
     
-    return vertices;
+    return 0;
 }
 
 std::string FileReader::GetFileExtension(const std::string& filename)

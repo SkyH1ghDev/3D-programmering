@@ -11,6 +11,7 @@
 #include "DirectXMath.h"
 #include "stb_image.h"
 #include "FileReader.hpp"
+#include "VertexManager.hpp"
 
 void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
             ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport, ID3D11VertexShader* vShader,
@@ -64,7 +65,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 
 	FileReader fileReader = FileReader();
-	std::vector<Vertex> test = fileReader.ReadFile("teapot.obj");
+	if (fileReader.ReadFile("teapot.obj") == -1)
+	{
+		return -1;
+	}
 
 	using namespace DirectX;
 	
@@ -254,6 +258,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	swapChain->Release();
 	immediateContext->Release();
 	device->Release();
+
+	VertexManager::ReleaseInstance();
 
 	return 0;
 }

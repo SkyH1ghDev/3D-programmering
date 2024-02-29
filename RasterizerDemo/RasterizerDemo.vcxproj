@@ -285,7 +285,9 @@
     <ClInclude Include="Src\Helpers\D3D11\D3D11Helper.h" />
     <ClInclude Include="Src\Helpers\Pipeline\PipelineHelper.h" />
     <ClInclude Include="Src\Helpers\Window\WindowHelper.h" />
+    <ClInclude Include="Src\Vertex\Face.hpp" />
     <ClInclude Include="Src\Vertex\Vertex.hpp" />
+    <ClInclude Include="Src\Vertex\VertexManager.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\3D-Objects\teapot.obj" />

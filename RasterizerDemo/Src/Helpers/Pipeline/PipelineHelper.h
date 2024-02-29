@@ -5,9 +5,9 @@
 
 struct SimpleVertex
 {
-	float pos[3];
-	float nrm[3];
-	float uv[2];
+	std::array<float, 4> pos;
+	std::array<float, 4> nrm;
+	std::array<float, 2> uv;
 
 	SimpleVertex(const std::array<float, 3>& position, const std::array<float, 3>& normal, const std::array<float, 2>& UV)
 	{
@@ -21,6 +21,9 @@ struct SimpleVertex
 			pos[i] = position[i];
 			nrm[i] = normal[i];
 		}
+
+		pos[3] = 1.0f;
+		nrm[3] = 0.0f;
 	}
 };
 

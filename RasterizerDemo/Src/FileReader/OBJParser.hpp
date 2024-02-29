@@ -21,5 +21,5 @@ private:
     std::vector<std::vector<std::string>> ReadContentsOfFile(const std::string& filename) const override;
 
     //
-    std::vector<Vertex> GetVerticesFromFile(const std::string& filename) const;
+    int GetVerticesFromFile(const std::string& filename) const;
 };

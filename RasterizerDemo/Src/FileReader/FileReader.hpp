@@ -13,14 +13,14 @@ public:
     FileReader(const FileReader& other);
     
     // FUNCTIONS
-    std::vector<Vertex> ReadFile(const std::string& filename) const;
+    int ReadFile(const std::string& filename) const;
     
     // DESTRUCTOR
     ~FileReader();
     
 private:
     // VARIABLES
-    std::unique_ptr<MTLParser> _matParserPtr;
+    std::unique_ptr<MTLParser> _mtlParserPtr;
     std::unique_ptr<OBJParser> _objParserPtr;
 
     // FUNCTIONS
