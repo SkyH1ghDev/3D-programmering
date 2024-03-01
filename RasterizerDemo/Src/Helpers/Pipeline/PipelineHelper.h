@@ -9,6 +9,9 @@ struct SimpleVertex
 	std::array<float, 4> nrm;
 	std::array<float, 2> uv;
 
+	SimpleVertex(const SimpleVertex&) = default;
+	SimpleVertex() = default;
+	
 	SimpleVertex(const std::array<float, 3>& position, const std::array<float, 3>& normal, const std::array<float, 2>& UV)
 	{
 		for (int i = 0; i < 2; ++i)
@@ -24,6 +27,20 @@ struct SimpleVertex
 
 		pos[3] = 1.0f;
 		nrm[3] = 0.0f;
+	}
+
+	SimpleVertex(const std::array<float, 4>& position, const std::array<float, 4>& normal, const std::array<float, 2>& UV)
+	{
+		for (int i = 0; i < 2; ++i)
+		{
+			uv[i] = UV[i];
+		}
+		
+		for (int i = 0; i < 4; ++i)
+		{
+			pos[i] = position[i];
+			nrm[i] = normal[i];
+		}
 	}
 };
 

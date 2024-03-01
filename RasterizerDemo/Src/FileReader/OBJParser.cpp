@@ -50,9 +50,14 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
     std::vector<std::vector<std::string>> fileTokens = ReadContentsOfFile(filename);
 
     VertexManager* vertexManagerInstance = VertexManager::GetInstance();
-    
+
     for (auto line : fileTokens)
     {
+        if (line.empty())
+        {
+            continue;
+        }
+        
         if (line.front() == "v") // Add new vertex with positional information into vertex list
         {
             std::array<float, 4> positionArray = { std::stof(line.at(1)), std::stof(line.at(2)), std::stof(line.at(3)), 1.0f};
@@ -66,13 +71,10 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
             vertexManagerInstance->NormalList.emplace_back(normalArray);
         }
 
-        // TODO: Add compatability for the "VertexPosIndex/VertexUVIndex" and "VertexPosIndex/VertexUVIndex/VertexNormalIndex" formats 
         if (line.front() == "f") 
         {
             bool first = true;
 
-            vertexManagerInstance->FaceList.emplace_back(Face());
-            
             std::vector<int> positionIndexVector;
             std::vector<int> uvIndexVector;
             std::vector<int> normalIndexVector;
@@ -92,20 +94,28 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
                     switch (indexNumber)
                     {
                     case 1:
-                        positionIndexVector.emplace_back(std::stoi(str));
+                        positionIndexVector.emplace_back(std::stoi(str) - 1);
                         continue;
                     case 2:
-                        uvIndexVector.emplace_back(std::stoi(str));
+                        uvIndexVector.emplace_back(std::stoi(str) - 1);
                         continue;
                     case 3:
-                        normalIndexVector.emplace_back(std::stoi(str));
+                        normalIndexVector.emplace_back(std::stoi(str) - 1);
                         continue;
                     default:
                         std::cerr << "Too many \"f\" arguments" << "\n";
                         return -1;
                     }
                 }
-            }           
+            }
+            
+            Face* facePtr = new Face;
+
+            facePtr->AddPositionIndex(positionIndexVector);
+            facePtr->AddUVIndex(uvIndexVector);
+            facePtr->AddNormalIndex(normalIndexVector);
+
+            vertexManagerInstance->FaceList.emplace_back(std::unique_ptr<Face>(facePtr));
         }
     }
     

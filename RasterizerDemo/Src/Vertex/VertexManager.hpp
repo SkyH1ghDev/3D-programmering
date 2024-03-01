@@ -2,6 +2,7 @@
 
 #include "Vertex.hpp"
 #include "Face.hpp"
+#include <memory>
 
 class VertexManager
 {
@@ -9,7 +10,7 @@ public:
 
     // VARIABLES
 
-    std::vector<Face> FaceList;
+    std::vector<std::unique_ptr<Face>> FaceList;
     std::vector<std::array<float, 4>> NormalList;
     std::vector<std::array<float, 4>> PositionList;
     std::vector<std::array<float, 2>> UVList;
@@ -18,7 +19,11 @@ public:
     
     static VertexManager* GetInstance()
     {
-        return instance == nullptr ? new VertexManager : instance;
+        if (instance == nullptr)
+        {
+            instance = new VertexManager;
+        }
+        return instance;
     }
 
     static void ReleaseInstance()
@@ -29,9 +34,9 @@ public:
 
 private:
 
-    VertexManager();
+    VertexManager() = default; 
     VertexManager(const VertexManager&) = delete;
     VertexManager& operator=(const VertexManager&) = delete;
 
-    constexpr static VertexManager* instance = nullptr;
+    static VertexManager* instance;
 };

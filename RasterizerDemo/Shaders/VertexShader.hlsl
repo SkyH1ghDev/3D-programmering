@@ -6,8 +6,8 @@ cbuffer ConstBuffer : register(b0)
 
 struct VertexShaderInput
 {
-	float3 position : POSITION;
-	float3 normal : NORMAL;
+	float4 position : POSITION;
+	float4 normal : NORMAL;
 	float2 uv : UV;
 };
 
@@ -22,9 +22,9 @@ struct VertexShaderOutput
 VertexShaderOutput main(VertexShaderInput input)
 {
 	VertexShaderOutput output;
-	output.worldPosition = mul(float4(input.position, 1.0f), worldMatrix);
+	output.worldPosition = mul(input.position, worldMatrix);
 	output.position = mul(output.worldPosition, viewProjectionMatrix);
-	output.normal = normalize(float4(mul(float4(input.normal, 1.0f), worldMatrix).xyz, 0.0f));
+	output.normal = normalize(float4(mul(input.normal, worldMatrix).xyz, 0.0f));
 	output.uv = input.uv;
 	return output;
 }

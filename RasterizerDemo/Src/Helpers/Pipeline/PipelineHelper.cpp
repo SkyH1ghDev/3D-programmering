@@ -1,4 +1,5 @@
 #include "PipelineHelper.h"
+#include "VertexManager.hpp"
 
 #include <fstream>
 #include <string>
@@ -74,7 +75,25 @@ bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, co
 
 bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 {
-	SimpleVertex quad[] =
+	std::vector<SimpleVertex> teapot;
+
+	VertexManager* vertexManagerInstance = VertexManager::GetInstance();
+
+	for (const auto& face : vertexManagerInstance->FaceList)
+	{
+		for (int i = 0; i < face->PositionIndices().size(); ++i) // PositionIndices, NormalIndices and UVIndices all have the same size. Doesn't matter which one is used.
+		{
+			teapot.emplace_back(SimpleVertex(vertexManagerInstance->PositionList.at(face->PositionIndices().at(i)),
+											 std::array<float, 4>({0.0f, 0.0f, 1.0f, 0.0f}),
+											 std::array<float, 2>({0.0f, 0.0f})));
+		}
+	}
+
+	SimpleVertex* simpleVertex = new SimpleVertex[teapot.size()];
+
+	std::copy(teapot.begin(), teapot.end(), simpleVertex);
+	
+	/*SimpleVertex quad[] =
 	{
 		{ {-0.5f, 0.5f, 0.0f}, {0, 0, -1}, {0, 0} },
 		{ {0.5f, -0.5f, 0.0f}, {0, 0, -1}, {1, 1}},
@@ -83,10 +102,10 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 		{{0.5f, -0.5f, 0.0f}, {0, 0, -1}, {1, 1}},
 		{{-0.5f, 0.5f, 0.0f}, {0, 0, -1}, {0, 0}},
 		{{0.5f, 0.5f, 0.0f}, {0, 0, -1}, {1, 0}}
-	};
+	};*/
 
 	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.ByteWidth = sizeof(quad);
+	bufferDesc.ByteWidth = sizeof(simpleVertex);
 	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.CPUAccessFlags = 0;
@@ -94,11 +113,12 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 	bufferDesc.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = quad;
+	data.pSysMem = simpleVertex;
 	data.SysMemPitch = 0;
 	data.SysMemSlicePitch = 0;
 
 	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
+	delete[] simpleVertex;
 	return !FAILED(hr);
 }
 
