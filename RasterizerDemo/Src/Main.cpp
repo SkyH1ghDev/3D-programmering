@@ -18,6 +18,8 @@ void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
             ID3D11PixelShader* pShader, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer, ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* samplerState)
 {
 	float clearColour[4] = { 0, 0, 0, 0 };
+	VertexManager* vertexManagerInstance = VertexManager::GetInstance();
+	
 	immediateContext->ClearRenderTargetView(rtv, clearColour);
 	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
@@ -32,21 +34,21 @@ void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
 	immediateContext->PSSetShaderResources(0, 1, &textureSRV);
 	immediateContext->PSSetSamplers(0, 1, &samplerState);
 	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
-	immediateContext->Draw(6, 0);
+	immediateContext->Draw(vertexManagerInstance->numVerticesToDraw, 0);
 }
 
 DirectX::XMMATRIX CreateWorldMatrix(float &angle)
 {
 	using namespace DirectX;
-	XMMATRIX translationMatrix = XMMatrixTranslation(0, 0, -1);
+	XMMATRIX translationMatrix = XMMatrixTranslation(0, 0, 0);
 	XMMATRIX rotationMatrix = XMMatrixRotationY(angle);
 	return XMMatrixTranspose(XMMatrixMultiply(translationMatrix, rotationMatrix));
 }
 
-DirectX::XMMATRIX CreateViewMatrix()
+DirectX::XMMATRIX CreateViewMatrix(const DirectX::XMFLOAT4* eyePos)
 {
 	using namespace DirectX;
-	XMVECTOR eyePosition = XMVectorSet(0.0f, 0.0f, -3.0f, 1.0f);
+	XMVECTOR eyePosition = XMLoadFloat4(eyePos);
 	XMVECTOR focusPosition = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	XMVECTOR upDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 	return XMMatrixLookAtLH(eyePosition, focusPosition, upDirection);
@@ -64,8 +66,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ int       nCmdShow)
 {
 
-	FileReader fileReader = FileReader();
-	if (fileReader.ReadFile("teapot.obj") == -1)
+	FileReader fileReader;
+	if (fileReader.ReadFile("XWing.obj") == -1)
 	{
 		return -1;
 	}
@@ -115,7 +117,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	XMMATRIX worldMatrix = CreateWorldMatrix(initialAngle);
 
 	// Create View Matrix
-	XMMATRIX viewMatrix = CreateViewMatrix();
+	XMFLOAT4 eyePos = {0.0f, 0.0f, -15.0f, 1.0f};
+	XMMATRIX viewMatrix = CreateViewMatrix(&eyePos);
 
 	// Create Projection Matrix
 	const float fovAngle = 59.0f; // Degrees
@@ -166,18 +169,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 	
 	// Create Constant Buffer For PS
-
 	struct psStruct
 	{
-		XMFLOAT4 lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
-		XMFLOAT4 lightPosition = {0.0f, 1.0f, -5.0f, 1.0f};
-		XMFLOAT4 eyePosition = {0.0f, 0.0f, -3.0f, 1.0f};
-		float ambientLightIntensity = 0.1f;
-		float shininess = 10000.0f;
+		XMFLOAT4 lightColour;
+		XMFLOAT4 lightPosition; 
+		XMFLOAT4 eyePosition;
+		float ambientLightIntensity;
+		float shininess;
 		char padding[8];
 	};
 
 	psStruct psValues;
+	psValues.lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
+	psValues.lightPosition = {0.0f, 1.0f, -10.0f, 1.0f};
+	psValues.eyePosition = eyePos;
+	psValues.ambientLightIntensity = 0.1f;
+	psValues.shininess = 10000.0f;
 	
 	D3D11_BUFFER_DESC psConstBuffer;
 	psConstBuffer.ByteWidth = sizeof(psStruct);
@@ -206,8 +213,37 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	immediateContext->VSSetConstantBuffers(0, 1, &vertexShaderConstantBuffer);
 	immediateContext->PSSetConstantBuffers(0, 1, &pixelShaderConstantBuffer);
+
+	// DEBUG RASTERIZER DESC
+	
+	D3D11_RASTERIZER_DESC rasterizerDesc;
+	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+	
+	rasterizerDesc.CullMode = D3D11_CULL_NONE;
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.FrontCounterClockwise = false;
+	rasterizerDesc.DepthBias = 0;
+	rasterizerDesc.DepthBiasClamp = 0.0f;
+	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+	rasterizerDesc.DepthClipEnable = true;
+	rasterizerDesc.ScissorEnable = false;
+	rasterizerDesc.MultisampleEnable = false;
+	rasterizerDesc.AntialiasedLineEnable = false;
 	
 
+	ID3D11RasterizerState* rasterizerState;
+	hr = device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
+
+	if (FAILED(hr))
+	{
+		std::cerr << "Create RasterizerState failed" << std::endl;
+		return -1;
+	}
+
+	immediateContext->RSSetState(rasterizerState); 
+
+	// DEBUG RASTERIZER DESC END
+	
 	float rotationalSpeed = 1.0f;
 	MSG msg = { };
 	while (!(GetKeyState(VK_ESCAPE) & 0b1000000000000000) && msg.message != WM_QUIT)
@@ -241,7 +277,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		initialAngle -= rotationalSpeed * deltaTime;
 	}
-	
+
+	rasterizerState->Release();
 	pixelShaderConstantBuffer->Release();
 	vertexShaderConstantBuffer->Release();
 	samplerState->Release();

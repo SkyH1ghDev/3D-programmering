@@ -1,49 +1,8 @@
 ﻿#include "OBJParser.hpp"
 #include "VertexManager.hpp"
 #include <sstream>
-#include <fstream>
 #include <iostream>
 #include <stdexcept>
-
-std::vector<std::vector<std::string>> OBJParser::ReadContentsOfFile(const std::string& filename) const
-{
-    std::ifstream inFile;
-
-    std::string filepath = "Resources/3D-Objects/" + filename;
-    
-    inFile.open(filepath);
-
-    if (!inFile.good())
-    {
-        std::cerr << "Failed to open OBJ-file";
-        exit(-1);
-    }
-
-    std::vector<std::vector<std::string>> lineVector;
-    std::string line;
-
-    // Gets line from file
-    while(std::getline(inFile, line))
-    {
-        int start = 0;
-        int end = 0;
-        
-        std::vector<std::string> tokenVector;
-        
-        // For each token in a line
-        while ((start = line.find_first_not_of(' ', end)) != std::string::npos)
-        {
-            end = line.find(' ', start);
-
-            tokenVector.emplace_back(line.substr(start, end - start));
-        }
-
-        lineVector.emplace_back(tokenVector);
-    }
-
-    inFile.close();
-    return lineVector;
-}
 
 int OBJParser::GetVerticesFromFile(const std::string& filename) const
 {
@@ -61,14 +20,22 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
         if (line.front() == "v") // Add new vertex with positional information into vertex list
         {
             std::array<float, 4> positionArray = { std::stof(line.at(1)), std::stof(line.at(2)), std::stof(line.at(3)), 1.0f};
-            vertexManagerInstance->PositionList.emplace_back(positionArray);
+            vertexManagerInstance->PositionList.push_back(positionArray);
             continue;
         }
 
         if (line.front() == "vn")
         {
             std::array<float, 4> normalArray = { std::stof(line.at(1)), std::stof(line.at(2)), std::stof(line.at(3)), 0.0f };
-            vertexManagerInstance->NormalList.emplace_back(normalArray);
+            vertexManagerInstance->NormalList.push_back(normalArray);
+            continue;
+        }
+
+        if (line.front() == "vt")
+        {
+            std::array<float, 2> uvArray = { std::stof(line.at(1)), std::stof(line.at(2)) };
+            vertexManagerInstance->UVList.push_back(uvArray);
+            continue;
         }
 
         if (line.front() == "f") 
@@ -108,16 +75,49 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
                     }
                 }
             }
+
+            // Check that there is at least one valid vertex, normal and uv that could be read from the file 
+            {
+                if (positionIndexVector.empty())
+                {
+                    std::cerr << "No Valid Vertex Positions Could Be Read" << "\n";
+                    return -1;
+                }
+
+                if (uvIndexVector.empty())
+                {
+                    std::cerr << "No Valid Vertex UVs Could Be Read" << "\n";
+                    return -1;
+                }
+
+                if (normalIndexVector.empty())
+                {
+                    std::cerr << "No Valid Vertex Normals Could Be Read" << "\n";
+                    return -1;
+                }
+            }
+
             
-            Face* facePtr = new Face;
+            std::unique_ptr<Face> uFace = std::make_unique<Face>();
+            
+            uFace->AddVertexPositionIndex(positionIndexVector);
+            uFace->AddUVIndex(uvIndexVector);
+            uFace->AddNormalIndex(normalIndexVector);
 
-            facePtr->AddPositionIndex(positionIndexVector);
-            facePtr->AddUVIndex(uvIndexVector);
-            facePtr->AddNormalIndex(normalIndexVector);
+            vertexManagerInstance->FaceList.push_back(std::move(uFace));
+            
+        }
+    }
 
-            vertexManagerInstance->FaceList.emplace_back(std::unique_ptr<Face>(facePtr));
+    for (auto &face : vertexManagerInstance->FaceList)
+    {
+        for (auto vertex : face->VertexPositionIndices())
+        {
+            vertexManagerInstance->numVerticesToDraw++;
         }
     }
     
     return 0;
 }
+
+

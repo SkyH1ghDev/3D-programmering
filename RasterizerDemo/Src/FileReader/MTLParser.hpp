@@ -5,10 +5,12 @@
 class MTLParser : public IFileParser
 {
 public:
+
+    MTLParser() = default;
+    ~MTLParser() override = default;
     
     friend class FileReader;
-    
 private:
     
-    std::vector<std::vector<std::string>> ReadContentsOfFile(const std::string& filename) const override;
+    int GetMaterialFromFile(const std::string& filename) const;
 };

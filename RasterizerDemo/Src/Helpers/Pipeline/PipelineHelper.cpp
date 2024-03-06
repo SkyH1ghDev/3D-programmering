@@ -52,7 +52,7 @@ bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11Pixel
 
 	if (FAILED(device->CreatePixelShader(shaderData.c_str(), shaderData.length(), nullptr, &pShader)))
 	{
-		std::cerr << "Failed to create pixel shader!" << std::endl;
+		std::cerr << "Failed to create pixel shader!" << "\n";
 		return false;
 	}
 
@@ -63,8 +63,8 @@ bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, co
 {
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
@@ -81,31 +81,21 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 
 	for (const auto& face : vertexManagerInstance->FaceList)
 	{
-		for (int i = 0; i < face->PositionIndices().size(); ++i) // PositionIndices, NormalIndices and UVIndices all have the same size. Doesn't matter which one is used.
+		for (int i = 0; i < face->VertexPositionIndices().size(); ++i) // PositionIndices, UVIndices and NormalIndices are all equal size, however only PositionIndices is guaranteed to have elements
 		{
-			teapot.emplace_back(SimpleVertex(vertexManagerInstance->PositionList.at(face->PositionIndices().at(i)),
-											 std::array<float, 4>({0.0f, 0.0f, 1.0f, 0.0f}),
-											 std::array<float, 2>({0.0f, 0.0f})));
+			SimpleVertex vertex = SimpleVertex(vertexManagerInstance->PositionList.at(face->VertexPositionIndices().at(i)),
+											   vertexManagerInstance->NormalList.at(face->NormalIndices().at(i)), 
+											    vertexManagerInstance->UVList.at(face->UVIndices().at(i)));
+			teapot.push_back(vertex);
 		}
 	}
 
-	SimpleVertex* simpleVertex = new SimpleVertex[teapot.size()];
+	SimpleVertex* teapotArr = new SimpleVertex[teapot.size()];
 
-	std::copy(teapot.begin(), teapot.end(), simpleVertex);
+	std::copy(teapot.begin(), teapot.end(), teapotArr);
 	
-	/*SimpleVertex quad[] =
-	{
-		{ {-0.5f, 0.5f, 0.0f}, {0, 0, -1}, {0, 0} },
-		{ {0.5f, -0.5f, 0.0f}, {0, 0, -1}, {1, 1}},
-		{ {-0.5f, -0.5f, 0.0f}, {0, 0, -1}, {0, 1}},
-
-		{{0.5f, -0.5f, 0.0f}, {0, 0, -1}, {1, 1}},
-		{{-0.5f, 0.5f, 0.0f}, {0, 0, -1}, {0, 0}},
-		{{0.5f, 0.5f, 0.0f}, {0, 0, -1}, {1, 0}}
-	};*/
-
 	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.ByteWidth = sizeof(simpleVertex);
+	bufferDesc.ByteWidth = sizeof(*teapotArr) * vertexManagerInstance->numVerticesToDraw;
 	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.CPUAccessFlags = 0;
@@ -113,12 +103,12 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 	bufferDesc.StructureByteStride = 0;
 
 	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = simpleVertex;
+	data.pSysMem = teapotArr;
 	data.SysMemPitch = 0;
 	data.SysMemSlicePitch = 0;
 
 	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
-	delete[] simpleVertex;
+	delete[] teapotArr;
 	return !FAILED(hr);
 }
 

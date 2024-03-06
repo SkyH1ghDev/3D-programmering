@@ -26,14 +26,20 @@ int FileReader::ReadFile(const std::string& filename) const
         {
             return -1;
         }
+        return 0;
     }
     else if (fileExtension == "mtl")
     {
-        // _mtlParserPtr->ReadContentsOfFile(filename);
+        if (_mtlParserPtr->GetMaterialFromFile(filename) == -1)
+        {
+            return -1;
+        }
+        return 0;
     }
     else
     {
         std::cerr << "Invalid file-type" << "\n";
+        return -1;
     }
     
     return 0;

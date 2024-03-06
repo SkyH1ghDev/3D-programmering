@@ -14,6 +14,7 @@ public:
     std::vector<std::array<float, 4>> NormalList;
     std::vector<std::array<float, 4>> PositionList;
     std::vector<std::array<float, 2>> UVList;
+    int numVerticesToDraw = 0;
     
     //FUNCTIONS
     

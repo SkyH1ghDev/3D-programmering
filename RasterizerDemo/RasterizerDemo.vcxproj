@@ -108,6 +108,7 @@
         Src\Helpers\Window;
         Src\Helpers\D3D11;
         Src\Helpers\Pipeline;
+        Src\Material;
         Src\FileReader;
         Src\Vertex;
         Resources\Libraries
@@ -245,12 +246,14 @@
         Src\Helpers\Window; 
         Src\Helpers\D3D11;
         Src\Helpers\Pipeline;
+        Src\Material;
         Src\FileReader;
         Src\Vertex;
         Resources\Libraries
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Src\Material\MaterialManager.cpp" />
     <ClCompile Include="Src\Vertex\VertexManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -286,11 +289,14 @@
     <ClInclude Include="Src\Helpers\D3D11\D3D11Helper.h" />
     <ClInclude Include="Src\Helpers\Pipeline\PipelineHelper.h" />
     <ClInclude Include="Src\Helpers\Window\WindowHelper.h" />
+    <ClInclude Include="Src\Material\Material.hpp" />
+    <ClInclude Include="Src\Material\MaterialManager.hpp" />
     <ClInclude Include="Src\Vertex\Face.hpp" />
     <ClInclude Include="Src\Vertex\Vertex.hpp" />
     <ClInclude Include="Src\Vertex\VertexManager.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\3D-Objects\cube.obj" />
     <Content Include="Resources\3D-Objects\teapot.obj" />
     <Content Include="Resources\Images\Pic.jpg" />
   </ItemGroup>

@@ -5,16 +5,16 @@
 class Face
 {
 public:
-    std::vector<int> PositionIndices()
+    std::vector<int> VertexPositionIndices()
     {
         return this->_positionIndices;
     }
 
-    void AddPositionIndex(const std::vector<int>& positionIndexVec)
+    void AddVertexPositionIndex(const std::vector<int>& positionIndexVec)
     {
         for (auto index : positionIndexVec)
         {
-            _positionIndices.emplace_back(index);
+            _positionIndices.push_back(index);
         }
     }
 
@@ -27,7 +27,7 @@ public:
     {
         for (auto index : normalIndexVec)
         {
-            _normalIndices.emplace_back(index);
+            _normalIndices.push_back(index);
         }
     }
 
@@ -40,7 +40,7 @@ public:
     {
         for(auto index : uvIndexVec)
         {
-            this->_uvIndices.emplace_back(index);
+            this->_uvIndices.push_back(index);
         }
     }
 
