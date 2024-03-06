@@ -11,6 +11,7 @@
 #include "DirectXMath.h"
 #include "stb_image.h"
 #include "FileReader.hpp"
+#include "ManagerHelper.hpp"
 #include "VertexManager.hpp"
 
 void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
@@ -296,7 +297,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	immediateContext->Release();
 	device->Release();
 
-	VertexManager::ReleaseInstance();
+	ManagerHelper::ReleaseManagers();
 
 	return 0;
 }
