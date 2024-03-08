@@ -10,10 +10,59 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
 
     VertexManager* vertexManagerInstance = VertexManager::GetInstance();
 
+    int faceIndex = 0;
+    
+    int groupIndexStart = 0;
+    int materialIndexStart = 0;
+    
     for (auto line : fileTokens)
     {
         if (line.empty())
         {
+            continue;
+        }
+
+        if (line.front() == "g")
+        {
+            if (groupIndexStart > faceIndex)
+            {
+                continue;
+            }
+            
+            std::unique_ptr<GroupData> uGroupData = std::make_unique<GroupData>();
+
+            uGroupData->groupName = line.at(1);
+            uGroupData->startIndex = groupIndexStart;
+            uGroupData->endIndex = faceIndex;
+            
+            vertexManagerInstance->groupDataList.push_back(std::move(uGroupData));
+
+            groupIndexStart = faceIndex + 1;
+            continue;
+        }
+
+        if (line.front() == "mtllib")
+        {
+            vertexManagerInstance->materialLibraryList.push_back(line.at(1));
+            continue;
+        }
+
+        if (line.front() == "usemtl")
+        {
+            if (materialIndexStart > faceIndex)
+            {
+                continue;
+            }
+            
+            std::unique_ptr<MaterialData> uMaterialData = std::make_unique<MaterialData>();
+
+            uMaterialData->materialName = line.at(1);
+            uMaterialData->startIndex = materialIndexStart;
+            uMaterialData->endIndex = faceIndex;
+
+            vertexManagerInstance->materialDataList.push_back(std::move(uMaterialData));
+
+            materialIndexStart = faceIndex + 1;
             continue;
         }
         
@@ -97,6 +146,7 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
                 }
             }
 
+            ++faceIndex;
             
             std::unique_ptr<Face> uFace = std::make_unique<Face>();
             
@@ -105,7 +155,6 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
             uFace->AddNormalIndex(normalIndexVector);
 
             vertexManagerInstance->FaceList.push_back(std::move(uFace));
-            
         }
     }
 
