@@ -94,14 +94,18 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
             std::vector<int> positionIndexVector;
             std::vector<int> uvIndexVector;
             std::vector<int> normalIndexVector;
+
+            int numVertices = 0;
             
             for (auto string : line)
             {
                 if (first) { first = false; continue; } // Skip first element of line
 
+                ++numVertices;
+                
                 std::stringstream strStream(string);
                 std::string str;
-
+                
                 int indexNumber = 0;
                 
                 while(getline(strStream, str, '/'))
@@ -110,13 +114,13 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
                     switch (indexNumber)
                     {
                     case 1:
-                        positionIndexVector.emplace_back(std::stoi(str) - 1);
+                        positionIndexVector.push_back(std::stoi(str) - 1);
                         continue;
                     case 2:
-                        uvIndexVector.emplace_back(std::stoi(str) - 1);
+                        uvIndexVector.push_back(std::stoi(str) - 1);
                         continue;
                     case 3:
-                        normalIndexVector.emplace_back(std::stoi(str) - 1);
+                        normalIndexVector.push_back(std::stoi(str) - 1);
                         continue;
                     default:
                         std::cerr << "Too many \"f\" arguments" << "\n";
@@ -146,15 +150,38 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
                 }
             }
 
-            ++faceIndex;
             
-            std::unique_ptr<Face> uFace = std::make_unique<Face>();
-            
-            uFace->AddVertexPositionIndex(positionIndexVector);
-            uFace->AddUVIndex(uvIndexVector);
-            uFace->AddNormalIndex(normalIndexVector);
+            if (numVertices == 4) // Face is a quad
+            {
+                std::unique_ptr<Face> uFace1 = std::make_unique<Face>();
+                std::unique_ptr<Face> uFace2 = std::make_unique<Face>();
 
-            vertexManagerInstance->FaceList.push_back(std::move(uFace));
+                uFace1->AddVertexPositionIndex(std::vector<int>({positionIndexVector.at(0), positionIndexVector.at(1), positionIndexVector.at(2)}));
+                uFace2->AddVertexPositionIndex(std::vector<int>({positionIndexVector.at(0), positionIndexVector.at(2), positionIndexVector.at(3)}));
+
+                uFace1->AddUVIndex(std::vector<int>({uvIndexVector.at(0), uvIndexVector.at(1), uvIndexVector.at(2)}));
+                uFace2->AddUVIndex(std::vector<int>({uvIndexVector.at(0), uvIndexVector.at(2), uvIndexVector.at(3)}));
+                
+                uFace1->AddNormalIndex(std::vector<int>({normalIndexVector.at(0), normalIndexVector.at(1), normalIndexVector.at(2)}));
+                uFace2->AddNormalIndex(std::vector<int>({normalIndexVector.at(0), normalIndexVector.at(2), normalIndexVector.at(3)}));
+
+                vertexManagerInstance->FaceList.push_back(std::move(uFace1));
+                vertexManagerInstance->FaceList.push_back(std::move(uFace2));
+
+                faceIndex += 2;
+            }
+            else
+            {
+                ++faceIndex;
+                        
+                std::unique_ptr<Face> uFace = std::make_unique<Face>();
+                
+                uFace->AddVertexPositionIndex(positionIndexVector);
+                uFace->AddUVIndex(uvIndexVector);
+                uFace->AddNormalIndex(normalIndexVector);
+    
+                vertexManagerInstance->FaceList.push_back(std::move(uFace));    
+            }
         }
     }
 

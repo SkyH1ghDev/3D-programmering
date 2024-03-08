@@ -68,7 +68,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 
 	FileReader fileReader;
-	if (fileReader.ReadFile("XWing.obj") == -1)
+	if (fileReader.ReadFile("lego.obj") == -1)
 	{
 		return -1;
 	}

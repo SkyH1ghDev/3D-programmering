@@ -470,6 +470,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\3D-Objects\cube.obj" />
+    <Content Include="Resources\3D-Objects\lego.mtl" />
+    <Content Include="Resources\3D-Objects\lego.obj" />
     <Content Include="Resources\3D-Objects\teapot.obj" />
     <Content Include="Resources\3D-Objects\XWing.obj" />
     <Content Include="Resources\Images\Pic.jpg" />
