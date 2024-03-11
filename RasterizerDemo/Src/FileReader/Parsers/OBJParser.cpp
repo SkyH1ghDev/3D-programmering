@@ -29,7 +29,7 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
                 continue;
             }
             
-            std::unique_ptr<GroupData> uGroupData = std::make_unique<GroupData>();
+            std::unique_ptr<VertexGroupData> uGroupData = std::make_unique<VertexGroupData>();
 
             uGroupData->groupName = line.at(1);
             uGroupData->startIndex = groupIndexStart;
@@ -54,7 +54,7 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
                 continue;
             }
             
-            std::unique_ptr<MaterialData> uMaterialData = std::make_unique<MaterialData>();
+            std::unique_ptr<VertexMaterialData> uMaterialData = std::make_unique<VertexMaterialData>();
 
             uMaterialData->materialName = line.at(1);
             uMaterialData->startIndex = materialIndexStart;

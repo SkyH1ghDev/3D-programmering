@@ -167,6 +167,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\FileReader\FileReader.cpp" />
+    <ClCompile Include="Src\FileReader\ImageReader.cpp" />
     <ClCompile Include="Src\FileReader\Parsers\MTLParser.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -455,6 +456,7 @@
   <ItemGroup>
     <ClInclude Include="Resources\Libraries\stb_image.h" />
     <ClInclude Include="Src\FileReader\FileReader.hpp" />
+    <ClInclude Include="Src\FileReader\ImageReader.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\IFileParser.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\MTLParser.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\OBJParser.hpp" />

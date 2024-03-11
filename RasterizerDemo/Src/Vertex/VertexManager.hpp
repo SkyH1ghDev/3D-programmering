@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 
-class GroupData;
-class MaterialData;
+class VertexGroupData;
+class VertexMaterialData;
 
 class VertexManager
 {
@@ -15,8 +15,8 @@ public:
     // VARIABLES
 
     std::vector<std::unique_ptr<Face>> FaceList;
-    std::vector<std::unique_ptr<GroupData>> groupDataList;
-    std::vector<std::unique_ptr<MaterialData>> materialDataList;
+    std::vector<std::unique_ptr<VertexGroupData>> groupDataList;
+    std::vector<std::unique_ptr<VertexMaterialData>> materialDataList;
     std::vector<std::string> materialLibraryList;
     std::vector<std::array<float, 4>> NormalList;
     std::vector<std::array<float, 4>> PositionList;
@@ -49,7 +49,7 @@ private:
     static VertexManager* instance;
 };
 
-class GroupData
+class VertexGroupData
 {
 public:
     std::string groupName;
@@ -57,7 +57,7 @@ public:
     int endIndex;
 };
 
-class MaterialData
+class VertexMaterialData
 {
 public:
     std::string materialName;

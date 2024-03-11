@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "IFileParser.hpp"
+#include "ImageReader.hpp"
 
 class MTLParser : public IFileParser
 {
@@ -13,4 +14,7 @@ public:
 private:
     
     int GetMaterialFromFile(const std::string& filename) const;
+
+private:
+    ImageReader imageReader;
 };
