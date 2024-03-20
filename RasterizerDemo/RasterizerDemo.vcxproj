@@ -115,6 +115,7 @@
         Src\Manager;
         Src\Vertex;
         Src\Pixel;
+        Src\Config;
         Resources\Libraries
       </AdditionalIncludeDirectories>
     </ClCompile>
@@ -168,6 +169,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Config\Configuration.cpp" />
     <ClCompile Include="Src\FileReader\FileReader.cpp" />
     <ClCompile Include="Src\FileReader\ImageReader.cpp" />
     <ClCompile Include="Src\FileReader\Parsers\MTLParser.cpp">
@@ -253,6 +255,7 @@
         Src\Manager;
         Src\Vertex;
         Src\Pixel;
+        Src\Config;
         Resources\Libraries
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
@@ -340,6 +343,7 @@
         Src\FileReader;
         Src\Vertex;
         Src\Pixel;
+        Src\Config;
         Resources\Libraries
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
@@ -431,12 +435,14 @@
         Src\FileReader\Parsers;
         Src\Vertex;
         Src\Pixel;
+        Src\Config;
         Resources\Libraries
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Src\Material\MaterialManager.cpp" />
     <ClCompile Include="Src\Pixel\PixelShaderData.cpp" />
+    <ClCompile Include="Src\Renderer\Renderer.cpp" />
     <ClCompile Include="Src\Vertex\Vertex.cpp" />
     <ClCompile Include="Src\Vertex\VertexManager.cpp" />
   </ItemGroup>
@@ -466,6 +472,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resources\Libraries\stb_image.h" />
+    <ClInclude Include="Src\Config\Configuration.hpp" />
+    <ClInclude Include="Src\Config\FileConfig.hpp" />
     <ClInclude Include="Src\FileReader\FileReader.hpp" />
     <ClInclude Include="Src\FileReader\ImageReader.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\IFileParser.hpp" />
@@ -479,6 +487,7 @@
     <ClInclude Include="Src\Material\Material.hpp" />
     <ClInclude Include="Src\Material\MaterialManager.hpp" />
     <ClInclude Include="Src\Pixel\PixelShaderData.hpp" />
+    <ClInclude Include="Src\Renderer\Renderer.hpp" />
     <ClInclude Include="Src\Vertex\Face.hpp" />
     <ClInclude Include="Src\Vertex\Vertex.hpp" />
     <ClInclude Include="Src\Vertex\VertexManager.hpp" />

@@ -1,7 +1,7 @@
 #include "WindowHelper.h"
 #include <iostream>
 
-LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WindowHelper::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	// sort through and find what code to run for the message given
 	switch (message)
@@ -21,7 +21,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-bool SetupWindow(HINSTANCE instance, UINT width, UINT height, int nCmdShow, HWND& window)
+bool WindowHelper::SetupWindow(HINSTANCE instance, UINT width, UINT height, int nCmdShow, HWND& window)
 {
 	const wchar_t CLASS_NAME[] = L"Test Window Class";
 
@@ -33,7 +33,7 @@ bool SetupWindow(HINSTANCE instance, UINT width, UINT height, int nCmdShow, HWND
 
 	RegisterClass(&wc);
 
-	window = CreateWindowEx(0, CLASS_NAME, L"TEST WINDOW", WS_OVERLAPPEDWINDOW,
+	window = CreateWindowEx(0, CLASS_NAME, L"3D Renderer - Christoffer Bohman", WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, width, height, nullptr, nullptr, instance, nullptr);
 
 	if (window == nullptr)

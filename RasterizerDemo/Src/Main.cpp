@@ -6,43 +6,19 @@
 #include <chrono>
 
 #include "WindowHelper.h"
-#include "Helpers\D3D11\D3D11Helper.hpp"
-#include "Helpers\Pipeline\PipelineHelper.hpp"
+#include "D3D11Helper.hpp"
+#include "PipelineHelper.hpp"
 #include "DirectXMath.h"
 #include "stb_image.h"
 #include "FileReader.hpp"
 #include "ManagerHelper.hpp"
-#include "VertexManager.hpp"
 #include "MatrixCreator.hpp"
-
-void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
-            ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport, ID3D11VertexShader* vShader,
-            ID3D11PixelShader* pShader, ID3D11InputLayout* inputLayout, ID3D11Buffer* vertexBuffer, ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* samplerState)
-{
-	float clearColour[4] = { 0, 0, 0, 0 };
-	VertexManager* vertexManagerInstance = VertexManager::GetInstance();
-	
-	immediateContext->ClearRenderTargetView(rtv, clearColour);
-	immediateContext->ClearDepthStencilView(dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-	immediateContext->IASetInputLayout(inputLayout);
-	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	immediateContext->VSSetShader(vShader, nullptr, 0);
-	immediateContext->PSSetShader(pShader, nullptr, 0);
-	immediateContext->RSSetViewports(1, &viewport);
-	immediateContext->PSSetShaderResources(0, 1, &textureSRV);
-	immediateContext->PSSetSamplers(0, 1, &samplerState);
-	immediateContext->OMSetRenderTargets(1, &rtv, dsView);
-	immediateContext->Draw(vertexManagerInstance->numVerticesToDraw, 0);
-}
+#include "Renderer/Renderer.hpp"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-	_In_opt_ HINSTANCE hPrevInstance,
-	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow)
+                      _In_opt_ HINSTANCE hPrevInstance,
+                      _In_ LPWSTR    lpCmdLine,
+                      _In_ int       nCmdShow)
 {
 
 	FileReader fileReader;
@@ -56,15 +32,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
-	MaterialManager* materialManagerInstance = MaterialManager::GetInstance();
-
 	using namespace DirectX;
 	
 	const UINT WIDTH = 1280;
 	const UINT HEIGHT = 720;
 	HWND window;
 
-	if (!SetupWindow(hInstance, WIDTH, HEIGHT, nCmdShow, window))
+	WindowHelper windowHelper;
+	if (!windowHelper.SetupWindow(hInstance, WIDTH, HEIGHT, nCmdShow, window))
 	{
 		std::cerr << "Failed to setup window!" << std::endl;
 		return -1;
@@ -232,7 +207,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	immediateContext->RSSetState(rasterizerState); 
 
 	// DEBUG RASTERIZER DESC END
-	
+
+	Renderer renderer;
 	float rotationalSpeed = 1.0f;
 	MSG msg = { };
 	while (!(GetKeyState(VK_ESCAPE) & 0b1000000000000000) && msg.message != WM_QUIT)
@@ -246,7 +222,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			DispatchMessage(&msg);
 		}
 		
-		Render(immediateContext, rtv, dsView, viewport, vShader, pShader, inputLayout, vertexBuffer, textureSRV, samplerState);
+		renderer.Render(immediateContext, rtv, dsView, viewport, vShader, pShader, inputLayout, vertexBuffer, textureSRV, samplerState);
 		swapChain->Present(0, 0);
 
 		// Map New World Matrix Every Frame
