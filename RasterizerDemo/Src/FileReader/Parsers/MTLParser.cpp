@@ -34,7 +34,11 @@ int MTLParser::GetMaterialFromFile(const std::string& filename) const
 
         if (line.front() == "Kd")
         {
-            continue; // TODO: Implement
+            currentMaterialData->diffuseMap = std::vector<unsigned char>({  static_cast<unsigned char>(round(255 * std::stof(line.at(1)))),
+                                                                                static_cast<unsigned char>(round(255 * std::stof(line.at(2)))),
+                                                                                static_cast<unsigned char>(round(255 * std::stof(line.at(3)))),
+                                                                                255});
+            continue;
         }
 
         if (line.front() == "map_Kd")
@@ -45,7 +49,11 @@ int MTLParser::GetMaterialFromFile(const std::string& filename) const
 
         if (line.front() == "Ks")
         {
-            continue; // TODO: Implement
+            currentMaterialData->specularMap = std::vector<unsigned char>({ static_cast<unsigned char>(round(255 * std::stof(line.at(1)))),
+                                                                                static_cast<unsigned char>(round(255 * std::stof(line.at(2)))),
+                                                                                static_cast<unsigned char>(round(255 * std::stof(line.at(3)))),
+                                                                                255});
+            continue;
         }
 
         if (line.front() == "map_Ks")
@@ -56,7 +64,11 @@ int MTLParser::GetMaterialFromFile(const std::string& filename) const
 
         if (line.front() == "Ka")
         {
-            continue; // TODO: Implement
+             currentMaterialData->ambientMap = std::vector<unsigned char>({ static_cast<unsigned char>(round(255 * std::stof(line.at(1)))),
+                                                                                 static_cast<unsigned char>(round(255 * std::stof(line.at(2)))),
+                                                                                 static_cast<unsigned char>(round(255 * std::stof(line.at(3)))),
+                                                                                 255});
+            continue;
         }
 
         if (line.front() == "map_Ka")

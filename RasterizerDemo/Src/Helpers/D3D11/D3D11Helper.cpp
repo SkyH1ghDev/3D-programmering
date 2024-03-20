@@ -1,6 +1,8 @@
-#include "D3D11Helper.h"
+#include "D3D11Helper.hpp"
 
-bool CreateInterfaces(ID3D11Device*& device, ID3D11DeviceContext*& immediateContext, IDXGISwapChain*& swapChain, UINT width, UINT height, HWND window)
+#include <iostream>
+
+bool D3D11Helper::CreateInterfaces(ID3D11Device*& device, ID3D11DeviceContext*& immediateContext, IDXGISwapChain*& swapChain, UINT width, UINT height, HWND window)
 {
 	UINT flags = 0;
 	if (_DEBUG)
@@ -34,7 +36,7 @@ bool CreateInterfaces(ID3D11Device*& device, ID3D11DeviceContext*& immediateCont
 	return !(FAILED(hr));
 }
 
-bool CreateRenderTargetView(ID3D11Device* device, IDXGISwapChain* swapChain, ID3D11RenderTargetView*& rtv)
+bool D3D11Helper::CreateRenderTargetView(ID3D11Device* device, IDXGISwapChain* swapChain, ID3D11RenderTargetView*& rtv)
 {
 	// get the address of the back buffer
 	ID3D11Texture2D* backBuffer = nullptr;
@@ -52,7 +54,7 @@ bool CreateRenderTargetView(ID3D11Device* device, IDXGISwapChain* swapChain, ID3
 
 }
 
-bool CreateDepthStencil(ID3D11Device* device, UINT width, UINT height, ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView)
+bool D3D11Helper::CreateDepthStencil(ID3D11Device* device, UINT width, UINT height, ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView)
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
 	textureDesc.Width = width;
@@ -76,7 +78,7 @@ bool CreateDepthStencil(ID3D11Device* device, UINT width, UINT height, ID3D11Tex
 	return !(FAILED(hr));
 }
 
-void SetViewport(D3D11_VIEWPORT& viewport, UINT width, UINT height)
+void D3D11Helper::SetViewport(D3D11_VIEWPORT& viewport, UINT width, UINT height)
 {
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
@@ -86,7 +88,7 @@ void SetViewport(D3D11_VIEWPORT& viewport, UINT width, UINT height)
 	viewport.MaxDepth = 1;
 }
 
-bool SetupD3D11(UINT width, UINT height, HWND window, ID3D11Device*& device,
+bool D3D11Helper::SetupD3D11(UINT width, UINT height, HWND window, ID3D11Device*& device,
 	ID3D11DeviceContext*& immediateContext, IDXGISwapChain*& swapChain, ID3D11RenderTargetView*& rtv,
 	ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView, D3D11_VIEWPORT& viewport)
 {

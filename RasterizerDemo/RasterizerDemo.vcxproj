@@ -108,11 +108,13 @@
         Src\Helpers\Window;
         Src\Helpers\D3D11;
         Src\Helpers\Pipeline;
+        Src\Helpers\MatrixCreator;
         Src\Material;
         Src\FileReader\Parsers;
         Src\FileReader;
         Src\Manager;
         Src\Vertex;
+        Src\Pixel;
         Resources\Libraries
       </AdditionalIncludeDirectories>
     </ClCompile>
@@ -244,11 +246,13 @@
         Src\Helpers\Window;
         Src\Helpers\D3D11;
         Src\Helpers\Pipeline;
+        Src\Helpers\MatrixCreator;
         Src\Material;
         Src\FileReader\Parsers;
         Src\FileReader;
         Src\Manager;
         Src\Vertex;
+        Src\Pixel;
         Resources\Libraries
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
@@ -330,15 +334,18 @@
         Src\Helpers\D3D11;
         Src\Helpers\Pipeline;
         Src\Helpers\Manager;
+        Src\Helpers\MatrixCreator;
         Src\Material;
         Src\FileReader\Parsers;
         Src\FileReader;
         Src\Vertex;
+        Src\Pixel;
         Resources\Libraries
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Src\Helpers\D3D11\D3D11Helper.cpp" />
+    <ClCompile Include="Src\Helpers\MatrixCreator\MatrixCreator.cpp" />
     <ClCompile Include="Src\Helpers\Pipeline\PipelineHelper.cpp" />
     <ClCompile Include="Src\Helpers\Window\WindowHelper.cpp" />
     <ClCompile Include="Src\Main.cpp">
@@ -418,15 +425,19 @@
         Src\Helpers\D3D11;
         Src\Helpers\Pipeline;
         Src\Helpers\Manager;
+        Src\Helpers\MatrixCreator;
         Src\Material;
         Src\FileReader;
         Src\FileReader\Parsers;
         Src\Vertex;
+        Src\Pixel;
         Resources\Libraries
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Src\Material\MaterialManager.cpp" />
+    <ClCompile Include="Src\Pixel\PixelShaderData.cpp" />
+    <ClCompile Include="Src\Vertex\Vertex.cpp" />
     <ClCompile Include="Src\Vertex\VertexManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -460,12 +471,14 @@
     <ClInclude Include="Src\FileReader\Parsers\IFileParser.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\MTLParser.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\OBJParser.hpp" />
-    <ClInclude Include="Src\Helpers\D3D11\D3D11Helper.h" />
+    <ClInclude Include="Src\Helpers\D3D11\D3D11Helper.hpp" />
     <ClInclude Include="Src\Helpers\Manager\ManagerHelper.hpp" />
-    <ClInclude Include="Src\Helpers\Pipeline\PipelineHelper.h" />
+    <ClInclude Include="Src\Helpers\MatrixCreator\MatrixCreator.hpp" />
+    <ClInclude Include="Src\Helpers\Pipeline\PipelineHelper.hpp" />
     <ClInclude Include="Src\Helpers\Window\WindowHelper.h" />
     <ClInclude Include="Src\Material\Material.hpp" />
     <ClInclude Include="Src\Material\MaterialManager.hpp" />
+    <ClInclude Include="Src\Pixel\PixelShaderData.hpp" />
     <ClInclude Include="Src\Vertex\Face.hpp" />
     <ClInclude Include="Src\Vertex\Vertex.hpp" />
     <ClInclude Include="Src\Vertex\VertexManager.hpp" />

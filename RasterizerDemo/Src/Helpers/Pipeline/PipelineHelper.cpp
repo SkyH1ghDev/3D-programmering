@@ -1,4 +1,4 @@
-#include "PipelineHelper.h"
+#include "PipelineHelper.hpp"
 #include "VertexManager.hpp"
 
 #include <fstream>
@@ -8,8 +8,7 @@
 
 #include "stb_image.h"
 
-
-bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11PixelShader*& pShader, std::string& vShaderByteCode)
+bool PipelineHelper::LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11PixelShader*& pShader, std::string& vShaderByteCode)
 {
 	std::string shaderData;
 	std::ifstream reader;
@@ -59,7 +58,7 @@ bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11Pixel
 	return true;
 }
 
-bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const std::string& vShaderByteCode)
+bool PipelineHelper::CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const std::string& vShaderByteCode)
 {
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
@@ -73,9 +72,9 @@ bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, co
 	return !FAILED(hr);
 }
 
-bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
+bool PipelineHelper::CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 {
-	std::vector<SimpleVertex> teapot;
+	std::vector<Vertex> teapot;
 
 	VertexManager* vertexManagerInstance = VertexManager::GetInstance();
 
@@ -83,14 +82,18 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 	{
 		for (int i = 0; i < face->VertexPositionIndices().size(); ++i) // PositionIndices, UVIndices and NormalIndices are all equal size, however only PositionIndices is guaranteed to have elements
 		{
-			SimpleVertex vertex = SimpleVertex(vertexManagerInstance->PositionList.at(face->VertexPositionIndices().at(i)),
-											   vertexManagerInstance->NormalList.at(face->NormalIndices().at(i)), 
-											    vertexManagerInstance->UVList.at(face->UVIndices().at(i)));
+
+			Vertex vertex;
+
+			vertex.SetPosition(vertexManagerInstance->PositionList.at(face->VertexPositionIndices().at(i)));
+			vertex.SetNormal(vertexManagerInstance->NormalList.at(face->NormalIndices().at(i)));
+			vertex.SetUV(vertexManagerInstance->UVList.at(face->UVIndices().at(i)));
+			
 			teapot.push_back(vertex);
 		}
 	}
 
-	SimpleVertex* teapotArr = new SimpleVertex[teapot.size()];
+	Vertex* teapotArr = new Vertex[teapot.size()];
 
 	std::copy(teapot.begin(), teapot.end(), teapotArr);
 	
@@ -112,7 +115,7 @@ bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 	return !FAILED(hr);
 }
 
-bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, unsigned char*& imageData)
+bool PipelineHelper::CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, unsigned char*& imageData)
 {
 	int textureHeight, textureWidth, rgbaChannels;
 	
@@ -165,7 +168,7 @@ bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11Shader
 	return !FAILED(hr);
 }
 
-bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& samplerState)
+bool PipelineHelper::CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& samplerState)
 {
 	D3D11_SAMPLER_DESC samplerDesc;
     	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -182,7 +185,7 @@ bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& samplerState)
     	return !(FAILED(hr));
 }
 
-bool SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11VertexShader*& vShader,
+bool PipelineHelper::SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11VertexShader*& vShader,
 				   ID3D11PixelShader*& pShader, ID3D11InputLayout*& inputLayout, ID3D11Texture2D*& texture,
 				   ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& samplerState, unsigned char*& imageData)
 {

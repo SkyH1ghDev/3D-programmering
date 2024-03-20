@@ -5,80 +5,34 @@
 class Vertex
 {
 public:
-
-    Vertex() = default;
     
-    Vertex(const std::array<float, 3> position, const std::array<float, 3> normal, const std::array<float, 2> uv)
-    {
-        for (int i = 0; i < 3; ++i)
-        {
-            this->_position[i] = position[i];
-        }
-        this->_position[3] = 1.0f;
-
-        for (int i = 0; i < 3; ++i)
-        {
-            this->_normal[i] = normal[i];
-        }
-        this->_normal[3] = 0.0f;
-
-        for (int i = 0; i < 2; ++i)
-        {
-            this->_uv[i] = uv[i];
-        }
-    }
+    Vertex() = default;
+    Vertex(const std::array<float, 3>& position, const std::array<float, 3>& normal, const std::array<float, 2>& uv);
+    Vertex(const std::array<float, 4>& position, const std::array<float, 4>& normal, const std::array<float, 2>& uv);
 
     // Gets position of a Vertex
-    std::array<float, 4> Position()
-    {
-        return this->_position;
-    }
+    std::array<float, 4> Position() const;
 
     // Sets position of a Vertex
-    void SetPosition(const std::array<float, 3>& newPos)
-    {
-        for (int i = 0; i < 3; ++i)
-        {
-            this->_position[i] = newPos[i];
-        }
-
-        this->_position[3] = 1.0f;
-    }
+    void SetPosition(const std::array<float, 3>& newPos);
+    void SetPosition(const std::array<float, 4>& newPos);
 
     // Gets normal of a Vertex
-    std::array<float, 4> Normal()
-    {
-        return this->_normal;
-    }
+    std::array<float, 4> Normal();
 
     // Sets normal of a Vertex
-    void SetNormal(const std::array<float, 3>& newNormal)
-    {
-        for (int i = 0; i < 3; ++i)
-        {
-            this->_normal[i] = newNormal[i];
-        }
-
-        this->_normal[3] = 0.0f;
-    }
+    void SetNormal(const std::array<float, 3>& newNormal);
+    void SetNormal(const std::array<float, 4>& newNormal);
 
     // Gets uv of a Vertex
-    std::array<float, 2> UV()
-    {
-        return this->_uv;
-    }
+    std::array<float, 2> UV();
 
     // Sets uv of a Vertex
-    void SetUV(const std::array<float, 2>& newUV)
-    {
-        for (int i = 0; i < 2; ++i)
-        {
-            this->_uv[i]= newUV[i];
-        }
-    }
-    
+    void SetUV(const std::array<float, 2>& newUV);
+
 private:
     std::array<float, 4> _position = { 0, 0, 0, 1 };
     std::array<float, 4> _normal= { 0, 0, 0, 0 };
     std::array<float, 2> _uv= { 0, 0 };
+    
 };

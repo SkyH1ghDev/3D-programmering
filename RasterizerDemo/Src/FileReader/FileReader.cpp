@@ -1,7 +1,7 @@
 ﻿#include "FileReader.hpp"
 #include <iostream>
 
-#include "D3D11Helper.h"
+#include "..\Helpers\D3D11\D3D11Helper.hpp"
 
 // CONSTRUCTORS 
 FileReader::FileReader()
