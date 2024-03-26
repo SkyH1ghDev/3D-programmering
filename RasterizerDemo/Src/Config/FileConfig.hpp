@@ -2,11 +2,10 @@
 
 #include <vector>
 #include <string>
+#include "ConfigBase.hpp"
 
-#include "D3D11Helper.hpp"
-
-class FileConfig
+class FileConfig : public ConfigBase
 {
 public:
-    std::vector<std::string> FilenameList = {"lego.obj"};
+    const std::vector<std::string> FilenameList = {"lego.obj"};
 };

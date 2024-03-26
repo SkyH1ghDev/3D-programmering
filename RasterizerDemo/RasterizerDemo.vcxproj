@@ -472,8 +472,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resources\Libraries\stb_image.h" />
+    <ClInclude Include="Src\Config\ConfigBase.hpp" />
     <ClInclude Include="Src\Config\Configuration.hpp" />
     <ClInclude Include="Src\Config\FileConfig.hpp" />
+    <ClInclude Include="Src\Config\ProjectionMatrixConfig.hpp" />
+    <ClInclude Include="Src\Config\ViewMatrixConfig.hpp" />
+    <ClInclude Include="Src\Config\WindowConfig.hpp" />
+    <ClInclude Include="Src\Config\WorldMatrixConfig.hpp" />
     <ClInclude Include="Src\FileReader\FileReader.hpp" />
     <ClInclude Include="Src\FileReader\ImageReader.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\IFileParser.hpp" />

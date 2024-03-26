@@ -34,12 +34,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	using namespace DirectX;
 	
-	const UINT WIDTH = 1280;
-	const UINT HEIGHT = 720;
 	HWND window;
-
+	WindowConfig windowConfig;
 	WindowHelper windowHelper;
-	if (!windowHelper.SetupWindow(hInstance, WIDTH, HEIGHT, nCmdShow, window))
+	if (!windowHelper.SetupWindow(hInstance, windowConfig.Width, windowConfig.Height, nCmdShow, window))
 	{
 		std::cerr << "Failed to setup window!" << std::endl;
 		return -1;
@@ -62,7 +60,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ID3D11SamplerState* samplerState;
 
 	D3D11Helper d3d11Helper;
-	if (!d3d11Helper.SetupD3D11(WIDTH, HEIGHT, window, device, immediateContext, swapChain, rtv, dsTexture, dsView, viewport))
+	if (!d3d11Helper.SetupD3D11(windowConfig.Width, windowConfig.Height, window, device, immediateContext, swapChain, rtv, dsTexture, dsView, viewport))
 	{
 		std::cerr << "Failed to setup d3d11!" << std::endl;
 		return -1;
@@ -74,23 +72,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -1;
 	}
-
+	
+   // Create World Matrix
 	MatrixCreator matrixCreator;
-	// Create World Matrix
-	float initialAngle = 0.0f;
-	XMMATRIX worldMatrix = matrixCreator.CreateWorldMatrix(initialAngle);
-
+	WorldMatrixConfig worldMatrixConfig;
+	XMMATRIX worldMatrix = matrixCreator.CreateWorldMatrix(worldMatrixConfig);
+	
 	// Create View Matrix
-	std::array<float, 4> eyePos = {0.0f, 0.0f, -15.0f, 1.0f};
-	XMMATRIX viewMatrix = matrixCreator.CreateViewMatrix(eyePos);
-
+	ViewMatrixConfig viewMatrixConfig;
+	XMMATRIX viewMatrix = matrixCreator.CreateViewMatrix(viewMatrixConfig);
+	
 	// Create Projection Matrix
-	const float fovAngle = 59.0f; // Degrees
-	const float aspectRatio = static_cast<float>(WIDTH) / static_cast<float>(HEIGHT);
-	const float nearZ = 0.1f;
-	const float farZ = 100.0f;
-	XMMATRIX projectionMatrix = matrixCreator.CreateProjectionMatrix(fovAngle, aspectRatio, nearZ, farZ);
-
+	ProjectionMatrixConfig projectionMatrixConfig;
+	XMMATRIX projectionMatrix = matrixCreator.CreateProjectionMatrix(projectionMatrixConfig);
+	
 	// Combine View + Projection Matrices And Transpose The Result
 
 	XMMATRIX viewProjectionMatrix = XMMatrixMultiplyTranspose(viewMatrix, projectionMatrix);
@@ -146,7 +141,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	psStruct psValues;
 	psValues.lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
 	psValues.lightPosition = {0.0f, 1.0f, -10.0f, 1.0f};
-	psValues.eyePosition = XMFLOAT4(eyePos.data());
+	psValues.eyePosition = XMFLOAT4(viewMatrixConfig.EyePos.data());
 	psValues.ambientLightIntensity = 0.1f;
 	psValues.shininess = 10000.0f;
 	
@@ -210,6 +205,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Renderer renderer;
 	float rotationalSpeed = 1.0f;
+	float currentAngle = worldMatrixConfig.InitialAngle;
 	MSG msg = { };
 	while (!(GetKeyState(VK_ESCAPE) & 0b1000000000000000) && msg.message != WM_QUIT)
 	{
@@ -231,7 +227,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		ZeroMemory(&mappedResource, sizeof(mappedResource));
 
 		immediateContext->Map(vertexShaderConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-		XMStoreFloat4x4(&worldMatrixFloat4x4, matrixCreator.CreateWorldMatrix(initialAngle));
+		XMStoreFloat4x4(&worldMatrixFloat4x4, matrixCreator.CreateWorldMatrix(currentAngle));
 		matrixArr[0] = worldMatrixFloat4x4;
 		memcpy(mappedResource.pData, matrixArr, sizeof(matrixArr));
 		immediateContext->Unmap(vertexShaderConstantBuffer, 0);
@@ -240,7 +236,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		duration<float> timeDiff = t1 - t2;
 		float deltaTime = timeDiff.count();
 
-		initialAngle -= rotationalSpeed * deltaTime;
+		currentAngle -= rotationalSpeed * deltaTime;
 	}
 
 	rasterizerState->Release();
