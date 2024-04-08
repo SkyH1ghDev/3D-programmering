@@ -2,10 +2,14 @@
 
 #include <vector>
 #include <string>
-#include "ConfigBase.hpp"
+#include "IConfigBase.hpp"
 
-class FileConfig : public ConfigBase
+class FileConfig : public IConfigBase
 {
 public:
-    const std::vector<std::string> FilenameList = {"lego.obj"};
+    std::vector<std::string> GetFilenameList() const { return this->_filenameList; }
+
+private:
+    std::vector<std::string> _filenameList = {"lego.obj", "lego.mtl"};
+
 };

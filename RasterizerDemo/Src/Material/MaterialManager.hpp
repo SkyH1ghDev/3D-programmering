@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 class MaterialData;
 
@@ -12,7 +13,7 @@ public:
 
     // VARIABLES
     
-    std::vector<std::unique_ptr<MaterialData>> materialDataList;
+    std::unordered_map<std::string, std::unique_ptr<MaterialData>> MaterialDataMap;
     
     // FUNCTIONS
     

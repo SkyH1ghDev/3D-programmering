@@ -2,7 +2,7 @@
 
 #include "OBJParser.hpp"
 #include "MTLParser.hpp"
-#include "..\Vertex\Vertex.hpp"
+#include "FileConfig.hpp"
 #include <memory>
 
 class FileReader
@@ -10,10 +10,9 @@ class FileReader
 public:
     // CONSTRUCTORS
     FileReader();
-    FileReader(const FileReader& other);
     
     // FUNCTIONS
-    int ReadFile(const std::string& filename) const;
+    int ReadFilesFromConfig(const FileConfig& fileConfig);
     
     // DESTRUCTOR
     ~FileReader();
@@ -24,5 +23,6 @@ private:
     std::unique_ptr<OBJParser> _objParserPtr;
 
     // FUNCTIONS
-    static std::string GetFileExtension(const std::string& filename);
+    std::string GetFileExtension(const std::string& filename);
+    int ReadFile(const std::string& filename);
 };

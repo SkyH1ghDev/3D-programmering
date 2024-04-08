@@ -1,16 +1,23 @@
 ﻿#pragma once
 
-#include "ConfigBase.hpp"
+#include "IConfigBase.hpp"
 #include "WindowConfig.hpp"
 
-class ProjectionMatrixConfig : public ConfigBase
+class ProjectionMatrixConfig : public IConfigBase
 {
+public:
+	ProjectionMatrixConfig() : _aspectRatio(static_cast<float>(this->_windowConfig.GetWidth()) / static_cast<float>(this->_windowConfig.GetHeight())) {}
+
+	float GetAspectRatio() const { return _aspectRatio; }
+	float GetFovAngle() const { return _fovAngle; }
+	float GetNearZ() const { return _nearZ; }
+	float GetFarZ() const { return _farZ; }
+	
 private:
 	WindowConfig _windowConfig;
 	
-public:
-	const float AspectRatio = static_cast<float>(this->_windowConfig.Width) / static_cast<float>(this->_windowConfig.Height);
-	const float FovAngle = 59.0f; // Degrees
-	const float NearZ = 0.1f;
-	const float FarZ = 100.0f;
+	float _aspectRatio;
+	float _fovAngle = 59.0f; // Degrees
+	float _nearZ = 0.1f;
+	float _farZ = 100.0f;
 };

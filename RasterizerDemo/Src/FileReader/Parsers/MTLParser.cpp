@@ -26,8 +26,9 @@ int MTLParser::GetMaterialFromFile(const std::string& filename) const
             
             uMaterialData->materialName = line.at(1);
 
-            materialManagerInstance->materialDataList.push_back(std::move(uMaterialData));
-
+            std::pair<std::string, std::unique_ptr<MaterialData>> pair = std::make_pair(uMaterialData->materialName, std::move(uMaterialData));
+            
+            materialManagerInstance->MaterialDataMap.insert(std::move(pair));
             ++currentMaterialIndex;
             continue;
         }

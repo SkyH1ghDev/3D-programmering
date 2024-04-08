@@ -1,10 +1,13 @@
 #define STB_IMAGE_IMPLEMENTATION
+#define DX DirectX
 
 #include <Windows.h>
 #include <iostream>
 #include <d3d11.h>
 #include <chrono>
 
+#include "Configuration.hpp"
+#include "ConstantBuffer.hpp"
 #include "WindowHelper.h"
 #include "D3D11Helper.hpp"
 #include "PipelineHelper.hpp"
@@ -13,31 +16,23 @@
 #include "FileReader.hpp"
 #include "ManagerHelper.hpp"
 #include "MatrixCreator.hpp"
-#include "Renderer/Renderer.hpp"
+#include "Renderer.hpp"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance,
                       _In_ LPWSTR    lpCmdLine,
                       _In_ int       nCmdShow)
 {
-
+	Configuration setupConfiguration;
+	
 	FileReader fileReader;
-	if (fileReader.ReadFile("lego.obj") == -1)
-	{
-		return -1;
-	}
-	
-	if (fileReader.ReadFile("lego.mtl") == -1)
-	{
-		return -1;
-	}
+	FileConfig fileConfig = setupConfiguration.GetFileConfig();
+	fileReader.ReadFilesFromConfig(fileConfig);
 
-	using namespace DirectX;
-	
 	HWND window;
-	WindowConfig windowConfig;
+	WindowConfig windowConfig = setupConfiguration.GetWindowConfig();
 	WindowHelper windowHelper;
-	if (!windowHelper.SetupWindow(hInstance, windowConfig.Width, windowConfig.Height, nCmdShow, window))
+	if (!windowHelper.SetupWindow(hInstance, windowConfig.GetWidth(), windowConfig.GetHeight(), nCmdShow, window))
 	{
 		std::cerr << "Failed to setup window!" << std::endl;
 		return -1;
@@ -59,8 +54,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ID3D11ShaderResourceView* textureSRV;
 	ID3D11SamplerState* samplerState;
 
+
 	D3D11Helper d3d11Helper;
-	if (!d3d11Helper.SetupD3D11(windowConfig.Width, windowConfig.Height, window, device, immediateContext, swapChain, rtv, dsTexture, dsView, viewport))
+	if (!d3d11Helper.SetupD3D11(windowConfig.GetWidth(), windowConfig.GetHeight(), window, device, immediateContext, swapChain, rtv, dsTexture, dsView, viewport))
 	{
 		std::cerr << "Failed to setup d3d11!" << std::endl;
 		return -1;
@@ -76,50 +72,35 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
    // Create World Matrix
 	MatrixCreator matrixCreator;
 	WorldMatrixConfig worldMatrixConfig;
-	XMMATRIX worldMatrix = matrixCreator.CreateWorldMatrix(worldMatrixConfig);
+	DX::XMMATRIX worldMatrix = matrixCreator.CreateWorldMatrix(worldMatrixConfig);
 	
 	// Create View Matrix
 	ViewMatrixConfig viewMatrixConfig;
-	XMMATRIX viewMatrix = matrixCreator.CreateViewMatrix(viewMatrixConfig);
+	DX::XMMATRIX viewMatrix = matrixCreator.CreateViewMatrix(viewMatrixConfig);
 	
 	// Create Projection Matrix
 	ProjectionMatrixConfig projectionMatrixConfig;
-	XMMATRIX projectionMatrix = matrixCreator.CreateProjectionMatrix(projectionMatrixConfig);
+	DX::XMMATRIX projectionMatrix = matrixCreator.CreateProjectionMatrix(projectionMatrixConfig);
 	
 	// Combine View + Projection Matrices And Transpose The Result
 
-	XMMATRIX viewProjectionMatrix = XMMatrixMultiplyTranspose(viewMatrix, projectionMatrix);
+	DX::XMMATRIX viewProjectionMatrix = XMMatrixMultiplyTranspose(viewMatrix, projectionMatrix);
 
 	// Convert Matrices into XMFloat4x4
 
-	XMFLOAT4X4 worldMatrixFloat4x4;
+	DX::XMFLOAT4X4 worldMatrixFloat4x4;
 	XMStoreFloat4x4(&worldMatrixFloat4x4, worldMatrix);
 
-	XMFLOAT4X4 viewProjectionMatrixFloat4x4;
+	DX::XMFLOAT4X4 viewProjectionMatrixFloat4x4;
 	XMStoreFloat4x4(&viewProjectionMatrixFloat4x4, viewProjectionMatrix);
 
 	// Create Constant Buffer Of Matrices For VS
 	
-	XMFLOAT4X4 matrixArr[] = {worldMatrixFloat4x4, viewProjectionMatrixFloat4x4};
+	std::vector<DX::XMFLOAT4X4> matrixVector = {worldMatrixFloat4x4, viewProjectionMatrixFloat4x4};
 
-	D3D11_BUFFER_DESC vsConstBuffer;
-	vsConstBuffer.ByteWidth = sizeof(worldMatrixFloat4x4) + sizeof(viewProjectionMatrixFloat4x4);
-	vsConstBuffer.Usage = D3D11_USAGE_DYNAMIC;
-	vsConstBuffer.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	vsConstBuffer.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	vsConstBuffer.MiscFlags = 0;
-	vsConstBuffer.StructureByteStride = 0;
-
-	D3D11_SUBRESOURCE_DATA vsConstBufferSubResource;
-	vsConstBufferSubResource.pSysMem = matrixArr;
-	vsConstBufferSubResource.SysMemPitch = 0;
-	vsConstBufferSubResource.SysMemSlicePitch = 0;
-
-	// Checks if byteWidth is a multiple of 16
-	static_assert(sizeof(matrixArr) % 16 == 0);
+	HRESULT hr;
 	
-	ID3D11Buffer* vertexShaderConstantBuffer;
-	HRESULT hr = device->CreateBuffer(&vsConstBuffer, &vsConstBufferSubResource, &vertexShaderConstantBuffer);
+	ConstantBuffer vsConstBuffer = ConstantBuffer(hr, device, sizeof(worldMatrixFloat4x4) + sizeof(viewProjectionMatrixFloat4x4), matrixVector.data(), 0, 0, D3D11_USAGE_DYNAMIC, static_cast<D3D11_CPU_ACCESS_FLAG>(0), static_cast<D3D11_RESOURCE_MISC_FLAG>(0), 0);
 	
 	if (FAILED(hr))
 	{
@@ -130,9 +111,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Create Constant Buffer For PS
 	struct psStruct
 	{
-		XMFLOAT4 lightColour;
-		XMFLOAT4 lightPosition; 
-		XMFLOAT4 eyePosition;
+		DX::XMFLOAT4 lightColour;
+		DX::XMFLOAT4 lightPosition; 
+		DX::XMFLOAT4 eyePosition;
 		float ambientLightIntensity;
 		float shininess;
 		char padding[8];
@@ -141,28 +122,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	psStruct psValues;
 	psValues.lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
 	psValues.lightPosition = {0.0f, 1.0f, -10.0f, 1.0f};
-	psValues.eyePosition = XMFLOAT4(viewMatrixConfig.EyePos.data());
+	psValues.eyePosition = DX::XMFLOAT4(viewMatrixConfig.GetEyePosition().data());
 	psValues.ambientLightIntensity = 0.1f;
 	psValues.shininess = 10000.0f;
-	
-	D3D11_BUFFER_DESC psConstBuffer;
-	psConstBuffer.ByteWidth = sizeof(psStruct);
-	psConstBuffer.Usage = D3D11_USAGE_IMMUTABLE;
-	psConstBuffer.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	psConstBuffer.CPUAccessFlags = 0;
-	psConstBuffer.MiscFlags = 0;
-	psConstBuffer.StructureByteStride = 0;
 
-	D3D11_SUBRESOURCE_DATA psConstBufferSubResource;
-	psConstBufferSubResource.pSysMem = &psValues;
-	psConstBufferSubResource.SysMemPitch = 0;
-	psConstBufferSubResource.SysMemSlicePitch = 0;
-
-	// Check if byteWidth is a multiple of 16
-	static_assert(sizeof(psStruct) % 16 == 0);
-
-	ID3D11Buffer* pixelShaderConstantBuffer;
-	hr = device->CreateBuffer(&psConstBuffer, &psConstBufferSubResource, &pixelShaderConstantBuffer);
+	ConstantBuffer psConstBuffer = ConstantBuffer(hr, device, sizeof(psStruct), &psValues, 0, 0, D3D11_USAGE_IMMUTABLE, static_cast<D3D11_CPU_ACCESS_FLAG>(0), static_cast<D3D11_RESOURCE_MISC_FLAG>(0), 0);
 
 	if (FAILED(hr))
 	{
@@ -170,8 +134,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
+	ID3D11Buffer* vertexShaderConstantBuffer = vsConstBuffer.GetBuffer();
 	immediateContext->VSSetConstantBuffers(0, 1, &vertexShaderConstantBuffer);
-	immediateContext->PSSetConstantBuffers(0, 1, &pixelShaderConstantBuffer);
+
+	ID3D11Buffer* pixelShaderConstBuffer = psConstBuffer.GetBuffer();
+	immediateContext->PSSetConstantBuffers(0, 1, &pixelShaderConstBuffer);
 
 	// DEBUG RASTERIZER DESC
 	
@@ -205,7 +172,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Renderer renderer;
 	float rotationalSpeed = 1.0f;
-	float currentAngle = worldMatrixConfig.InitialAngle;
+	float currentAngle = worldMatrixConfig.GetInitialAngle();
 	MSG msg = { };
 	while (!(GetKeyState(VK_ESCAPE) & 0b1000000000000000) && msg.message != WM_QUIT)
 	{
@@ -228,8 +195,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		immediateContext->Map(vertexShaderConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		XMStoreFloat4x4(&worldMatrixFloat4x4, matrixCreator.CreateWorldMatrix(currentAngle));
-		matrixArr[0] = worldMatrixFloat4x4;
-		memcpy(mappedResource.pData, matrixArr, sizeof(matrixArr));
+		matrixVector[0] = worldMatrixFloat4x4;
+		memcpy(mappedResource.pData, matrixVector.data(), sizeof(matrixVector));
 		immediateContext->Unmap(vertexShaderConstantBuffer, 0);
 
 		time_point<high_resolution_clock> t2 = high_resolution_clock::now();
@@ -240,7 +207,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	rasterizerState->Release();
-	pixelShaderConstantBuffer->Release();
 	vertexShaderConstantBuffer->Release();
 	samplerState->Release();
 	textureSRV->Release();

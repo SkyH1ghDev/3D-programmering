@@ -1,10 +1,14 @@
 ﻿#pragma once
 
-#include "ConfigBase.hpp"
+#include "IConfigBase.hpp"
 
-class WindowConfig : public ConfigBase
+class WindowConfig : public IConfigBase
 {
 public:
-   const int Height = 720;
-   const int Width = 1280;
+   int GetHeight() const { return this->_height; }
+   int GetWidth() const { return this->_width; }
+   
+private:
+   int _height = 720;
+   int _width = 1280;
 };

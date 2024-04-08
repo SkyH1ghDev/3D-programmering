@@ -10,9 +10,6 @@ public:
     MTLParser() = default;
     ~MTLParser() override = default;
     
-    friend class FileReader;
-private:
-    
     int GetMaterialFromFile(const std::string& filename) const;
 
 private:

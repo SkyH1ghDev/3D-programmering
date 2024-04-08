@@ -24,7 +24,7 @@ VertexShaderOutput main(VertexShaderInput input)
 	VertexShaderOutput output;
 	output.worldPosition = mul(input.position, worldMatrix);
 	output.position = mul(output.worldPosition, viewProjectionMatrix);
-	output.normal = normalize(float4(mul(float4(input.normal.xyz, 1.0f), worldMatrix).xyz, 0.0f));
+	output.normal = normalize(mul(input.normal, worldMatrix));
 	output.uv = input.uv;
 	return output;
 }

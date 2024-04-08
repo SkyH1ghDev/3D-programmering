@@ -1,22 +1,29 @@
 ﻿#include "FileReader.hpp"
 #include <iostream>
 
-#include "..\Helpers\D3D11\D3D11Helper.hpp"
-
-// CONSTRUCTORS 
 FileReader::FileReader()
 {
     _mtlParserPtr = std::make_unique<MTLParser>();
     _objParserPtr = std::make_unique<OBJParser>();
 }
 
-FileReader::FileReader(const FileReader& other)
+int FileReader::ReadFilesFromConfig(const FileConfig& fileConfig)
 {
-    // Temporarily empty
+    for(std::string file : fileConfig.GetFilenameList())
+    {
+        if (ReadFile(file) == -1)
+        {
+            std::cerr << "Could not read file: \"" << file << "\" \n";
+            
+            return -1;
+        }
+    }
+    
+    return 0;
 }
 
-// FUNCTIONS
-int FileReader::ReadFile(const std::string& filename) const
+
+int FileReader::ReadFile(const std::string& filename)
 {
     const std::string fileExtension = GetFileExtension(filename);
     
@@ -53,7 +60,7 @@ std::string FileReader::GetFileExtension(const std::string& filename)
         return(filename.substr(i+1, filename.length() - i));
     }
 
-    return ("");
+    return "";
 }
 
 

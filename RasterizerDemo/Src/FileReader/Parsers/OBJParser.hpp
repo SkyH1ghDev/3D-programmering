@@ -9,8 +9,5 @@ public:
     OBJParser() = default;
     ~OBJParser() override = default;
 
-    friend class FileReader;
-private:
-    
     int GetVerticesFromFile(const std::string& filename) const;
 };

@@ -1,9 +1,12 @@
 ﻿#pragma once
 
-#include "ConfigBase.hpp"
+#include "IConfigBase.hpp"
 
-class WorldMatrixConfig : public ConfigBase
+class WorldMatrixConfig : public IConfigBase
 {
 public:
-    const float InitialAngle = 0.0f;
+    float GetInitialAngle() const { return this->_initalAngle; }
+    
+private:
+    float _initalAngle = 0.0f;
 };
