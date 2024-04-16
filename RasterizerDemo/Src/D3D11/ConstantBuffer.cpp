@@ -3,22 +3,24 @@
 #include <iostream>
 
 ConstantBuffer::ConstantBuffer(HRESULT &hr, ID3D11Device *device, size_t byteSize,
-                               void *initialData = nullptr,
-                               unsigned int sysMemPitch = 0,
-                               unsigned int sysMemSlicePitch = 0,
-                               D3D11_USAGE usageFlag = D3D11_USAGE_IMMUTABLE, 
-                               D3D11_CPU_ACCESS_FLAG cpuAccessFlag = static_cast<D3D11_CPU_ACCESS_FLAG>(0),
-                               D3D11_RESOURCE_MISC_FLAG miscFlags = static_cast<D3D11_RESOURCE_MISC_FLAG>(0),
-                               unsigned int structureByStride = 0)
+                               void *initialData,
+                               unsigned int sysMemPitch,
+                               unsigned int sysMemSlicePitch,
+                               unsigned int structureByStride,
+                               BufferFlagData flags)
 {
-	static_assert(byteSize % 16 == 0, "Size of constant buffer is not divisible by 16");
+	if (byteSize % 16 != 0)
+	{
+		std::cerr << "Size of constant buffer is not divisible by 16" << "\n";
+		hr = -1;
+	}
 	
 	D3D11_BUFFER_DESC constBufferDesc;
- 	constBufferDesc.ByteWidth = sizeof(byteSize);
- 	constBufferDesc.Usage = usageFlag;
+ 	constBufferDesc.ByteWidth = byteSize;
+ 	constBufferDesc.Usage = flags.Usage;
  	constBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
- 	constBufferDesc.CPUAccessFlags = cpuAccessFlag;
- 	constBufferDesc.MiscFlags = miscFlags;
+ 	constBufferDesc.CPUAccessFlags = flags.CpuAccess;
+ 	constBufferDesc.MiscFlags = flags.Misc;
  	constBufferDesc.StructureByteStride = structureByStride;
  
  	D3D11_SUBRESOURCE_DATA constBufferSubResource;
@@ -31,7 +33,7 @@ ConstantBuffer::ConstantBuffer(HRESULT &hr, ID3D11Device *device, size_t byteSiz
 
 	if(!FAILED(hr))
 	{
-	    this->_buffer = std::unique_ptr<ID3D11Buffer>(constBuffer);
+		this->_buffer = constBuffer;
 		this->_bufferSize = byteSize;
 	}
 
@@ -53,7 +55,7 @@ ConstantBuffer &ConstantBuffer::operator=(ConstantBuffer &&other) noexcept
 
 ID3D11Buffer *ConstantBuffer::GetBuffer() const
 {
-   return this->_buffer.get();
+   return this->_buffer;
 }
 
 size_t ConstantBuffer::GetSize() const
@@ -63,5 +65,9 @@ size_t ConstantBuffer::GetSize() const
 
 ConstantBuffer::~ConstantBuffer()
 {
-   this->_buffer->Release();
+	if (this->_buffer != nullptr)
+	{
+		std::cout << this->GetSize() << "\n";
+		this->_buffer->Release();
+	}
 }

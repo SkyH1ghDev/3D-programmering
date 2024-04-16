@@ -99,8 +99,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::vector<DX::XMFLOAT4X4> matrixVector = {worldMatrixFloat4x4, viewProjectionMatrixFloat4x4};
 
 	HRESULT hr;
+
+	BufferFlagData vsBufferFlags;
+	vsBufferFlags.Usage = D3D11_USAGE_DYNAMIC;
+	vsBufferFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 	
-	ConstantBuffer vsConstBuffer = ConstantBuffer(hr, device, sizeof(worldMatrixFloat4x4) + sizeof(viewProjectionMatrixFloat4x4), matrixVector.data(), 0, 0, D3D11_USAGE_DYNAMIC, static_cast<D3D11_CPU_ACCESS_FLAG>(0), static_cast<D3D11_RESOURCE_MISC_FLAG>(0), 0);
+	
+	ConstantBuffer vsConstBuffer = ConstantBuffer(hr, device, sizeof(worldMatrixFloat4x4) + sizeof(viewProjectionMatrixFloat4x4), matrixVector.data(), 0, 0, 0, vsBufferFlags);
 	
 	if (FAILED(hr))
 	{
@@ -126,7 +131,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	psValues.ambientLightIntensity = 0.1f;
 	psValues.shininess = 10000.0f;
 
-	ConstantBuffer psConstBuffer = ConstantBuffer(hr, device, sizeof(psStruct), &psValues, 0, 0, D3D11_USAGE_IMMUTABLE, static_cast<D3D11_CPU_ACCESS_FLAG>(0), static_cast<D3D11_RESOURCE_MISC_FLAG>(0), 0);
+	BufferFlagData psBufferFlags;
+	psBufferFlags.Usage = D3D11_USAGE_IMMUTABLE;
+	
+	ConstantBuffer psConstBuffer = ConstantBuffer(hr, device, sizeof(psStruct), &psValues, 0, 0, 0, psBufferFlags);
 
 	if (FAILED(hr))
 	{

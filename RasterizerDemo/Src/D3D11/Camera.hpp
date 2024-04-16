@@ -50,10 +50,10 @@ public:
 	void RotateRight(float amount);
 	void RotateUp(float amount);
 
-	const DirectX::XMFLOAT3& GetPosition() const;
-	const DirectX::XMFLOAT3& GetForward() const;
-	const DirectX::XMFLOAT3& GetRight() const;
-	const DirectX::XMFLOAT3& GetUp() const;
+	const DX::XMFLOAT3& GetPosition() const;
+	const DX::XMFLOAT3& GetForward() const;
+	const DX::XMFLOAT3& GetRight() const;
+	const DX::XMFLOAT3& GetUp() const;
 
 	void UpdateInternalConstantBuffer(ID3D11DeviceContext* context);
 	ID3D11Buffer* GetConstantBuffer() const;
