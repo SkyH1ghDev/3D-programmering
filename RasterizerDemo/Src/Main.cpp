@@ -204,7 +204,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		immediateContext->Map(vertexShaderConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		XMStoreFloat4x4(&worldMatrixFloat4x4, matrixCreator.CreateWorldMatrix(currentAngle));
 		matrixVector[0] = worldMatrixFloat4x4;
-		memcpy(mappedResource.pData, matrixVector.data(), sizeof(matrixVector));
+		memcpy(mappedResource.pData, matrixVector.data(), sizeof(matrixVector.at(0)) * matrixVector.size());
 		immediateContext->Unmap(vertexShaderConstantBuffer, 0);
 
 		time_point<high_resolution_clock> t2 = high_resolution_clock::now();
@@ -215,7 +215,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	rasterizerState->Release();
-	vertexShaderConstantBuffer->Release();
 	samplerState->Release();
 	textureSRV->Release();
 	texture->Release();

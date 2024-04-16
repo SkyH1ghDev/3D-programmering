@@ -24,7 +24,7 @@ ConstantBuffer::ConstantBuffer(HRESULT &hr, ID3D11Device *device, size_t byteSiz
  	constBufferDesc.StructureByteStride = structureByStride;
  
  	D3D11_SUBRESOURCE_DATA constBufferSubResource;
- 	constBufferSubResource.pSysMem = &initialData;
+ 	constBufferSubResource.pSysMem = initialData;
  	constBufferSubResource.SysMemPitch = sysMemPitch;
  	constBufferSubResource.SysMemSlicePitch = sysMemSlicePitch;
 
@@ -67,7 +67,6 @@ ConstantBuffer::~ConstantBuffer()
 {
 	if (this->_buffer != nullptr)
 	{
-		std::cout << this->GetSize() << "\n";
 		this->_buffer->Release();
 	}
 }
