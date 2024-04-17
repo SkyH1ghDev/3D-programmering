@@ -1,3 +1,6 @@
-﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(517,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
-  Main.cpp
-C:\Skolprojekt\3D-Programmering\Inlämning 2\RasterizerDemo\Main.cpp(8,10): error C1083: Cannot open include file: 'WindowHelper.h': No such file or directory
+﻿D:\School\3D-programmering\Inl�mning 2\RasterizerDemo\Src\Shaders\VertexShader.hlsl(21,23-38): error X4502: invalid vs_2_0 output semantic 'WORLD_POSITION'
+D:\School\3D-programmering\Inl�mning 2\RasterizerDemo\Src\Shaders\VertexShader.hlsl(22,16-23): error X4502: invalid vs_2_0 output semantic 'NORMAL'
+D:\School\3D-programmering\Inl�mning 2\RasterizerDemo\Src\Shaders\VertexShader.hlsl(23,12-15): error X4502: invalid vs_2_0 output semantic 'UV'
+D:\School\3D-programmering\Inl�mning 2\RasterizerDemo\Src\Shaders\VertexShader.hlsl(15,12-15): error X4502: invalid vs_2_0 input semantic 'UV'
+  
+  compilation failed; no code produced

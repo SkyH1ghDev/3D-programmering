@@ -45,7 +45,8 @@ def get_all_file_paths(root_dir: str):
     for i in range(0, len(all_file_paths)):
         all_file_paths[i] = all_file_paths[i].replace('\\', '/')
         all_file_paths[i] = all_file_paths[i].removeprefix('D:/School/3D-programmering/Inlämning 2/RasterizerDemo/')
-    
+        
+    all_file_paths.remove("Src/Shaders")
     all_file_paths.append("Resources/Libraries")
     
     return all_file_paths

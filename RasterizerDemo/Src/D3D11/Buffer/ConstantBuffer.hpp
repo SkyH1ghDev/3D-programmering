@@ -23,5 +23,5 @@ public:
 	size_t GetSize() const;
 	ID3D11Buffer* GetBuffer() const;
 
-	void UpdateBuffer(ID3D11DeviceContext* context, void* data);
+	void UpdateBuffer(ID3D11DeviceContext* context, void* data, const size_t& byteSize);
 };

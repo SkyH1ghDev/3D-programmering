@@ -2,15 +2,17 @@
 
 #include "MatrixCreator.hpp"
 
-DirectX::XMMATRIX MatrixCreator::CreateWorldMatrix(const float& angle)
+DX::XMMATRIX MatrixCreator::CreateWorldXMMATRIX(const float& angle)
 {
 	DX::XMMATRIX translationMatrix = DX::XMMatrixTranslation(0, 0, 0);
 	DX::XMMATRIX rotationMatrix = DX::XMMatrixRotationY(angle);
 	return XMMatrixTranspose(XMMatrixMultiply(translationMatrix, rotationMatrix));
 }
 
-DirectX::XMMATRIX MatrixCreator::CreateWorldMatrix(const WorldMatrixConfig& worldMatrixConfig)
+DX::XMMATRIX MatrixCreator::CreateWorldXMMATRIX()
 {
+	WorldMatrixConfig worldMatrixConfig;
+	
 	DX::XMMATRIX translationMatrix = DX::XMMatrixTranslation(0, 0, 0);
 	DX::XMMATRIX rotationMatrix = DX::XMMatrixRotationY(worldMatrixConfig.GetInitialAngle());
 	return XMMatrixTranspose(XMMatrixMultiply(translationMatrix, rotationMatrix));
@@ -18,30 +20,54 @@ DirectX::XMMATRIX MatrixCreator::CreateWorldMatrix(const WorldMatrixConfig& worl
 
 
 
-DirectX::XMMATRIX MatrixCreator::CreateViewMatrix(const std::array<float, 4>& eyePos)
+DX::XMFLOAT4X4 MatrixCreator::CreateWorldXMFLOAT4X4(const float &angle)
 {
-	DX::XMVECTOR eyePosition = DX::XMVectorSet(eyePos[0], eyePos[1], eyePos[2], eyePos[3]);
-	DX::XMVECTOR focusPosition = DX::XMVectorSet(0.0f + eyePos[0], 0.0f + eyePos[1], 0.0f + eyePos[2], 1.0f);
-	DX::XMVECTOR upDirection = DX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+	DX::XMMATRIX worldXMMatrix = CreateWorldXMMATRIX(angle);
+
+	DX::XMFLOAT4X4 worldFloat4X4;
+	DX::XMStoreFloat4x4(&worldFloat4X4, worldXMMatrix);
+
+	return worldFloat4X4;
+}
+
+DX::XMFLOAT4X4 MatrixCreator::CreateWorldXMFLOAT4X4()
+{
+	DX::XMMATRIX worldXMMatrix = CreateWorldXMMATRIX();
+
+	DX::XMFLOAT4X4 worldFloat4X4;
+	DX::XMStoreFloat4x4(&worldFloat4X4, worldXMMatrix);
+
+	return worldFloat4X4;
+}
+
+
+
+DX::XMMATRIX MatrixCreator::CreateViewXMMATRIX(const std::array<float, 4>& camPos, const std::array<float, 4>& focalPoint)
+{
+	DX::XMVECTOR eyePosition = DX::XMVectorSet(camPos[0], camPos[1], camPos[2], camPos[3]);
+	DX::XMVECTOR focusPosition = DX::XMVectorSet(focalPoint[0], focalPoint[1],focalPoint[2], focalPoint[3]);
+	DX::XMVECTOR upDirection = DX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	return DX::XMMatrixLookAtLH(eyePosition, focusPosition, upDirection);
 }
 
-DirectX::XMMATRIX MatrixCreator::CreateViewMatrix(const ViewMatrixConfig& viewMatrixConfig)
+DX::XMMATRIX MatrixCreator::CreateViewXMMATRIX()
 {
-	DX::XMVECTOR eyePosition = DX::XMVectorSet(viewMatrixConfig.GetEyePosition()[0], viewMatrixConfig.GetEyePosition()[1], viewMatrixConfig.GetEyePosition()[2], viewMatrixConfig.GetEyePosition()[3]);
-	DX::XMVECTOR focusPosition = DX::XMVectorSet(0.0f + viewMatrixConfig.GetEyePosition()[0], 0.0f + viewMatrixConfig.GetEyePosition()[1], 0.0f + viewMatrixConfig.GetEyePosition()[3], 1.0f);
-	DX::XMVECTOR upDirection = DX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
-	return DX::XMMatrixLookAtLH(eyePosition, focusPosition, upDirection);
+	ViewMatrixConfig viewMatrixConfig;
+	
+	DX::XMVECTOR camPosition = DX::XMVectorSet(viewMatrixConfig.GetCamPosition()[0], viewMatrixConfig.GetCamPosition()[1], viewMatrixConfig.GetCamPosition()[2], viewMatrixConfig.GetCamPosition()[3]);
+	DX::XMVECTOR focusPosition = DX::XMVectorSet(viewMatrixConfig.GetFocusPosition()[0], viewMatrixConfig.GetFocusPosition()[1], viewMatrixConfig.GetFocusPosition()[2], viewMatrixConfig.GetFocusPosition()[3]);
+	DX::XMVECTOR upDirection = DX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	return DX::XMMatrixLookAtLH(camPosition, focusPosition, upDirection);
 }
 
 
 
-DirectX::XMMATRIX MatrixCreator::CreateProjectionMatrix(const float &fovAngle, const float &aspectRatio, const float &nearZ, const float &farZ)
+DX::XMMATRIX MatrixCreator::CreateProjectionXMMATRIX(const float &fovAngle, const float &aspectRatio, const float &nearZ, const float &farZ)
 {
 	return DX::XMMatrixPerspectiveFovLH(DX::XMConvertToRadians(fovAngle), aspectRatio, nearZ, farZ);
 }
 
-DirectX::XMMATRIX MatrixCreator::CreateProjectionMatrix(const ProjectionMatrixConfig& projectionMatrixConfig)
+DX::XMMATRIX MatrixCreator::CreateProjectionXMMATRIX(const ProjectionMatrixConfig& projectionMatrixConfig)
 {
 	return DX::XMMatrixPerspectiveFovLH(DX::XMConvertToRadians(projectionMatrixConfig.GetFovAngle()), projectionMatrixConfig.GetAspectRatio(), projectionMatrixConfig.GetNearZ(), projectionMatrixConfig.GetFarZ());
 }

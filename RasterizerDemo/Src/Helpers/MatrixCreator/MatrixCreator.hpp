@@ -12,12 +12,15 @@ class MatrixCreator
 public:
     MatrixCreator() = default;
 
-    DirectX::XMMATRIX CreateWorldMatrix(const float& angle);
-    DirectX::XMMATRIX CreateWorldMatrix(const WorldMatrixConfig& worldMatrixConfig);
+    DX::XMMATRIX CreateWorldXMMATRIX(const float& angle);
+    DX::XMMATRIX CreateWorldXMMATRIX();
+
+    DX::XMFLOAT4X4 CreateWorldXMFLOAT4X4(const float& angle);
+    DX::XMFLOAT4X4 CreateWorldXMFLOAT4X4();
     
-    DirectX::XMMATRIX CreateViewMatrix(const std::array<float, 4>& eyePos);
-    DirectX::XMMATRIX CreateViewMatrix(const ViewMatrixConfig& viewMatrixConfig);
+    DX::XMMATRIX CreateViewXMMATRIX(const std::array<float, 4>& camPos, const std::array<float, 4>& focalPoint);
+    DX::XMMATRIX CreateViewXMMATRIX();
     
-    DirectX::XMMATRIX CreateProjectionMatrix(const float &fovAngle, const float &aspectRatio, const float &nearZ, const float &farZ);
-    DirectX::XMMATRIX CreateProjectionMatrix(const ProjectionMatrixConfig& projectionMatrixConfig);
+    DX::XMMATRIX CreateProjectionXMMATRIX(const float &fovAngle, const float &aspectRatio, const float &nearZ, const float &farZ);
+    DX::XMMATRIX CreateProjectionXMMATRIX(const ProjectionMatrixConfig& projectionMatrixConfig);
 };

@@ -1,6 +1,10 @@
-cbuffer ConstBuffer : register(b0)
+cbuffer WorldMatrixBuffer : register(b0)
 {
 	matrix worldMatrix;
+};
+
+cbuffer ViewProjectionMatrixBuffer : register(b1)
+{
 	matrix viewProjectionMatrix;
 };
 

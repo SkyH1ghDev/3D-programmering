@@ -1,5 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define DX DirectX
+#define CHRONO std::chrono
 
 #include <Windows.h>
 #include <iostream>
@@ -17,6 +18,7 @@
 #include "ManagerHelper.hpp"
 #include "MatrixCreator.hpp"
 #include "Renderer.hpp"
+#include "Camera/Camera.hpp"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance,
@@ -68,14 +70,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -1;
 	}
+
+	HRESULT hr;
+	Camera mainCam(hr, device);
 	
    // Create World Matrix
 	MatrixCreator matrixCreator;
-	WorldMatrixConfig worldMatrixConfig;
-	DX::XMMATRIX worldMatrix = matrixCreator.CreateWorldMatrix(worldMatrixConfig);
 	
 	// Create View Matrix
-	ViewMatrixConfig viewMatrixConfig;
+	/*ViewMatrixConfig viewMatrixConfig;
 	DX::XMMATRIX viewMatrix = matrixCreator.CreateViewMatrix(viewMatrixConfig);
 	
 	// Create Projection Matrix
@@ -84,32 +87,39 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	
 	// Combine View + Projection Matrices And Transpose The Result
 
-	DX::XMMATRIX viewProjectionMatrix = XMMatrixMultiplyTranspose(viewMatrix, projectionMatrix);
+	DX::XMMATRIX viewProjectionMatrix = XMMatrixMultiplyTranspose(viewMatrix, projectionMatrix);*/
 
 	// Convert Matrices into XMFloat4x4
 
-	DX::XMFLOAT4X4 worldMatrixFloat4x4;
-	XMStoreFloat4x4(&worldMatrixFloat4x4, worldMatrix);
-
-	DX::XMFLOAT4X4 viewProjectionMatrixFloat4x4;
-	XMStoreFloat4x4(&viewProjectionMatrixFloat4x4, viewProjectionMatrix);
+	
+	//XMStoreFloat4x4(&viewProjectionMatrixFloat4x4, viewProjectionMatrix);
 
 	// Create Constant Buffer Of Matrices For VS
 	
-	std::vector<DX::XMFLOAT4X4> matrixVector = {worldMatrixFloat4x4, viewProjectionMatrixFloat4x4};
+	//std::vector<DX::XMFLOAT4X4> matrixVector = {worldMatrixFloat4x4, viewProjectionMatrixFloat4x4};
 
-	HRESULT hr;
-
-	BufferFlagData vsBufferFlags;
-	vsBufferFlags.Usage = D3D11_USAGE_DYNAMIC;
-	vsBufferFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+	BufferFlagData worldMatrixCBFlags;
+	worldMatrixCBFlags.Usage = D3D11_USAGE_DYNAMIC;
+	worldMatrixCBFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 	
-	
-	ConstantBuffer vsConstBuffer = ConstantBuffer(hr, device, sizeof(worldMatrixFloat4x4) + sizeof(viewProjectionMatrixFloat4x4), matrixVector.data(), 0, 0, 0, vsBufferFlags);
+	DX::XMFLOAT4X4 worldMatrixFloat4x4 = matrixCreator.CreateWorldXMFLOAT4X4();
+	ConstantBuffer cbWorldMatrix = ConstantBuffer(hr, device, sizeof(worldMatrixFloat4x4), &worldMatrixFloat4x4, 0, 0, 0, worldMatrixCBFlags);
 	
 	if (FAILED(hr))
 	{
-		std::cerr << "Create vsBuffer Failed" << std::endl;
+		std::cerr << "Create worldMatrixBuffer Failed" << std::endl;
+		return -1;
+	}
+
+	BufferFlagData viewProjectionMatrixCBFlags;
+	viewProjectionMatrixCBFlags.Usage = D3D11_USAGE_IMMUTABLE;
+	
+	DX::XMFLOAT4X4 viewProjectionMatrixFloat4x4 = mainCam.GetViewProjectionMatrix();
+	ConstantBuffer cbViewProjectionMatrix = ConstantBuffer(hr, device, sizeof(viewProjectionMatrixFloat4x4), &viewProjectionMatrixFloat4x4, 0, 0, 0, viewProjectionMatrixCBFlags);
+
+	if (FAILED(hr))
+	{
+		std::cerr << "Create viewProjectionMatrixBuffer Failed" << std::endl;
 		return -1;
 	}
 	
@@ -124,10 +134,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		char padding[8];
 	};
 
+	ViewMatrixConfig viewMatrixConfig;
 	psStruct psValues;
 	psValues.lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
 	psValues.lightPosition = {0.0f, 1.0f, -10.0f, 1.0f};
-	psValues.eyePosition = DX::XMFLOAT4(viewMatrixConfig.GetEyePosition().data());
+	psValues.eyePosition = DX::XMFLOAT4(viewMatrixConfig.GetCamPosition().data());
 	psValues.ambientLightIntensity = 0.1f;
 	psValues.shininess = 10000.0f;
 
@@ -142,8 +153,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
-	ID3D11Buffer* vertexShaderConstantBuffer = vsConstBuffer.GetBuffer();
-	immediateContext->VSSetConstantBuffers(0, 1, &vertexShaderConstantBuffer);
+	ID3D11Buffer* worldMatrixConstBuffer = cbWorldMatrix.GetBuffer();
+	ID3D11Buffer* viewProjectionMatrixConstBuffer = cbViewProjectionMatrix.GetBuffer();
+	immediateContext->VSSetConstantBuffers(0, 1, &worldMatrixConstBuffer);
+	immediateContext->VSSetConstantBuffers(1, 1, &viewProjectionMatrixConstBuffer);
 
 	ID3D11Buffer* pixelShaderConstBuffer = psConstBuffer.GetBuffer();
 	immediateContext->PSSetConstantBuffers(0, 1, &pixelShaderConstBuffer);
@@ -180,12 +193,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Renderer renderer;
 	float rotationalSpeed = 1.0f;
+	WorldMatrixConfig worldMatrixConfig;
 	float currentAngle = worldMatrixConfig.GetInitialAngle();
 	MSG msg = { };
 	while (!(GetKeyState(VK_ESCAPE) & 0b1000000000000000) && msg.message != WM_QUIT)
 	{
-		using namespace std::chrono;
-		time_point<high_resolution_clock> t1 = high_resolution_clock::now();
+		CHRONO::time_point<CHRONO::high_resolution_clock> t1 = CHRONO::high_resolution_clock::now();
 		
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
@@ -198,17 +211,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		// Map New World Matrix Every Frame
 		
-		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		ZeroMemory(&mappedResource, sizeof(mappedResource));
-
-		immediateContext->Map(vertexShaderConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-		XMStoreFloat4x4(&worldMatrixFloat4x4, matrixCreator.CreateWorldMatrix(currentAngle));
-		matrixVector[0] = worldMatrixFloat4x4;
-		memcpy(mappedResource.pData, matrixVector.data(), sizeof(matrixVector.at(0)) * matrixVector.size());
-		immediateContext->Unmap(vertexShaderConstantBuffer, 0);
-
-		time_point<high_resolution_clock> t2 = high_resolution_clock::now();
-		duration<float> timeDiff = t1 - t2;
+		
+		worldMatrixFloat4x4 = matrixCreator.CreateWorldXMFLOAT4X4(currentAngle);
+		
+		cbWorldMatrix.UpdateBuffer(immediateContext, &worldMatrixFloat4x4, sizeof(worldMatrixFloat4x4));
+		//vsConstBuffer.UpdateBuffer(immediateContext, &worldMatrixXMFloat4x4, sizeof(worldMatrixXMFloat4x4) * 2);
+		
+		CHRONO::time_point<CHRONO::high_resolution_clock> t2 = CHRONO::high_resolution_clock::now();
+		CHRONO::duration<float> timeDiff = t1 - t2;
 		float deltaTime = timeDiff.count();
 
 		currentAngle -= rotationalSpeed * deltaTime;

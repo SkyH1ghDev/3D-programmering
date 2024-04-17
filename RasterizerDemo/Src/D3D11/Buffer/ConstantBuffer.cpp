@@ -53,6 +53,17 @@ ConstantBuffer &ConstantBuffer::operator=(ConstantBuffer &&other) noexcept
 	return *this;
 }
 
+void ConstantBuffer::UpdateBuffer(ID3D11DeviceContext *context, void *data, const size_t &byteSize)
+{
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		ZeroMemory(&mappedResource, sizeof(mappedResource));
+
+		context->Map(this->_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		memcpy(mappedResource.pData, data, byteSize); 
+		context->Unmap(this->_buffer, 0);
+}
+
+
 ID3D11Buffer *ConstantBuffer::GetBuffer() const
 {
    return this->_buffer;
