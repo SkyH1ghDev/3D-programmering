@@ -748,7 +748,7 @@
     <ClCompile Include="Src\Pixel\PixelShaderData.cpp" />
     <ClCompile Include="Src\Renderer\Renderer.cpp" />
     <FxCompile Include="Src\Shaders\VertexShader.hlsl" />
-    <ClCompile Include="Src\Shaders\PixelShader.hlsl" />
+    <FxCompile Include="Src\Shaders\PixelShader.hlsl" />
     <ClCompile Include="Src\Vertex\Vertex.cpp" />
     <ClCompile Include="Src\Vertex\VertexManager.cpp" />
   </ItemGroup>
