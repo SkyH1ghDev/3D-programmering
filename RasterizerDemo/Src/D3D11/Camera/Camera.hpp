@@ -6,25 +6,34 @@
 #include <DirectXMath.h>
 
 #include "ConstantBuffer.hpp"
+#include "ProjectionMatrixConfig.hpp"
 
-struct ProjectionInfo
+class ProjectionInfo
 {
-	float fovAngleY = 0.0f;
-	float aspectRatio = 0.0f;
-	float nearZ = 0.0f;
-	float farZ = 0.0f;
+public:
+	float _fovAngleY;
+	float _aspectRatio;
+	float _nearZ;
+	float _farZ;
+
+	ProjectionInfo(ProjectionMatrixConfig);
 };
 
 class Camera
 {
 private:
 	DX::XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
+	
 	DX::XMFLOAT3 forward = { 0.0f, 0.0f, 1.0f };
+	DX::XMFLOAT3 backward = { 0.0f, 0.0f, -1.0f};
 	DX::XMFLOAT3 right = { 1.0f, 0.0f, 0.0f };
+	DX::XMFLOAT3 left = { -1.0f, 0.0f, 0.0f }; 
 	DX::XMFLOAT3 up = { 0.0f, 1.0f, 0.0f };
-	ProjectionInfo projInfo;
+	DX::XMFLOAT3 down = { 0.0f, -1.0f, 0.0f };
+	
+	ProjectionInfo _projInfo;
 
-	ConstantBuffer cameraBuffer;
+	ConstantBuffer _cameraBuffer;
 
 	void MoveInDirection(float amount, const DX::XMFLOAT3& direction);
 	void RotateAroundAxis(float amount, const DX::XMFLOAT3& axis);
