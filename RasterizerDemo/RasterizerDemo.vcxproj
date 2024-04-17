@@ -95,6 +95,9 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <AdditionalIncludeDirectories>Src/Shaders;</AdditionalIncludeDirectories>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -135,6 +138,9 @@
     <PreBuildEvent>
       <Command>python "$(ProjectDir)prebuild.py" "D:/School/3D-programmering/Inl&#228;mning 2/RasterizerDemo/RasterizerDemo.vcxproj"</Command>
     </PreBuildEvent>
+    <FxCompile>
+      <AdditionalIncludeDirectories>Src/Shaders</AdditionalIncludeDirectories>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -153,6 +159,9 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <AdditionalIncludeDirectories>Src/Shaders;</AdditionalIncludeDirectories>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -171,6 +180,9 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <AdditionalIncludeDirectories>Src/Shaders;</AdditionalIncludeDirectories>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\D3D11\Buffer\ConstantBuffer.cpp">
@@ -747,8 +759,14 @@
     <ClCompile Include="Src\Material\MaterialManager.cpp" />
     <ClCompile Include="Src\Pixel\PixelShaderData.cpp" />
     <ClCompile Include="Src\Renderer\Renderer.cpp" />
-    <FxCompile Include="Src\Shaders\VertexShader.hlsl" />
-    <FxCompile Include="Src\Shaders\PixelShader.hlsl" />
+    <FxCompile Include="Src\Shaders\PixelShader.hlsl">
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Src\Shaders\VertexShader.hlsl">
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+    </FxCompile>
     <ClCompile Include="Src\Vertex\Vertex.cpp" />
     <ClCompile Include="Src\Vertex\VertexManager.cpp" />
   </ItemGroup>
