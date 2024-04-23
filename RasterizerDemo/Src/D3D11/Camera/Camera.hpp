@@ -26,18 +26,18 @@ public:
 		const ProjectionInfo& projectionInfo,
 		const DX::XMFLOAT3& initialPosition = DX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-	void MoveForward(const float& amount);
-	void MoveBackward(const float& amount);
-	void MoveLeft(const float& amount);
-	void MoveRight(const float& amount);
-	void MoveUp(const float& amount);
-	void MoveDown(const float& amount);
+	void MoveForward(const float& amount, const float& deltaTime = 1);
+	void MoveBackward(const float& amount, const float& deltaTime = 1);
+	void MoveLeft(const float& amount, const float& deltaTime = 1);
+	void MoveRight(const float& amount, const float& deltaTime = 1);
+	void MoveUp(const float& amount, const float& deltaTime = 1);
+	void MoveDown(const float& amount, const float& deltaTime = 1);
 
 	void RotateForward(float amount);
 	void RotateRight(float amount);
 	void RotateUp(float amount);
 
-	const DX::XMFLOAT3& GetPosition() const;
+	const DX::XMFLOAT4& GetPosition() const;
 	const DX::XMFLOAT3& GetForward() const;
 	const DX::XMFLOAT3& GetRight() const;
 	const DX::XMFLOAT3& GetUp() const;

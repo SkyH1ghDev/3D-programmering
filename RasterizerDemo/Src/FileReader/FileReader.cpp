@@ -7,8 +7,10 @@ FileReader::FileReader()
     _objParserPtr = std::make_unique<OBJParser>();
 }
 
-int FileReader::ReadFilesFromConfig(const FileConfig& fileConfig)
+int FileReader::ReadFilesFromConfig()
 {
+    FileConfig fileConfig;
+    
     for(std::string file : fileConfig.GetFilenameList())
     {
         if (ReadFile(file) == -1)

@@ -8,13 +8,9 @@
 class FileReader
 {
 public:
-    // CONSTRUCTORS
     FileReader();
     
-    // FUNCTIONS
-    int ReadFilesFromConfig(const FileConfig& fileConfig);
-    
-    // DESTRUCTOR
+    int ReadFilesFromConfig();
     ~FileReader();
     
 private:

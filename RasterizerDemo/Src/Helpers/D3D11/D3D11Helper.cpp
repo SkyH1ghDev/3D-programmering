@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "WindowConfig.hpp"
+
 bool D3D11Helper::CreateInterfaces(ID3D11Device*& device, ID3D11DeviceContext*& immediateContext, IDXGISwapChain*& swapChain, UINT width, UINT height, HWND window)
 {
 	UINT flags = 0;
@@ -88,11 +90,13 @@ void D3D11Helper::SetViewport(D3D11_VIEWPORT& viewport, UINT width, UINT height)
 	viewport.MaxDepth = 1;
 }
 
-bool D3D11Helper::SetupD3D11(UINT width, UINT height, HWND window, ID3D11Device*& device,
+bool D3D11Helper::SetupD3D11(HWND window, ID3D11Device*& device,
 	ID3D11DeviceContext*& immediateContext, IDXGISwapChain*& swapChain, ID3D11RenderTargetView*& rtv,
 	ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView, D3D11_VIEWPORT& viewport)
 {
-	if (!CreateInterfaces(device, immediateContext, swapChain, width, height, window))
+	WindowConfig windowConfig;
+	
+	if (!CreateInterfaces(device, immediateContext, swapChain, windowConfig.GetWidth(), windowConfig.GetHeight(), window))
 	{
 		std::cerr << "Error creating interfaces!" << std::endl;
 		return false;
@@ -104,13 +108,13 @@ bool D3D11Helper::SetupD3D11(UINT width, UINT height, HWND window, ID3D11Device*
 		return false;
 	}
 
-	if (!CreateDepthStencil(device, width, height, dsTexture, dsView))
+	if (!CreateDepthStencil(device, windowConfig.GetWidth(), windowConfig.GetHeight(), dsTexture, dsView))
 	{
 		std::cerr << "Error creating depth stencil view!" << std::endl;
 		return false;
 	}
 
-	SetViewport(viewport, width, height);
+	SetViewport(viewport, windowConfig.GetWidth(), windowConfig.GetHeight());
 
 	return true;
 }

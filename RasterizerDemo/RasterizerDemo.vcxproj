@@ -108,6 +108,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
 		Src/FileReader; 
@@ -185,6 +186,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Clock\Clock.cpp" />
     <ClCompile Include="Src\D3D11\Buffer\ConstantBuffer.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -259,6 +261,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
 		Src/FileReader; 
@@ -353,6 +356,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
 		Src/FileReader; 
@@ -447,6 +451,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
 		Src/FileReader; 
@@ -544,6 +549,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
 		Src/FileReader; 
@@ -638,6 +644,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
 		Src/FileReader; 
@@ -736,6 +743,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
 		Src/FileReader; 
@@ -772,6 +780,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resources\Libraries\stb_image.h" />
+    <ClInclude Include="Src\Clock\Clock.hpp" />
     <ClInclude Include="Src\Config\IConfigBase.hpp" />
     <ClInclude Include="Src\Config\Configuration.hpp" />
     <ClInclude Include="Src\Config\FileConfig.hpp" />

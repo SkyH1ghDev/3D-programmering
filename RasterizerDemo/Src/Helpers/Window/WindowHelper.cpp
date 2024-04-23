@@ -1,6 +1,8 @@
 #include "WindowHelper.hpp"
 #include <iostream>
 
+#include "WindowConfig.hpp"
+
 LRESULT CALLBACK WindowHelper::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	// sort through and find what code to run for the message given
@@ -21,7 +23,7 @@ LRESULT CALLBACK WindowHelper::WindowProc(HWND hWnd, UINT message, WPARAM wParam
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-bool WindowHelper::SetupWindow(HINSTANCE instance, UINT width, UINT height, int nCmdShow, HWND& window)
+bool WindowHelper::SetupWindow(HINSTANCE instance, int nCmdShow, HWND& window)
 {
 	const wchar_t CLASS_NAME[] = L"Test Window Class";
 
@@ -33,8 +35,10 @@ bool WindowHelper::SetupWindow(HINSTANCE instance, UINT width, UINT height, int 
 
 	RegisterClass(&wc);
 
-	window = CreateWindowEx(0, CLASS_NAME, L"3D Renderer - Christoffer Bohman", WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, 0, width, height, nullptr, nullptr, instance, nullptr);
+	WindowConfig windowConfig;
+	
+	window = CreateWindowEx(0, CLASS_NAME, windowConfig.GetWindowName(), WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0, windowConfig.GetWidth(), windowConfig.GetHeight(), nullptr, nullptr, instance, nullptr);
 
 	if (window == nullptr)
 	{

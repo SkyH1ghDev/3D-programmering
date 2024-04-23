@@ -3,7 +3,6 @@
 #include <Windows.h>
 #include <iostream>
 #include <d3d11.h>
-#include <chrono>
 
 #include "Configuration.hpp"
 #include "ConstantBuffer.hpp"
@@ -16,26 +15,23 @@
 #include "ManagerHelper.hpp"
 #include "MatrixCreator.hpp"
 #include "Renderer.hpp"
-#include "Camera/Camera.hpp"
+#include "Camera.hpp"
+#include "Clock.hpp"
 
 namespace DX = DirectX;
-namespace CHRONO = std::chrono;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance,
                       _In_ LPWSTR    lpCmdLine,
                       _In_ int       nCmdShow)
 {
-	Configuration setupConfiguration;
 	
 	FileReader fileReader;
-	FileConfig fileConfig = setupConfiguration.GetFileConfig();
-	fileReader.ReadFilesFromConfig(fileConfig);
+	fileReader.ReadFilesFromConfig();
 
 	HWND window;
-	WindowConfig windowConfig = setupConfiguration.GetWindowConfig();
 	WindowHelper windowHelper;
-	if (!windowHelper.SetupWindow(hInstance, windowConfig.GetWidth(), windowConfig.GetHeight(), nCmdShow, window))
+	if (!windowHelper.SetupWindow(hInstance, nCmdShow, window))
 	{
 		std::cerr << "Failed to setup window!" << std::endl;
 		return -1;
@@ -59,7 +55,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 	D3D11Helper d3d11Helper;
-	if (!d3d11Helper.SetupD3D11(windowConfig.GetWidth(), windowConfig.GetHeight(), window, device, immediateContext, swapChain, rtv, dsTexture, dsView, viewport))
+	if (!d3d11Helper.SetupD3D11(window, device, immediateContext, swapChain, rtv, dsTexture, dsView, viewport))
 	{
 		std::cerr << "Failed to setup d3d11!" << std::endl;
 		return -1;
@@ -72,37 +68,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
-	/*
-	 * TODO: Change the Camera constructor to accept ViewMatrixConfig instead
-	*/
-	
 	HRESULT hr;
 	Camera mainCam(hr, device);
 	
-	// Create World Matrix
 	MatrixCreator matrixCreator;
 	
-	// Create View Matrix
-	/*ViewMatrixConfig viewMatrixConfig;
-	DX::XMMATRIX viewMatrix = matrixCreator.CreateViewMatrix(viewMatrixConfig);
-	
-	// Create Projection Matrix
-	ProjectionMatrixConfig projectionMatrixConfig;
-	DX::XMMATRIX projectionMatrix = matrixCreator.CreateProjectionMatrix(projectionMatrixConfig);
-	
-	// Combine View + Projection Matrices And Transpose The Result
-
-	DX::XMMATRIX viewProjectionMatrix = XMMatrixMultiplyTranspose(viewMatrix, projectionMatrix);*/
-
-	// Convert Matrices into XMFloat4x4
-
-	
-	//XMStoreFloat4x4(&viewProjectionMatrixFloat4x4, viewProjectionMatrix);
-
-	// Create Constant Buffer Of Matrices For VS
-	
-	//std::vector<DX::XMFLOAT4X4> matrixVector = {worldMatrixFloat4x4, viewProjectionMatrixFloat4x4};
-
 	BufferFlagData worldMatrixCBFlags;
 	worldMatrixCBFlags.Usage = D3D11_USAGE_DYNAMIC;
 	worldMatrixCBFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
@@ -144,7 +114,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	psStruct psValues;
 	psValues.lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
 	psValues.lightPosition = {0.0f, 1.0f, -10.0f, 1.0f};
-	psValues.eyePosition = DX::XMFLOAT4(viewMatrixConfig.GetCamPosition());
+	psValues.eyePosition = DX::XMFLOAT4(mainCam.GetPosition());
 	psValues.ambientLightIntensity = 0.1f;
 	psValues.shininess = 10000.0f;
 
@@ -167,36 +137,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ID3D11Buffer* pixelShaderConstBuffer = psConstBuffer.GetBuffer();
 	immediateContext->PSSetConstantBuffers(0, 1, &pixelShaderConstBuffer);
 
-	// DEBUG RASTERIZER DESC
-	
-	D3D11_RASTERIZER_DESC rasterizerDesc;
-	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
-	
-	rasterizerDesc.CullMode = D3D11_CULL_NONE;
-	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.FrontCounterClockwise = false;
-	rasterizerDesc.DepthBias = 0;
-	rasterizerDesc.DepthBiasClamp = 0.0f;
-	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
-	rasterizerDesc.DepthClipEnable = true;
-	rasterizerDesc.ScissorEnable = false;
-	rasterizerDesc.MultisampleEnable = false;
-	rasterizerDesc.AntialiasedLineEnable = false;
-	
-
-	ID3D11RasterizerState* rasterizerState;
-	hr = device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
-
-	if (FAILED(hr))
-	{
-		std::cerr << "Create RasterizerState failed" << std::endl;
-		return -1;
-	}
-
-	immediateContext->RSSetState(rasterizerState); 
-
-	// DEBUG RASTERIZER DESC END
-
+	Clock clock;
 	Renderer renderer;
 	float rotationalSpeed = 1.0f;
 	WorldMatrixConfig worldMatrixConfig;
@@ -204,7 +145,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	MSG msg = { };
 	while (!(GetKeyState(VK_ESCAPE) & 0b1000000000000000) && msg.message != WM_QUIT)
 	{
-		CHRONO::time_point<CHRONO::high_resolution_clock> t1 = CHRONO::high_resolution_clock::now();
+		clock.Start();
 		
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
@@ -214,8 +155,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		
 		renderer.Render(immediateContext, rtv, dsView, viewport, vShader, pShader, inputLayout, vertexBuffer, textureSRV, samplerState);
 		swapChain->Present(0, 0);
-
-		mainCam.MoveForward(0.001f);
+		
 		viewProjectionMatrixFloat4x4 = mainCam.GetViewProjectionMatrix();
 		cbViewProjectionMatrix.UpdateBuffer(immediateContext, &viewProjectionMatrixFloat4x4, sizeof(viewProjectionMatrixFloat4x4));
 		
@@ -224,14 +164,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		worldMatrixFloat4x4 = matrixCreator.CreateWorldXMFLOAT4X4(currentAngle);
 		cbWorldMatrix.UpdateBuffer(immediateContext, &worldMatrixFloat4x4, sizeof(worldMatrixFloat4x4));
 		
-		CHRONO::time_point<CHRONO::high_resolution_clock> t2 = CHRONO::high_resolution_clock::now();
-		CHRONO::duration<float> timeDiff = t1 - t2;
-		float deltaTime = timeDiff.count();
+		clock.End();
+		float deltaTime = clock.GetDeltaTime(); 
 
+		mainCam.MoveLeft(10.0f, deltaTime);
 		currentAngle -= rotationalSpeed * deltaTime;
 	}
 
-	rasterizerState->Release();
 	samplerState->Release();
 	textureSRV->Release();
 	texture->Release();

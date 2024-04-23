@@ -40,7 +40,6 @@ DX::XMFLOAT4X4 Camera::CreateViewProjectionMatrix() const
 	return viewProjMatrix4x4;
 }
 
-
 DX::XMFLOAT4X4 Camera::GetViewProjectionMatrix() const
 {
 	return this->_viewProjectionMatrix;
@@ -71,14 +70,36 @@ void Camera::MoveInDirection(const float& amount, const DX::XMFLOAT3& direction)
 	this->_viewProjectionMatrix = CreateViewProjectionMatrix(this->_position, this->_directionVector, this->_projInfo);
 }
 
-
-void Camera::MoveForward(const float& amount)
+void Camera::MoveForward(const float& amount, const float& deltaTime)
 {
-	MoveInDirection(amount, this->_forward);
+	MoveInDirection(amount * deltaTime, this->_forward);
 }
 
-void Camera::MoveBackward(const float& amount)
+void Camera::MoveBackward(const float& amount, const float& deltaTime)
 {
-	MoveInDirection(amount, this->_backward);
+	MoveInDirection(amount * deltaTime, this->_backward);
 }
+
+void Camera::MoveLeft(const float& amount, const float& deltaTime)
+{
+	MoveInDirection(amount * deltaTime, this->_left);
+}
+
+void Camera::MoveRight(const float &amount, const float& deltaTime)
+{
+	MoveInDirection(amount * deltaTime, this->_right);
+}
+
+void Camera::MoveUp(const float &amount, const float& deltaTime)
+{
+	MoveInDirection(amount * deltaTime, this->_up);
+}
+
+void Camera::MoveDown(const float &amount, const float& deltaTime)
+{
+	MoveInDirection(amount * deltaTime, this->_down);
+}
+
+
+
 
