@@ -1,6 +1,8 @@
-﻿#define DX DirectX
+﻿#include "MatrixCreator.hpp"
+#include "WorldMatrixConfig.hpp"
+#include "ViewMatrixConfig.hpp"
 
-#include "MatrixCreator.hpp"
+namespace DX = DirectX;
 
 DX::XMMATRIX MatrixCreator::CreateWorldXMMATRIX(const float& angle)
 {
@@ -42,10 +44,10 @@ DX::XMFLOAT4X4 MatrixCreator::CreateWorldXMFLOAT4X4()
 
 
 
-DX::XMMATRIX MatrixCreator::CreateViewXMMATRIX(const std::array<float, 4>& camPos, const std::array<float, 4>& focalPoint)
+DX::XMMATRIX MatrixCreator::CreateViewXMMATRIX(const DX::XMFLOAT4 &camPos, const DX::XMFLOAT4 &directionVector)
 {
-	DX::XMVECTOR eyePosition = DX::XMVectorSet(camPos[0], camPos[1], camPos[2], camPos[3]);
-	DX::XMVECTOR focusPosition = DX::XMVectorSet(focalPoint[0], focalPoint[1],focalPoint[2], focalPoint[3]);
+	DX::XMVECTOR eyePosition = DX::XMLoadFloat4(&camPos);
+	DX::XMVECTOR focusPosition = DX::XMVectorAdd(eyePosition, XMLoadFloat4(&directionVector));
 	DX::XMVECTOR upDirection = DX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	return DX::XMMatrixLookAtLH(eyePosition, focusPosition, upDirection);
 }
@@ -53,11 +55,14 @@ DX::XMMATRIX MatrixCreator::CreateViewXMMATRIX(const std::array<float, 4>& camPo
 DX::XMMATRIX MatrixCreator::CreateViewXMMATRIX()
 {
 	ViewMatrixConfig viewMatrixConfig;
+
+	DX::XMFLOAT4 eyePositionXMFloat4 = viewMatrixConfig.GetCamPosition();
+	DX::XMFLOAT4 directionVectorXMFloat4 = viewMatrixConfig.GetDirectionVector();
 	
-	DX::XMVECTOR camPosition = DX::XMVectorSet(viewMatrixConfig.GetCamPosition()[0], viewMatrixConfig.GetCamPosition()[1], viewMatrixConfig.GetCamPosition()[2], viewMatrixConfig.GetCamPosition()[3]);
-	DX::XMVECTOR focusPosition = DX::XMVectorSet(viewMatrixConfig.GetFocusPosition()[0], viewMatrixConfig.GetFocusPosition()[1], viewMatrixConfig.GetFocusPosition()[2], viewMatrixConfig.GetFocusPosition()[3]);
+	DX::XMVECTOR eyePosition = DX::XMLoadFloat4(&eyePositionXMFloat4);
+	DX::XMVECTOR focusPosition = DX::XMVectorAdd(eyePosition, DX::XMLoadFloat4(&directionVectorXMFloat4));
 	DX::XMVECTOR upDirection = DX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	return DX::XMMatrixLookAtLH(camPosition, focusPosition, upDirection);
+	return DX::XMMatrixLookAtLH(eyePosition, focusPosition, upDirection);
 }
 
 

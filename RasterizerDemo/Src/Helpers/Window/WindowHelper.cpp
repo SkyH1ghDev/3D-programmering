@@ -1,4 +1,4 @@
-#include "WindowHelper.h"
+#include "WindowHelper.hpp"
 #include <iostream>
 
 LRESULT CALLBACK WindowHelper::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

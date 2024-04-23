@@ -18,7 +18,7 @@ struct PixelShaderInput
 	float2 uv : UV;
 };
 
-float4 main(PixelShaderInput input) : SV_TARGET
+float4 main(PixelShaderInput input): SV_TARGET
 {
 	float4 ambientComponent = lightColour * ambientLightIntensity;
 

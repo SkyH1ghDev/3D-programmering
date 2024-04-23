@@ -805,7 +805,7 @@
     <ClInclude Include="Src\Helpers\Manager\ManagerHelper.hpp" />
     <ClInclude Include="Src\Helpers\MatrixCreator\MatrixCreator.hpp" />
     <ClInclude Include="Src\Helpers\Pipeline\PipelineHelper.hpp" />
-    <ClInclude Include="Src\Helpers\Window\WindowHelper.h" />
+    <ClInclude Include="Src\Helpers\Window\WindowHelper.hpp" />
     <ClInclude Include="Src\Material\Material.hpp" />
     <ClInclude Include="Src\Material\MaterialManager.hpp" />
     <ClInclude Include="Src\Pixel\PixelShaderData.hpp" />
@@ -820,7 +820,10 @@
     <Content Include="Resources\3D-Objects\lego.mtl" />
     <Content Include="Resources\3D-Objects\lego.obj" />
     <Content Include="Resources\3D-Objects\teapot.obj" />
-    <Content Include="Resources\3D-Objects\XWing.obj" />
+    <Content Include="Resources\3D-Objects\XwingObj.mtl" />
+    <Content Include="Resources\3D-Objects\XwingObj.obj" />
+    <Content Include="Resources\3D-Objects\XwingObjTriangulated.mtl" />
+    <Content Include="Resources\3D-Objects\XwingObjTriangulated.obj" />
     <Content Include="Resources\Images\Pic.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

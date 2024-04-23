@@ -1,6 +1,4 @@
 #define STB_IMAGE_IMPLEMENTATION
-#define DX DirectX
-#define CHRONO std::chrono
 
 #include <Windows.h>
 #include <iostream>
@@ -9,7 +7,7 @@
 
 #include "Configuration.hpp"
 #include "ConstantBuffer.hpp"
-#include "WindowHelper.h"
+#include "WindowHelper.hpp"
 #include "D3D11Helper.hpp"
 #include "PipelineHelper.hpp"
 #include "DirectXMath.h"
@@ -19,6 +17,9 @@
 #include "MatrixCreator.hpp"
 #include "Renderer.hpp"
 #include "Camera/Camera.hpp"
+
+namespace DX = DirectX;
+namespace CHRONO = std::chrono;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance,
@@ -71,10 +72,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
+	/*
+	 * TODO: Change the Camera constructor to accept ViewMatrixConfig instead
+	*/
+	
 	HRESULT hr;
 	Camera mainCam(hr, device);
 	
-   // Create World Matrix
+	// Create World Matrix
 	MatrixCreator matrixCreator;
 	
 	// Create View Matrix
@@ -112,7 +117,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	BufferFlagData viewProjectionMatrixCBFlags;
-	viewProjectionMatrixCBFlags.Usage = D3D11_USAGE_IMMUTABLE;
+	viewProjectionMatrixCBFlags.Usage = D3D11_USAGE_DYNAMIC;
+	viewProjectionMatrixCBFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 	
 	DX::XMFLOAT4X4 viewProjectionMatrixFloat4x4 = mainCam.GetViewProjectionMatrix();
 	ConstantBuffer cbViewProjectionMatrix = ConstantBuffer(hr, device, sizeof(viewProjectionMatrixFloat4x4), &viewProjectionMatrixFloat4x4, 0, 0, 0, viewProjectionMatrixCBFlags);
@@ -138,7 +144,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	psStruct psValues;
 	psValues.lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
 	psValues.lightPosition = {0.0f, 1.0f, -10.0f, 1.0f};
-	psValues.eyePosition = DX::XMFLOAT4(viewMatrixConfig.GetCamPosition().data());
+	psValues.eyePosition = DX::XMFLOAT4(viewMatrixConfig.GetCamPosition());
 	psValues.ambientLightIntensity = 0.1f;
 	psValues.shininess = 10000.0f;
 
@@ -209,13 +215,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		renderer.Render(immediateContext, rtv, dsView, viewport, vShader, pShader, inputLayout, vertexBuffer, textureSRV, samplerState);
 		swapChain->Present(0, 0);
 
+		mainCam.MoveForward(0.001f);
+		viewProjectionMatrixFloat4x4 = mainCam.GetViewProjectionMatrix();
+		cbViewProjectionMatrix.UpdateBuffer(immediateContext, &viewProjectionMatrixFloat4x4, sizeof(viewProjectionMatrixFloat4x4));
+		
 		// Map New World Matrix Every Frame
 		
-		
 		worldMatrixFloat4x4 = matrixCreator.CreateWorldXMFLOAT4X4(currentAngle);
-		
 		cbWorldMatrix.UpdateBuffer(immediateContext, &worldMatrixFloat4x4, sizeof(worldMatrixFloat4x4));
-		//vsConstBuffer.UpdateBuffer(immediateContext, &worldMatrixXMFloat4x4, sizeof(worldMatrixXMFloat4x4) * 2);
 		
 		CHRONO::time_point<CHRONO::high_resolution_clock> t2 = CHRONO::high_resolution_clock::now();
 		CHRONO::duration<float> timeDiff = t1 - t2;

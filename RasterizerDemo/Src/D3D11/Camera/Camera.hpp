@@ -1,20 +1,20 @@
 #pragma once
 
-#define DX DirectX
-
 #include <d3d11_4.h>
 #include <DirectXMath.h>
-
 #include "ConstantBuffer.hpp"
 #include "ProjectionInfo.hpp"
+#include "ViewMatrixConfig.hpp"
+
+namespace DX = DirectX;
 
 class Camera
 {
 public:
 	Camera() = delete;
 	Camera(HRESULT& hr, ID3D11Device* device,
-		   const ProjectionInfo& projectionInfo = ProjectionInfo(ProjectionMatrixConfig()),
-		   const DX::XMFLOAT3& initialPosition = DX::XMFLOAT3(0.0f, 0.0f, 0.0f ));
+		const DX::XMFLOAT4& initialPosition = ViewMatrixConfig().GetCamPosition(),
+		const ProjectionInfo& projectionInfo = ProjectionInfo(ProjectionMatrixConfig()));
 	
 	~Camera() = default;
 	Camera(const Camera& other) = delete;
@@ -23,12 +23,15 @@ public:
 	Camera& operator=(Camera&& other) = default;
 
 	void Initialize(ID3D11Device* device,
-					const ProjectionInfo& projectionInfo,
-					const DX::XMFLOAT3& initialPosition = DX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+		const ProjectionInfo& projectionInfo,
+		const DX::XMFLOAT3& initialPosition = DX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-	void MoveForward(float amount);
-	void MoveRight(float amount);
-	void MoveUp(float amount);
+	void MoveForward(const float& amount);
+	void MoveBackward(const float& amount);
+	void MoveLeft(const float& amount);
+	void MoveRight(const float& amount);
+	void MoveUp(const float& amount);
+	void MoveDown(const float& amount);
 
 	void RotateForward(float amount);
 	void RotateRight(float amount);
@@ -45,7 +48,11 @@ public:
 	DX::XMFLOAT4X4 GetViewProjectionMatrix() const;
 	
 private:
-	DX::XMFLOAT3 _position = { 0.0f, 0.0f, 0.0f };
+
+	// Reminder: _position and _projInfo need to be declared before _viewProjectionMatrix due to how the initialization of Camera works
+	DX::XMFLOAT4 _position = { 0.0f, 0.0f, 0.0f, 1.0f };
+	DX::XMFLOAT4 _directionVector = { 0.0f, 0.0f, 1.0f, 0.0f };
+	ProjectionInfo _projInfo;
 	
 	const DX::XMFLOAT3 _forward = { 0.0f, 0.0f, 1.0f };
 	const DX::XMFLOAT3 _backward = { 0.0f, 0.0f, -1.0f };
@@ -53,16 +60,15 @@ private:
 	const DX::XMFLOAT3 _left = { -1.0f, 0.0f, 0.0f }; 
 	const DX::XMFLOAT3 _up = { 0.0f, 1.0f, 0.0f };
 	const DX::XMFLOAT3 _down = { 0.0f, -1.0f, 0.0f };
-
+	
 	DX::XMFLOAT4X4 _viewProjectionMatrix;
 	
-	ProjectionInfo _projInfo;
-
 	ConstantBuffer _cameraBuffer;
 
-	void MoveInDirection(float amount, const DX::XMFLOAT3& direction);
-	void RotateAroundAxis(float amount, const DX::XMFLOAT3& axis);
+	void MoveInDirection(const float& amount, const DX::XMFLOAT3& direction);
+	void RotateAroundAxis(const float& amount, const DX::XMFLOAT3& axis);
 
 	BufferFlagData GetBufferFlags();
-	DX::XMFLOAT4X4 CreateViewProjectionMatrix(const DX::XMFLOAT3& position, const ProjectionInfo& projInfo) const;
+	DX::XMFLOAT4X4 CreateViewProjectionMatrix(const DX::XMFLOAT4 &position, const DX::XMFLOAT4 &directionVector, const ProjectionInfo& projInfo) const;
+	DX::XMFLOAT4X4 CreateViewProjectionMatrix() const;
 };
