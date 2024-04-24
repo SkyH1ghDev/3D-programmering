@@ -17,6 +17,7 @@
 #include "Renderer.hpp"
 #include "Camera.hpp"
 #include "Clock.hpp"
+#include "Input.hpp"
 
 namespace DX = DirectX;
 
@@ -137,6 +138,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ID3D11Buffer* pixelShaderConstBuffer = psConstBuffer.GetBuffer();
 	immediateContext->PSSetConstantBuffers(0, 1, &pixelShaderConstBuffer);
 
+	Input input;
 	Clock clock;
 	Renderer renderer;
 	float rotationalSpeed = 1.0f;
@@ -165,9 +167,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		cbWorldMatrix.UpdateBuffer(immediateContext, &worldMatrixFloat4x4, sizeof(worldMatrixFloat4x4));
 		
 		clock.End();
-		float deltaTime = clock.GetDeltaTime(); 
+		float deltaTime = clock.GetDeltaTime();
 
-		mainCam.MoveLeft(10.0f, deltaTime);
+		input.ReadInput(msg, mainCam, deltaTime);
 		currentAngle -= rotationalSpeed * deltaTime;
 	}
 

@@ -9,14 +9,14 @@ LRESULT CALLBACK WindowHelper::WindowProc(HWND hWnd, UINT message, WPARAM wParam
 	switch (message)
 	{
 		// this message is read when the window is closed
-	case WM_DESTROY:
-	{
+		case WM_DESTROY:
+		{
 		// close the application entirely
-		PostQuitMessage(0);
-		return 0;
-	}
-	default:
-		break;
+			PostQuitMessage(0);
+			return 0;
+		}
+		default:
+			break;
 	}
 
 	// Handle any messages the switch statement didn't by using default methodology

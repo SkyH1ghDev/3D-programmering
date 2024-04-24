@@ -40,20 +40,6 @@ DX::XMFLOAT4X4 Camera::CreateViewProjectionMatrix() const
 	return viewProjMatrix4x4;
 }
 
-DX::XMFLOAT4X4 Camera::GetViewProjectionMatrix() const
-{
-	return this->_viewProjectionMatrix;
-}
-
-BufferFlagData Camera::GetBufferFlags()
-{
-	BufferFlagData camBufferFlags;
-	camBufferFlags.Usage = D3D11_USAGE_DYNAMIC;
-	camBufferFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
-
-	return camBufferFlags;
-}
-
 void Camera::MoveInDirection(const float& amount, const DX::XMFLOAT3& direction)
 {
 	DX::XMVECTOR directionXMVector = XMLoadFloat3(&direction);
@@ -100,6 +86,22 @@ void Camera::MoveDown(const float &amount, const float& deltaTime)
 	MoveInDirection(amount * deltaTime, this->_down);
 }
 
+DX::XMFLOAT4X4 Camera::GetViewProjectionMatrix() const
+{
+	return this->_viewProjectionMatrix;
+}
 
+BufferFlagData Camera::GetBufferFlags()
+{
+	BufferFlagData camBufferFlags;
+	camBufferFlags.Usage = D3D11_USAGE_DYNAMIC;
+	camBufferFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
+	return camBufferFlags;
+}
+
+const DX::XMFLOAT4 &Camera::GetPosition() const
+{
+	return this->_position;
+}
 
