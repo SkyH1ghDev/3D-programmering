@@ -87,19 +87,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
-	BufferFlagData viewProjectionMatrixCBFlags;
-	viewProjectionMatrixCBFlags.Usage = D3D11_USAGE_DYNAMIC;
-	viewProjectionMatrixCBFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
-	
-	DX::XMFLOAT4X4 viewProjectionMatrixFloat4x4 = mainCam.GetViewProjectionMatrix();
-	ConstantBuffer cbViewProjectionMatrix = ConstantBuffer(hr, device, sizeof(viewProjectionMatrixFloat4x4), &viewProjectionMatrixFloat4x4, 0, 0, 0, viewProjectionMatrixCBFlags);
-
-	if (FAILED(hr))
-	{
-		std::cerr << "Create viewProjectionMatrixBuffer Failed" << std::endl;
-		return -1;
-	}
-	
 	// Create Constant Buffer For PS
 	struct psStruct
 	{
@@ -111,7 +98,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		char padding[8];
 	};
 
-	ViewMatrixConfig viewMatrixConfig;
 	psStruct psValues;
 	psValues.lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
 	psValues.lightPosition = {0.0f, 1.0f, -10.0f, 1.0f};
@@ -131,7 +117,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	ID3D11Buffer* worldMatrixConstBuffer = cbWorldMatrix.GetBuffer();
-	ID3D11Buffer* viewProjectionMatrixConstBuffer = cbViewProjectionMatrix.GetBuffer();
+	ID3D11Buffer* viewProjectionMatrixConstBuffer = mainCam.GetConstantBuffer();
 	immediateContext->VSSetConstantBuffers(0, 1, &worldMatrixConstBuffer);
 	immediateContext->VSSetConstantBuffers(1, 1, &viewProjectionMatrixConstBuffer);
 
@@ -145,7 +131,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WorldMatrixConfig worldMatrixConfig;
 	float currentAngle = worldMatrixConfig.GetInitialAngle();
 	MSG msg = { };
-	while (!(GetKeyState(VK_ESCAPE) & 0b1000000000000000) && msg.message != WM_QUIT)
+	while (input.Exit(msg))
 	{
 		clock.Start();
 		
@@ -158,10 +144,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		renderer.Render(immediateContext, rtv, dsView, viewport, vShader, pShader, inputLayout, vertexBuffer, textureSRV, samplerState);
 		swapChain->Present(0, 0);
 		
-		viewProjectionMatrixFloat4x4 = mainCam.GetViewProjectionMatrix();
-		cbViewProjectionMatrix.UpdateBuffer(immediateContext, &viewProjectionMatrixFloat4x4, sizeof(viewProjectionMatrixFloat4x4));
-		
-		// Map New World Matrix Every Frame
+		mainCam.UpdateInternalConstantBuffer(immediateContext);
 		
 		worldMatrixFloat4x4 = matrixCreator.CreateWorldXMFLOAT4X4(currentAngle);
 		cbWorldMatrix.UpdateBuffer(immediateContext, &worldMatrixFloat4x4, sizeof(worldMatrixFloat4x4));
@@ -169,7 +152,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		clock.End();
 		float deltaTime = clock.GetDeltaTime();
 
-		input.ReadInput(msg, mainCam, deltaTime);
+		input.ReadInput(mainCam, deltaTime);
 		currentAngle -= rotationalSpeed * deltaTime;
 	}
 

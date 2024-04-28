@@ -1,5 +1,6 @@
 ﻿#include "OBJParser.hpp"
 #include "VertexManager.hpp"
+#include "VertexBuffer.hpp"
 #include <sstream>
 #include <iostream>
 #include <stdexcept>

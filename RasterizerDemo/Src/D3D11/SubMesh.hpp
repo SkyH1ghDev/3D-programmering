@@ -4,7 +4,7 @@
 
 #include <d3d11_4.h>
 
-class SubMeshD3D11
+class SubMesh
 {
 private:
 	size_t startIndex = 0;
@@ -15,12 +15,12 @@ private:
 	ID3D11ShaderResourceView* specularTexture = nullptr;
 
 public:
-	SubMeshD3D11() = default;
-	~SubMeshD3D11() = default;
-	SubMeshD3D11(const SubMeshD3D11& other) = default;
-	SubMeshD3D11& operator=(const SubMeshD3D11& other) = default;
-	SubMeshD3D11(SubMeshD3D11&& other) = default;
-	SubMeshD3D11& operator=(SubMeshD3D11&& other) = default;
+	SubMesh() = default;
+	~SubMesh() = default;
+	SubMesh(const SubMesh& other) = default;
+	SubMesh& operator=(const SubMesh& other) = default;
+	SubMesh(SubMesh&& other) = default;
+	SubMesh& operator=(SubMesh&& other) = default;
 
 	void Initialize(size_t startIndexValue, size_t nrOfIndicesInSubMesh,
 		ID3D11ShaderResourceView* ambientTextureSRV, ID3D11ShaderResourceView* diffuseTextureSRV,

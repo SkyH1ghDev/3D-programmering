@@ -284,6 +284,7 @@
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Src\D3D11\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Src\D3D11\Camera\Camera.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -477,6 +478,7 @@
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Src\D3D11\InputLayout.cpp" />
+    <ClCompile Include="Src\D3D11\Scene.cpp" />
     <ClCompile Include="Src\FileReader\FileReader.cpp" />
     <ClCompile Include="Src\FileReader\ImageReader.cpp" />
     <ClCompile Include="Src\FileReader\Parsers\MTLParser.cpp">
@@ -894,20 +896,21 @@
     <ClInclude Include="Src\Config\WorldMatrixConfig.hpp" />
     <ClInclude Include="Src\D3D11\Buffer\BufferFlagData.hpp" />
     <ClInclude Include="Src\D3D11\Buffer\ConstantBuffer.hpp" />
+    <ClInclude Include="Src\D3D11\Buffer\VertexBuffer.hpp" />
     <ClInclude Include="Src\D3D11\Camera\Camera.hpp" />
     <ClInclude Include="Src\D3D11\Camera\ProjectionInfo.hpp" />
     <ClInclude Include="Src\D3D11\DepthBufferD3D11.h" />
-    <ClInclude Include="Src\D3D11\IndexBufferD3D11.h" />
+    <ClInclude Include="Src\D3D11\IndexBuffer.hpp" />
     <ClInclude Include="Src\D3D11\InputLayout.hpp" />
-    <ClInclude Include="Src\D3D11\MeshD3D11.h" />
+    <ClInclude Include="Src\D3D11\Mesh.hpp" />
     <ClInclude Include="Src\D3D11\RenderTargetD3D11.h" />
     <ClInclude Include="Src\D3D11\SamplerD3D11.h" />
-    <ClInclude Include="Src\D3D11\ShaderD3D11.h" />
+    <ClInclude Include="Src\D3D11\Scene.hpp" />
+    <ClInclude Include="Src\D3D11\Shader.hpp" />
     <ClInclude Include="Src\D3D11\ShaderResourceTextureD3D11.h" />
     <ClInclude Include="Src\D3D11\SpotLightCollectionD3D11.h" />
     <ClInclude Include="Src\D3D11\StructuredBufferD3D11.h" />
-    <ClInclude Include="Src\D3D11\SubMeshD3D11.h" />
-    <ClInclude Include="Src\D3D11\VertexBufferD3D11.h" />
+    <ClInclude Include="Src\D3D11\SubMesh.hpp" />
     <ClInclude Include="Src\FileReader\FileReader.hpp" />
     <ClInclude Include="Src\FileReader\ImageReader.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\IFileParser.hpp" />

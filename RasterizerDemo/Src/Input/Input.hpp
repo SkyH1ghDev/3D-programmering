@@ -7,9 +7,11 @@
 class Input
 {
 public:
-    void ReadInput(const MSG& msg, Camera& camera, float deltaTime);
+    void ReadInput(Camera& camera, float deltaTime);
+    int Exit(const MSG& msg);
     
 private:
-    void handleMovement(const MSG& msg, Camera& camera, float deltaTime);
+    void HandleMovement(Camera& camera, float deltaTime);
+    void HandleRotation(Camera& camera, float deltaTime);
     
 };

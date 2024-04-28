@@ -4,9 +4,9 @@
 
 #include <d3d11_4.h>
 
-#include "SubMeshD3D11.h"
-#include "VertexBufferD3D11.h"
-#include "IndexBufferD3D11.h"
+#include "SubMesh.hpp"
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
 
 struct MeshData
 {
@@ -35,20 +35,20 @@ struct MeshData
 	std::vector<SubMeshInfo> subMeshInfo;
 };
 
-class MeshD3D11
+class Mesh
 {
 private:
-	std::vector<SubMeshD3D11> subMeshes;
-	VertexBufferD3D11 vertexBuffer;
-	IndexBufferD3D11 indexBuffer;
+	std::vector<SubMesh> subMeshes;
+	VertexBuffer vertexBuffer;
+	IndexBuffer indexBuffer;
 
 public:
-	MeshD3D11() = default;
-	~MeshD3D11() = default;
-	MeshD3D11(const MeshD3D11 & other) = delete;
-	MeshD3D11& operator=(const MeshD3D11 & other) = delete;
-	MeshD3D11(MeshD3D11 && other) = delete;
-	MeshD3D11& operator=(MeshD3D11 && other) = delete;
+	Mesh() = default;
+	~Mesh() = default;
+	Mesh(const Mesh & other) = delete;
+	Mesh& operator=(const Mesh & other) = delete;
+	Mesh(Mesh && other) = delete;
+	Mesh& operator=(Mesh && other) = delete;
 
 	void Initialize(ID3D11Device* device, const MeshData& meshInfo);
 
