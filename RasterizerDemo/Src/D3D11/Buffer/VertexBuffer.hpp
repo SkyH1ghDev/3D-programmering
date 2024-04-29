@@ -10,7 +10,7 @@ private:
 	UINT _vertexSize = 0;
 
 public:
-	VertexBuffer() = delete;
+	VertexBuffer() = default;
 	VertexBuffer(ID3D11Device* device, UINT sizeOfVertex, 
 		UINT nrOfVerticesInBuffer, void* vertexData);
 	~VertexBuffer();

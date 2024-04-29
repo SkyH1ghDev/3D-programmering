@@ -1,6 +1,6 @@
 ﻿#include "OBJParser.hpp"
 #include "VertexManager.hpp"
-#include "VertexBuffer.hpp"
+#include "Mesh.hpp"
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
@@ -10,6 +10,7 @@ int OBJParser::GetVerticesFromFile(const std::string& filename) const
     std::vector<std::vector<std::string>> fileTokens = ReadContentsOfFile(filename);
 
     VertexManager* vertexManagerInstance = VertexManager::GetInstance();
+    MeshData meshData;
 
     int faceIndex = 0;
     

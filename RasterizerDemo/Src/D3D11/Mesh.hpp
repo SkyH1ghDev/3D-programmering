@@ -8,20 +8,21 @@
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
 
-struct MeshData
+class MeshData
 {
+public:
 	struct VertexInfo
 	{
 		size_t sizeOfVertex;
 		size_t nrOfVerticesInBuffer;
 		void* vertexData;
-	} vertexInfo;
+	};
 
 	struct IndexInfo
 	{
 		size_t nrOfIndicesInBuffer;
 		uint32_t* indexData;
-	} indexInfo;
+	};
 
 	struct SubMeshInfo
 	{
