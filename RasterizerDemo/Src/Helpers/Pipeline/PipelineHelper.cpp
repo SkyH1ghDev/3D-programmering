@@ -72,9 +72,7 @@ bool PipelineHelper::CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*&
 	return !FAILED(hr);
 }
 
-// TODO: CHANGE INTO USING MESH INSTEAD OF SINGLETON
-
-VertexBuffer PipelineHelper::CreateVertexBuffer(HRESULT& hr, ID3D11Device* device, VertexBuffer& vertexBuffer)
+bool PipelineHelper::CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer)
 {
 	std::vector<Vertex> teapot;
 
@@ -99,7 +97,7 @@ VertexBuffer PipelineHelper::CreateVertexBuffer(HRESULT& hr, ID3D11Device* devic
 
 	std::copy(teapot.begin(), teapot.end(), teapotArr);
 	
-	/*D3D11_BUFFER_DESC bufferDesc;
+	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.ByteWidth = sizeof(*teapotArr) * vertexManagerInstance->numVerticesToDraw;
 	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -112,10 +110,9 @@ VertexBuffer PipelineHelper::CreateVertexBuffer(HRESULT& hr, ID3D11Device* devic
 	data.SysMemPitch = 0;
 	data.SysMemSlicePitch = 0;
 
-	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);*/
-	VertexBuffer vertexBuf = VertexBuffer(device, sizeof(*teapotArr), vertexManagerInstance->numVerticesToDraw, teapotArr);
+	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
 	delete[] teapotArr;
-	return vertexBuf;
+	return !FAILED(hr);
 }
 
 bool PipelineHelper::CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, unsigned char*& imageData)
@@ -188,7 +185,7 @@ bool PipelineHelper::CreateSamplerState(ID3D11Device* device, ID3D11SamplerState
     	return !(FAILED(hr));
 }
 
-bool PipelineHelper::SetupPipeline(ID3D11Device* device, VertexBuffer& vertexBuffer, ID3D11VertexShader*& vShader,
+bool PipelineHelper::SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11VertexShader*& vShader,
 				   ID3D11PixelShader*& pShader, ID3D11InputLayout*& inputLayout, ID3D11Texture2D*& texture,
 				   ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& samplerState, unsigned char*& imageData)
 {

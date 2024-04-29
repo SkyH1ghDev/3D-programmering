@@ -18,7 +18,6 @@
 #include "Camera.hpp"
 #include "Clock.hpp"
 #include "Input.hpp"
-#include "VertexBuffer.hpp"
 
 namespace DX = DirectX;
 
@@ -49,7 +48,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ID3D11VertexShader* vShader;
 	ID3D11PixelShader* pShader;
 	ID3D11InputLayout* inputLayout;
-	VertexBuffer vertexBuffer;
+	ID3D11Buffer* vertexBuffer;
 	unsigned char* imageData;
 	ID3D11Texture2D* texture;
 	ID3D11ShaderResourceView* textureSRV;
