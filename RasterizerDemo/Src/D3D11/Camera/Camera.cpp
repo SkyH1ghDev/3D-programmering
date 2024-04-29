@@ -69,32 +69,32 @@ void Camera::RotateAroundAxis(const float &amount, const DX::XMFLOAT4 &axis)
 
 void Camera::RotateForward(float amount, const float &deltaTime)
 {
-	RotateAroundAxis(amount * deltaTime, this->_forward);
+	RotateAroundAxis(amount * deltaTime, {0.0f, 0.0f, 1.0f, 0.0f});
 }
 
 void Camera::RotateBackward(float amount, const float &deltaTime)
 {
-	RotateAroundAxis(amount * deltaTime * -1, this->_forward); 
+	RotateAroundAxis(amount * deltaTime * -1, {0.0f, 0.0f, 1.0f, 0.0f}); 
 }
 
 void Camera::RotateRight(float amount, const float &deltaTime)
 {
-	RotateAroundAxis(amount * deltaTime, this->_right);
+	RotateAroundAxis(amount * deltaTime, {1.0f, 0.0f, 0.0f, 0.0f});
 }
 
 void Camera::RotateLeft(float amount, const float &deltaTime)
 {
-	RotateAroundAxis(amount * deltaTime * -1, this->_right);
+	RotateAroundAxis(amount * deltaTime * -1, {1.0f, 0.0f, 0.0f, 0.0f});
 }
 
 void Camera::RotateUp(float amount, const float &deltaTime)
 {
-	RotateAroundAxis(amount * deltaTime, this->_up);
+	RotateAroundAxis(amount * deltaTime, {0.0f, 1.0f, 0.0f, 0.0f});
 }
 
 void Camera::RotateDown(float amount, const float &deltaTime)
 {
-	RotateAroundAxis(amount * deltaTime * -1, this->_up);
+	RotateAroundAxis(amount * deltaTime * -1, {0.0f, 1.0f, 0.0f, 0.0f});
 }
 
 void Camera::MoveInDirection(const float& amount, const DX::XMFLOAT4& direction)

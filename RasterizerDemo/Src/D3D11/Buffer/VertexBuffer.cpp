@@ -4,5 +4,5 @@ VertexBuffer::VertexBuffer(ID3D11Device *device, UINT sizeOfVertex, UINT nrOfVer
 {
     this->_vertexSize = sizeOfVertex;
     this->_nrOfVertices = nrOfVerticesInBuffer;
-    this->_buffer = device->CreateBuffer()
+    //this->_buffer = device->CreateBuffer()
 }
