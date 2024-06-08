@@ -60,31 +60,47 @@ void Camera::RotateAroundAxis(const float &amount, const DX::XMFLOAT4 &axis)
 	DX::XMVECTOR rightVector = DX::XMLoadFloat4(&this->_right); 
 	DX::XMVECTOR upVector = DX::XMLoadFloat4(&this->_up);
 
-	DX::XMStoreFloat4(&this->_forward, DX::XMVector4Normalize(DX::XMVector4Transform(forwardVector, rotationMatrix)));
-	DX::XMStoreFloat4(&this->_right, DX::XMVector4Normalize(DX::XMVector4Transform(rightVector, rotationMatrix)));
-	DX::XMStoreFloat4(&this->_up, DX::XMVector4Normalize(DX::XMVector4Transform(upVector, rotationMatrix)));
+	forwardVector = DX::XMVector4Normalize(DX::XMVector4Transform(forwardVector, rotationMatrix));
+	rightVector = DX::XMVector4Normalize(DX::XMVector4Transform(rightVector, rotationMatrix));
+	upVector = DX::XMVector4Normalize(DX::XMVector4Transform(upVector, rotationMatrix));
 
+	// Orthogonalize right vector with forward vector
+	DX::XMVECTOR rightProjectionVector = DX::XMVectorMultiply(DX::XMVector4Dot(rightVector, forwardVector), forwardVector);
+	rightVector = DX::XMVector4Normalize(DX::XMVectorSubtract(rightVector, rightProjectionVector));
+
+	// Orthogonalize up vector with forward vector
+	DX::XMVECTOR upProjectionVector = DX::XMVectorMultiply(DX::XMVector4Dot(upVector, forwardVector), forwardVector);
+	upVector = DX::XMVectorSubtract(upVector, upProjectionVector); // No need to noramlize until all calculations are finished
+
+	// Orthogonalize up vector with right vector
+	upProjectionVector = DX::XMVectorMultiply(DX::XMVector4Dot(upVector, rightVector), rightVector);
+	upVector = DX::XMVector4Normalize(DX::XMVectorSubtract(upVector, upProjectionVector));
+
+	DX::XMStoreFloat4(&this->_forward, forwardVector);
+	DX::XMStoreFloat4(&this->_right, rightVector);
+	DX::XMStoreFloat4(&this->_up, upVector);
+	
 	this->_viewProjectionMatrix = CreateViewProjectionMatrix(this->_position, this->_forward, this->_projInfo);
 }
 
 void Camera::RotateForward(float amount, const float &deltaTime)
 {
-	RotateAroundAxis(amount * deltaTime, {0.0f, 0.0f, 1.0f, 0.0f});
+	RotateAroundAxis(amount * deltaTime, this->_forward);
 }
 
 void Camera::RotateBackward(float amount, const float &deltaTime)
 {
-	RotateAroundAxis(amount * deltaTime * -1, {0.0f, 0.0f, 1.0f, 0.0f}); 
+	RotateAroundAxis(amount * deltaTime * -1, this->_forward); 
 }
 
 void Camera::RotateRight(float amount, const float &deltaTime)
 {
-	RotateAroundAxis(amount * deltaTime, {1.0f, 0.0f, 0.0f, 0.0f});
+	RotateAroundAxis(amount * deltaTime, this->_right);
 }
 
 void Camera::RotateLeft(float amount, const float &deltaTime)
 {
-	RotateAroundAxis(amount * deltaTime * -1, {1.0f, 0.0f, 0.0f, 0.0f});
+	RotateAroundAxis(amount * deltaTime * -1, this->_right); 
 }
 
 void Camera::RotateUp(float amount, const float &deltaTime)

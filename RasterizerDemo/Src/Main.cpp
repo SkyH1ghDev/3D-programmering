@@ -127,7 +127,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Input input;
 	Clock clock;
 	Renderer renderer;
-	float rotationalSpeed = 1.0f;
+	float rotationalSpeed = 0.0f;
 	WorldMatrixConfig worldMatrixConfig;
 	float currentAngle = worldMatrixConfig.GetInitialAngle();
 	MSG msg = { };

@@ -6,11 +6,6 @@
 
 class DepthBufferD3D11
 {
-private:
-	ID3D11Texture2D* texture = nullptr;
-	std::vector<ID3D11DepthStencilView*> depthStencilViews;
-	ID3D11ShaderResourceView* srv = nullptr;
-
 public:
 	DepthBufferD3D11() = default;
 	DepthBufferD3D11(ID3D11Device* device, UINT width, UINT height, bool hasSRV = false);
@@ -25,4 +20,9 @@ public:
 
 	ID3D11DepthStencilView* GetDSV(UINT arrayIndex) const;
 	ID3D11ShaderResourceView* GetSRV() const;
+	
+private:
+	ID3D11Texture2D* texture = nullptr;
+	std::vector<ID3D11DepthStencilView*> depthStencilViews;
+	ID3D11ShaderResourceView* srv = nullptr;
 };

@@ -4,11 +4,6 @@
 
 class RenderTargetD3D11
 {
-private:
-	ID3D11Texture2D* texture = nullptr;
-	ID3D11RenderTargetView* rtv = nullptr;
-	ID3D11ShaderResourceView* srv = nullptr;
-
 public:
 	RenderTargetD3D11() = default;
 	~RenderTargetD3D11();
@@ -22,4 +17,9 @@ public:
 
 	ID3D11RenderTargetView* GetRTV() const;
 	ID3D11ShaderResourceView* GetSRV() const;
+	
+private:
+	ID3D11Texture2D* texture = nullptr;
+	ID3D11RenderTargetView* rtv = nullptr;
+	ID3D11ShaderResourceView* srv = nullptr;
 };

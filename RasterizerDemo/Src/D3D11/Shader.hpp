@@ -14,22 +14,6 @@ enum class ShaderType
 
 class Shader
 {
-private:
-
-	ShaderType type;
-
-	union
-	{
-		ID3D11VertexShader* vertex = nullptr;
-		ID3D11HullShader* hull;
-		ID3D11DomainShader* domain;
-		ID3D11GeometryShader* geometry;
-		ID3D11PixelShader* pixel;
-		ID3D11ComputeShader* compute;
-	} shader;
-
-	ID3DBlob* shaderBlob = nullptr;
-
 public:
 	Shader() = default;
 	~Shader();
@@ -47,4 +31,20 @@ public:
 	size_t GetShaderByteSize() const;
 
 	void BindShader(ID3D11DeviceContext* context) const;
+	
+private:
+
+	ShaderType type;
+
+	union
+	{
+		ID3D11VertexShader* vertex = nullptr;
+		ID3D11HullShader* hull;
+		ID3D11DomainShader* domain;
+		ID3D11GeometryShader* geometry;
+		ID3D11PixelShader* pixel;
+		ID3D11ComputeShader* compute;
+	} shader;
+
+	ID3DBlob* shaderBlob = nullptr;
 };

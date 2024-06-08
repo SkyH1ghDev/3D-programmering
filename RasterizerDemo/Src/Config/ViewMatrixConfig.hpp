@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <array>
 #include <DirectXMath.h>
 
 #include "IConfigBase.hpp"

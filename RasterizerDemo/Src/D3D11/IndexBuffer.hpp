@@ -6,10 +6,6 @@
 
 class IndexBuffer
 {
-private:
-	ID3D11Buffer* buffer = nullptr;
-	size_t nrOfIndices = 0;
-
 public:
 	IndexBuffer() = default;
 	IndexBuffer(ID3D11Device* device, size_t nrOfIndicesInBuffer, uint32_t* indexData);
@@ -23,4 +19,8 @@ public:
 
 	size_t GetNrOfIndices() const;
 	ID3D11Buffer* GetBuffer() const;
+	
+private:
+	ID3D11Buffer* buffer = nullptr;
+	size_t nrOfIndices = 0;
 };

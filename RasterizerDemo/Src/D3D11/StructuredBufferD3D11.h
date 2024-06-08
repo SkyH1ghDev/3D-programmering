@@ -4,12 +4,6 @@
 
 class StructuredBufferD3D11
 {
-private:
-	ID3D11Buffer* buffer = nullptr;
-	ID3D11ShaderResourceView* srv = nullptr;
-	UINT elementSize = 0;
-	size_t nrOfElements = 0;
-
 public:
 	StructuredBufferD3D11() = default;
 	StructuredBufferD3D11(ID3D11Device* device, UINT sizeOfElement,
@@ -28,4 +22,10 @@ public:
 	UINT GetElementSize() const;
 	size_t GetNrOfElements() const;
 	ID3D11ShaderResourceView* GetSRV() const;
+	
+private:
+	ID3D11Buffer* buffer = nullptr;
+	ID3D11ShaderResourceView* srv = nullptr;
+	UINT elementSize = 0;
+	size_t nrOfElements = 0;
 };

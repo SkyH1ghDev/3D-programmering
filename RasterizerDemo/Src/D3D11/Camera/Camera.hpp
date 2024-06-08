@@ -49,9 +49,17 @@ public:
 	ID3D11Buffer* GetConstantBuffer() const;
 	
 	DX::XMFLOAT4X4 GetViewProjectionMatrix() const;
+
+private:
+	
+	void MoveInDirection(const float& amount, const DX::XMFLOAT4& direction);
+	void RotateAroundAxis(const float& amount, const DX::XMFLOAT4& axis);
+
+	BufferFlagData GetBufferFlags();
+	DX::XMFLOAT4X4 CreateViewProjectionMatrix(const DX::XMFLOAT4 &position, const DX::XMFLOAT4 &directionVector, const ProjectionInfo& projInfo) const;
+	DX::XMFLOAT4X4 CreateViewProjectionMatrix() const;
 	
 private:
-
 	// Reminder: _position and _projInfo need to be declared before _viewProjectionMatrix due to how the initialization of Camera works
 	DX::XMFLOAT4 _position = { 0.0f, 0.0f, 0.0f, 1.0f };
 	ProjectionInfo _projInfo;
@@ -64,10 +72,5 @@ private:
 	
 	ConstantBuffer _cameraBuffer;
 
-	void MoveInDirection(const float& amount, const DX::XMFLOAT4& direction);
-	void RotateAroundAxis(const float& amount, const DX::XMFLOAT4& axis);
 
-	BufferFlagData GetBufferFlags();
-	DX::XMFLOAT4X4 CreateViewProjectionMatrix(const DX::XMFLOAT4 &position, const DX::XMFLOAT4 &directionVector, const ProjectionInfo& projInfo) const;
-	DX::XMFLOAT4X4 CreateViewProjectionMatrix() const;
 };

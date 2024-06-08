@@ -6,7 +6,7 @@ class Renderer
 {
 public:
 
-   void Setup(const Configuration& configuration);
+    void Setup(const Configuration& configuration);
     
     void Render(ID3D11DeviceContext* immediateContext, ID3D11RenderTargetView* rtv,
                 ID3D11DepthStencilView* dsView, D3D11_VIEWPORT& viewport, ID3D11VertexShader* vShader,

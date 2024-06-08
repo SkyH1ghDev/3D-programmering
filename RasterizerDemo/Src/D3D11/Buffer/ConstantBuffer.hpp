@@ -5,10 +5,6 @@
 
 class ConstantBuffer
 {
-private:
-	ID3D11Buffer* _buffer = nullptr;
-	size_t _bufferSize = 0;
-
 public:
 	ConstantBuffer() = delete;
 	ConstantBuffer(HRESULT &hr, ID3D11Device *device, size_t byteSize, void *initialData, unsigned sysMemPitch, unsigned sysMemSlicePitch, unsigned structureByStride, BufferFlagData flags);
@@ -24,4 +20,10 @@ public:
 	ID3D11Buffer* GetBuffer() const;
 
 	void UpdateBuffer(ID3D11DeviceContext* context, void* data, const size_t& byteSize);
+	
+private:
+	ID3D11Buffer* _buffer = nullptr;
+	size_t _bufferSize = 0;
+
+
 };

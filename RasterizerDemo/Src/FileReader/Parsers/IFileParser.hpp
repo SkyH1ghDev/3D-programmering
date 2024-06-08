@@ -4,7 +4,6 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
-#include "Vertex.hpp"
 
 class IFileParser
 {
@@ -26,7 +25,7 @@ protected:
         if (!inFile.good())
         {
             std::cerr << "Failed to open OBJ-file";
-            exit(-1);
+            exit(-1); //TODO: Remove this
         }
 
         std::vector<std::vector<std::string>> lineVector;

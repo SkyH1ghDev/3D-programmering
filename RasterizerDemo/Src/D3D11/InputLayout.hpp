@@ -7,11 +7,6 @@
 
 class InputLayout
 {
-private:
-	std::vector<D3D11_INPUT_ELEMENT_DESC> _inputDesc;
-	std::vector<std::pair<const std::string&, DXGI_FORMAT>> _elementList;
-	ID3D11InputLayout* _inputLayout = nullptr;
-	
 public:
 	InputLayout() = default;
 	~InputLayout();
@@ -24,4 +19,9 @@ public:
 	void FinalizeInputLayout(ID3D11Device* device, const void* vsDataPtr, size_t vsDataSize);
 	
 	ID3D11InputLayout* GetInputLayout() const;
+	
+private:
+	std::vector<D3D11_INPUT_ELEMENT_DESC> _inputDesc;
+	std::vector<std::pair<const std::string&, DXGI_FORMAT>> _elementList;
+	ID3D11InputLayout* _inputLayout = nullptr;
 };

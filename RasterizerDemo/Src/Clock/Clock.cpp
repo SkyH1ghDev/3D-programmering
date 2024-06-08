@@ -10,7 +10,7 @@ void Clock::End()
     this->_endTime = CHRONO::high_resolution_clock::now();
 }
 
-float Clock::GetDeltaTime()
+float Clock::GetDeltaTime() const
 {
     CHRONO::duration<float> timeDiff = this->_endTime - this->_startTime;
     return timeDiff.count();

@@ -4,18 +4,11 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-
-class MaterialData;
+#include "MaterialData.hpp"
 
 class MaterialManager 
 {
 public:
-
-    // VARIABLES
-    
-    std::unordered_map<std::string, std::unique_ptr<MaterialData>> MaterialDataMap;
-    
-    // FUNCTIONS
     
     static MaterialManager* GetInstance()
     {
@@ -30,22 +23,20 @@ public:
     {
         delete instance;
     }
-
+    
 private:
 
     MaterialManager() = default; 
     MaterialManager(const MaterialManager&) = delete;
     MaterialManager& operator=(const MaterialManager&) = delete;
     
+public:
+    
+    std::unordered_map<std::string, std::unique_ptr<MaterialData>> MaterialDataMap;
+
+private:
+    
     static MaterialManager* instance;
 };
 
-class MaterialData
-{
-public:
-    std::string materialName;
-    std::vector<unsigned char> diffuseMap;
-    std::vector<unsigned char> specularMap;
-    std::vector<unsigned char> ambientMap;
-    int specularExponent;
-};
+

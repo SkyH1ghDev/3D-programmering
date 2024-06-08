@@ -32,22 +32,6 @@ struct SpotLightData
 
 class SpotLightCollectionD3D11
 {
-private:
-	struct LightBuffer
-	{
-		DirectX::XMFLOAT4X4 vpMatrix;
-		DirectX::XMFLOAT3 colour;
-		DirectX::XMFLOAT3 direction;
-		float angle = 0.0f;
-		DirectX::XMFLOAT3 position;
-	};
-
-	std::vector<LightBuffer> bufferData;
-
-	DepthBufferD3D11 shadowMaps;
-	StructuredBufferD3D11 lightBuffer;
-	std::vector<Camera> shadowCameras;
-
 public:
 	SpotLightCollectionD3D11() = default;
 	~SpotLightCollectionD3D11() = default;
@@ -65,4 +49,20 @@ public:
 	ID3D11ShaderResourceView* GetShadowMapsSRV() const;
 	ID3D11ShaderResourceView* GetLightBufferSRV() const;
 	ID3D11Buffer* GetLightCameraConstantBuffer(UINT lightIndex) const;
+	
+private:
+	struct LightBuffer
+	{
+		DirectX::XMFLOAT4X4 vpMatrix;
+		DirectX::XMFLOAT3 colour;
+		DirectX::XMFLOAT3 direction;
+		float angle = 0.0f;
+		DirectX::XMFLOAT3 position;
+	};
+
+	std::vector<LightBuffer> bufferData;
+
+	DepthBufferD3D11 shadowMaps;
+	StructuredBufferD3D11 lightBuffer;
+	std::vector<Camera> shadowCameras;
 };

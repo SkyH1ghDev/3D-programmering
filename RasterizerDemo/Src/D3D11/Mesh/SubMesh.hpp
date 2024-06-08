@@ -1,19 +1,9 @@
 #pragma once
 
-#include <string>
-
 #include <d3d11_4.h>
 
 class SubMesh
 {
-private:
-	size_t startIndex = 0;
-	size_t nrOfIndices = 0;
-
-	ID3D11ShaderResourceView* ambientTexture = nullptr;
-	ID3D11ShaderResourceView* diffuseTexture = nullptr;
-	ID3D11ShaderResourceView* specularTexture = nullptr;
-
 public:
 	SubMesh() = default;
 	~SubMesh() = default;
@@ -31,4 +21,12 @@ public:
 	ID3D11ShaderResourceView* GetAmbientSRV() const;
 	ID3D11ShaderResourceView* GetDiffuseSRV() const;
 	ID3D11ShaderResourceView* GetSpecularSRV() const;
+	
+private:
+	size_t startIndex = 0;
+	size_t nrOfIndices = 0;
+
+	ID3D11ShaderResourceView* ambientTexture = nullptr;
+	ID3D11ShaderResourceView* diffuseTexture = nullptr;
+	ID3D11ShaderResourceView* specularTexture = nullptr;
 };

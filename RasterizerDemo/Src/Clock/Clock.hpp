@@ -10,7 +10,7 @@ public:
     
     void Start();
     void End();
-    float GetDeltaTime();
+    float GetDeltaTime() const;
 
 private:
     CHRONO::time_point<CHRONO::high_resolution_clock> _startTime;

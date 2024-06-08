@@ -7,9 +7,6 @@
 
 class SamplerD3D11
 {
-private:
-	ID3D11SamplerState* sampler = nullptr;
-
 public:
 	SamplerD3D11() = default;
 	SamplerD3D11(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE adressMode,
@@ -24,4 +21,7 @@ public:
 		std::optional<std::array<float, 4>> borderColour = std::nullopt);
 
 	ID3D11SamplerState* GetSamplerState() const;
+	
+private:
+	ID3D11SamplerState* sampler = nullptr;
 };

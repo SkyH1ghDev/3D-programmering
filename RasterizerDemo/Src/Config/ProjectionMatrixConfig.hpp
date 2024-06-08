@@ -8,6 +8,7 @@ class ProjectionMatrixConfig : public IConfigBase
 public:
 	ProjectionMatrixConfig() : _aspectRatio(static_cast<float>(this->_windowConfig.GetWidth()) / static_cast<float>(this->_windowConfig.GetHeight())) {}
 
+public:	
 	float GetAspectRatio() const { return _aspectRatio; }
 	float GetFovAngle() const { return _fovAngle; }
 	float GetNearZ() const { return _nearZ; }
