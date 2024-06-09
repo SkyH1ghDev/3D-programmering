@@ -1,18 +1,20 @@
 #pragma once
 
+#include "Vertex.hpp"
 #include <d3d11_4.h>
+#include <vector>
 
 class VertexBuffer
 {
 public:
-	VertexBuffer() = delete;
-	VertexBuffer(ID3D11Device* device, UINT sizeOfVertex, 
-		UINT nrOfVerticesInBuffer, void* vertexData);
+	VertexBuffer() = default;
+	VertexBuffer(HRESULT& hr, ID3D11Device* device, UINT sizeOfVertex, 
+		UINT nrOfVerticesInBuffer, const std::vector<Vertex>& vertexData);
 	~VertexBuffer();
 	VertexBuffer(const VertexBuffer& other) = delete;
 	VertexBuffer& operator=(const VertexBuffer& other) = delete;
-	VertexBuffer(VertexBuffer&& other) = delete;
-	VertexBuffer& operator=(VertexBuffer&& other) = delete;
+	VertexBuffer(VertexBuffer&& other) = default;
+	VertexBuffer& operator=(VertexBuffer&& other) noexcept;
 
 	void Initialize(ID3D11Device* device, UINT sizeOfVertex,
 		UINT nrOfVerticesInBuffer, void* vertexData);

@@ -7,12 +7,18 @@
 class Scene
 {
 public:
-    Scene() = default;
+    Scene() = delete;
+    ~Scene() = default;
+    Scene(HRESULT& hr, ID3D11Device* device);
+    Scene(Camera& camera);
+    Scene(std::vector<Camera> cameraList);
     
     void Render();
+    void SetMeshes(std::vector<Mesh> meshList);
+    Camera& GetCurrentCamera();
     
 private:
-    Camera ActiveCamera;
-    std::vector<Camera> CameraList;
-    std::vector<Mesh> MeshList;
+    uint16_t _currentCameraIndex = 0; // Max 65535 Cameras
+    std::vector<Camera> _cameraList;
+    std::vector<Mesh> _meshList;
 };

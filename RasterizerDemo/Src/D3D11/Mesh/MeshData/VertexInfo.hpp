@@ -1,9 +1,14 @@
 ﻿#pragma once
 
+#include "Vertex.hpp"
+
 class VertexInfo
 {
 public:
-    size_t SizeOfVertex;
-    size_t NrOfVerticesInBuffer;
-    void* VertexData;
+    VertexInfo() = default;
+    
+public:
+    UINT SizeOfVertex = sizeof(Vertex);
+    UINT NrOfVerticesInBuffer;
+    std::vector<Vertex> VertexVector;
 };

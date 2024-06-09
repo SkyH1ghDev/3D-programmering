@@ -6,7 +6,6 @@
 
 #include "SubMesh.hpp"
 #include "VertexBuffer.hpp"
-#include "IndexBuffer.hpp"
 #include "MeshData.hpp"
 
 class Mesh
@@ -14,10 +13,11 @@ class Mesh
 public:
 	Mesh() = default;
 	~Mesh() = default;
+	Mesh(HRESULT& hr, ID3D11Device* device, const MeshData& meshData);
 	Mesh(const Mesh & other) = delete;
 	Mesh& operator=(const Mesh & other) = delete;
-	Mesh(Mesh && other) = delete;
-	Mesh& operator=(Mesh && other) = delete;
+	Mesh(Mesh && other) = default;
+	Mesh& operator=(Mesh && other) = default;
 
 	void Initialize(ID3D11Device* device, const MeshData& meshInfo);
 
@@ -31,6 +31,8 @@ public:
 	
 private:
 	std::vector<SubMesh> _subMeshes;
-	VertexBuffer _vertexBuffer;
-	IndexBuffer _indexBuffer;
+	VertexBuffer _vertexBuffer = VertexBuffer();
+	
+	// IndexBuffer is unused as the current implementation uses the Triangle List topology rather than indexed
+	// IndexBuffer _indexBuffer;
 };

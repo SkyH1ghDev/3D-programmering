@@ -490,105 +490,9 @@
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Src\D3D11\InputLayout.cpp" />
-    <ClCompile Include="Src\D3D11\Scene\Scene.cpp">
-      <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <Optimization>Disabled</Optimization>
-      <SupportJustMyCode>true</SupportJustMyCode>
-      <AssemblerOutput>NoListing</AssemblerOutput>
-      <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
-      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
-      <BrowseInformation>false</BrowseInformation>
-      <BrowseInformationFile>x64\Debug\</BrowseInformationFile>
-      <CompileAs>Default</CompileAs>
-      <ConformanceMode>true</ConformanceMode>
-      <DiagnosticsFormat>Column</DiagnosticsFormat>
-      <DisableLanguageExtensions>false</DisableLanguageExtensions>
-      <ErrorReporting>Prompt</ErrorReporting>
-      <ExpandAttributedSource>false</ExpandAttributedSource>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <EnableASAN>false</EnableASAN>
-      <EnableFuzzer>false</EnableFuzzer>
-      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Precise</FloatingPointModel>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <GenerateModuleDependencies>false</GenerateModuleDependencies>
-      <GenerateSourceDependencies>false</GenerateSourceDependencies>
-      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
-      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>Default</LanguageStandard_C>
-      <MinimalRebuild>false</MinimalRebuild>
-      <ModuleDependenciesFile>x64\Debug\</ModuleDependenciesFile>
-      <ModuleOutputFile>x64\Debug\</ModuleOutputFile>
-      <OmitDefaultLibName>false</OmitDefaultLibName>
-      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <ObjectFileName>x64\Debug\</ObjectFileName>
-      <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>x64\Debug\vc143.pdb</ProgramDataBaseFileName>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>x64\Debug\RasterizerDemo.pch</PrecompiledHeaderOutputFile>
-      <PreprocessToFile>false</PreprocessToFile>
-      <PreprocessKeepComments>false</PreprocessKeepComments>
-      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
-      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
-      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
-      <ShowIncludes>false</ShowIncludes>
-      <SourceDependenciesFile>x64\Debug\</SourceDependenciesFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
-      <SmallerTypeCheck>false</SmallerTypeCheck>
-      <SpectreMitigation>false</SpectreMitigation>
-      <StructMemberAlignment>Default</StructMemberAlignment>
-      <TrackerLogDirectory>x64\Debug\RasterizerDemo.tlog\</TrackerLogDirectory>
-      <TranslateIncludes>false</TranslateIncludes>
-      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
-      <TreatWarningAsError>false</TreatWarningAsError>
-      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <UseFullPaths>true</UseFullPaths>
-      <WarningLevel>Level3</WarningLevel>
-      <XMLDocumentationFileName>x64\Debug\</XMLDocumentationFileName>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <IntelJCCErratum>false</IntelJCCErratum>
-      <BuildStlModules>false</BuildStlModules>
-      <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
-      <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
-      <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
-      <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_UNICODE;UNICODE;</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>
-		Src; 
-		Src/Clock; 
-		Src/Config; 
-		Src/D3D11; 
-		Src/FileReader; 
-		Src/Helpers; 
-		Src/Input; 
-		Src/Material; 
-		Src/Pixel; 
-		Src/Renderer; 
-		Src/Vertex; 
-		Src/D3D11/Buffer; 
-		Src/D3D11/Camera; 
-		Src/D3D11/Mesh; 
-		Src/D3D11/Scene; 
-		Src/D3D11/Mesh/MeshData; 
-		Src/FileReader/Parsers; 
-		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
-		Src/Helpers/MatrixCreator; 
-		Src/Helpers/Pipeline; 
-		Src/Helpers/Window; 
-		Resources/Libraries
-      </AdditionalIncludeDirectories>
-      <LinkCompiled>true</LinkCompiled>
-    </ClCompile>
+    <ClCompile Include="Src\D3D11\Mesh\Mesh.cpp" />
+    <ClCompile Include="Src\D3D11\Mesh\SubMesh.cpp" />
+    <ClCompile Include="Src\D3D11\Scene\Scene.cpp" />
     <ClCompile Include="Src\FileReader\FileReader.cpp" />
     <ClCompile Include="Src\FileReader\ImageReader.cpp" />
     <ClCompile Include="Src\FileReader\Parsers\MTLParser.cpp">
@@ -1022,7 +926,6 @@
     <ClInclude Include="Src\D3D11\Camera\Camera.hpp" />
     <ClInclude Include="Src\D3D11\Camera\ProjectionInfo.hpp" />
     <ClInclude Include="Src\D3D11\DepthBufferD3D11.h" />
-    <ClInclude Include="Src\D3D11\IndexBuffer.hpp" />
     <ClInclude Include="Src\D3D11\InputLayout.hpp" />
     <ClInclude Include="Src\D3D11\Mesh\Mesh.hpp" />
     <ClInclude Include="Src\D3D11\Mesh\MeshData\IndexInfo.hpp" />
@@ -1040,6 +943,8 @@
     <ClInclude Include="Src\FileReader\FileReader.hpp" />
     <ClInclude Include="Src\FileReader\ImageReader.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\IFileParser.hpp" />
+    <ClInclude Include="Src\FileReader\Parsers\ImageData.hpp" />
+    <ClInclude Include="Src\FileReader\Parsers\MTLData.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\MTLParser.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\OBJParser.hpp" />
     <ClInclude Include="Src\Helpers\D3D11\D3D11Helper.hpp" />

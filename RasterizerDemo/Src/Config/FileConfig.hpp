@@ -10,6 +10,6 @@ public:
     std::vector<std::string> GetFilenameList() const { return this->_filenameList; }
 
 private:
-    std::vector<std::string> _filenameList = {"XwingObjTriangulated.obj", "XwingObjTriangulated.mtl"};
+    std::vector<std::string> _filenameList = {"XwingObjTriangulated.obj"};
 
 };

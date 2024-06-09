@@ -11,12 +11,12 @@ public:
     
     FileReader();
     
-    int ReadFilesFromConfig();
+    int ReadFilesFromConfig(std::vector<MeshData> &meshDataList);
     ~FileReader();
     
 private:
     std::string GetFileExtension(const std::string& filename);
-    int ReadFile(const std::string& filename);
+    int ReadFile(const std::string& filename, MeshData &meshData);
     
 private:
     std::unique_ptr<MTLParser> _mtlParserPtr;

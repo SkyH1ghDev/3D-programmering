@@ -7,43 +7,38 @@ FileReader::FileReader()
     _objParserPtr = std::make_unique<OBJParser>();
 }
 
-int FileReader::ReadFilesFromConfig()
+int FileReader::ReadFilesFromConfig(std::vector<MeshData> &meshDataList)
 {
     FileConfig fileConfig;
+
+    MeshData meshData;
     
-    for(std::string file : fileConfig.GetFilenameList())
+    for (const std::string& file : fileConfig.GetFilenameList())
     {
-        if (ReadFile(file) == -1)
+        if (ReadFile(file, meshData) == -1)
         {
             std::cerr << "Could not read file: \"" << file << "\" \n";
             
             return -1;
         }
+
+        meshDataList.push_back(meshData);
     }
     
     return 0;
 }
 
 
-int FileReader::ReadFile(const std::string& filename)
+int FileReader::ReadFile(const std::string& filename, MeshData &meshData)
 {
     const std::string fileExtension = GetFileExtension(filename);
     
     if (fileExtension == "obj")
     {
-        if (_objParserPtr->GetVerticesFromFile(filename) == -1)
+        if (_objParserPtr->GetVerticesFromFile(filename, meshData) == -1)
         {
             return -1;
         }
-        return 0;
-    }
-    else if (fileExtension == "mtl")
-    {
-        if (_mtlParserPtr->GetMaterialFromFile(filename) == -1)
-        {
-            return -1;
-        }
-        return 0;
     }
     else
     {

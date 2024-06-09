@@ -5,8 +5,12 @@
 class SubMesh
 {
 public:
-	SubMesh() = default;
-	~SubMesh() = default;
+	SubMesh() = delete;
+	SubMesh(size_t startIndexValue, size_t nrOfIndicesInSubMesh, float specularExponent,
+		ID3D11ShaderResourceView* ambientTextureSRV, ID3D11Texture2D* ambientTexture2D,
+		ID3D11ShaderResourceView* diffuseTextureSRV, ID3D11Texture2D* diffuseTexture2D,
+		ID3D11ShaderResourceView* specularTextureSRV, ID3D11Texture2D* specularTexture2D);
+	~SubMesh();
 	SubMesh(const SubMesh& other) = default;
 	SubMesh& operator=(const SubMesh& other) = default;
 	SubMesh(SubMesh&& other) = default;
@@ -23,10 +27,16 @@ public:
 	ID3D11ShaderResourceView* GetSpecularSRV() const;
 	
 private:
-	size_t startIndex = 0;
-	size_t nrOfIndices = 0;
+	size_t _startIndex = 0;
+	size_t _nrOfIndices = 0;
+	float _specularExponent = 0.0f;
 
-	ID3D11ShaderResourceView* ambientTexture = nullptr;
-	ID3D11ShaderResourceView* diffuseTexture = nullptr;
-	ID3D11ShaderResourceView* specularTexture = nullptr;
+	ID3D11ShaderResourceView* _ambientTextureSRV = nullptr;
+	ID3D11Texture2D* _ambientTexture2D = nullptr;
+	
+	ID3D11ShaderResourceView* _diffuseTextureSRV = nullptr;
+	ID3D11Texture2D* _diffuseTexture2D = nullptr;
+	
+	ID3D11ShaderResourceView* _specularTextureSRV = nullptr;
+	ID3D11Texture2D* _specularTexture2D = nullptr;
 };

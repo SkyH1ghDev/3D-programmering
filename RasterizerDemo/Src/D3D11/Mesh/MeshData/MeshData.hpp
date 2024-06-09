@@ -9,5 +9,6 @@
 class MeshData
 {
 public:
-    std::vector<SubMeshInfo> SubMeshInfo;
+    VertexInfo VertexInfo;
+    std::vector<SubMeshInfo> SubMeshInfoList;
 };

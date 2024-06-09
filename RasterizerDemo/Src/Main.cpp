@@ -18,6 +18,7 @@
 #include "Camera.hpp"
 #include "Clock.hpp"
 #include "Input.hpp"
+#include "Scene.hpp"
 
 namespace DX = DirectX;
 
@@ -26,10 +27,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_ LPWSTR    lpCmdLine,
                       _In_ int       nCmdShow)
 {
-	
+	std::vector<MeshData> meshDataList;
 	FileReader fileReader;
-	fileReader.ReadFilesFromConfig();
-
+	if (fileReader.ReadFilesFromConfig(meshDataList) == -1)
+	{
+		return -1;
+	}
+	
 	HWND window;
 	WindowHelper windowHelper;
 	if (!windowHelper.SetupWindow(hInstance, nCmdShow, window))
@@ -54,7 +58,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ID3D11ShaderResourceView* textureSRV;
 	ID3D11SamplerState* samplerState;
 
-
 	D3D11Helper d3d11Helper;
 	if (!d3d11Helper.SetupD3D11(window, device, immediateContext, swapChain, rtv, dsTexture, dsView, viewport))
 	{
@@ -62,15 +65,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
+	HRESULT hr;
+
+	Scene mainScene(hr, device);
+	Camera& mainCam = mainScene.GetCurrentCamera();
+	
+	for (MeshData meshData : meshDataList)
+	{
+		Mesh()
+	}
+	
 	PipelineHelper pipelineHelper;
 	if (!pipelineHelper.SetupPipeline(device, vertexBuffer, vShader, pShader, inputLayout, texture, textureSRV, samplerState, imageData))
 	{
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -1;
 	}
-
-	HRESULT hr;
-	Camera mainCam(hr, device);
 	
 	MatrixCreator matrixCreator;
 	
