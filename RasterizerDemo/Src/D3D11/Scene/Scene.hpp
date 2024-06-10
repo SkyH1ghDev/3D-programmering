@@ -15,6 +15,8 @@ public:
     
     void Render();
     void SetMeshes(std::vector<Mesh> meshList);
+    void AddMesh(Mesh& mesh);
+    
     Camera& GetCurrentCamera();
     
 private:

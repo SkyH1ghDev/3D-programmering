@@ -28,9 +28,15 @@ void Scene::SetMeshes(std::vector<Mesh> meshList)
 {
     for (Mesh& mesh : meshList)
     {
-        this->_meshList.push_back(std::move(mesh));
+        this->_meshList.emplace_back(std::move(mesh));
     }
 }
+
+void Scene::AddMesh(Mesh& mesh)
+{
+    this->_meshList.emplace_back(std::move(mesh));
+}
+
 
 Camera& Scene::GetCurrentCamera()
 {

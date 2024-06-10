@@ -108,6 +108,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Application; 
 		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
@@ -190,6 +191,8 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Application\Application.cpp" />
+    <ClCompile Include="Src\Application\SetupHelper.cpp" />
     <ClCompile Include="Src\Clock\Clock.cpp" />
     <ClCompile Include="Src\D3D11\Buffer\ConstantBuffer.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
@@ -265,6 +268,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Application; 
 		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
@@ -365,6 +369,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Application; 
 		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
@@ -464,6 +469,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Application; 
 		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
@@ -489,9 +495,11 @@
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Src\D3D11\D3D11Controller.cpp" />
     <ClCompile Include="Src\D3D11\InputLayout.cpp" />
     <ClCompile Include="Src\D3D11\Mesh\Mesh.cpp" />
     <ClCompile Include="Src\D3D11\Mesh\SubMesh.cpp" />
+    <ClCompile Include="Src\D3D11\RenderTarget.cpp" />
     <ClCompile Include="Src\D3D11\Scene\Scene.cpp" />
     <ClCompile Include="Src\FileReader\FileReader.cpp" />
     <ClCompile Include="Src\FileReader\ImageReader.cpp" />
@@ -569,6 +577,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Application; 
 		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
@@ -668,6 +677,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Application; 
 		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
@@ -771,6 +781,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Application; 
 		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
@@ -870,6 +881,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>
 		Src; 
+		Src/Application; 
 		Src/Clock; 
 		Src/Config; 
 		Src/D3D11; 
@@ -911,6 +923,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resources\Libraries\stb_image.h" />
+    <ClInclude Include="Src\Application\Application.hpp" />
+    <ClInclude Include="Src\Application\SetupHelper.hpp" />
     <ClInclude Include="Src\Clock\Clock.hpp" />
     <ClInclude Include="Src\Config\IConfigBase.hpp" />
     <ClInclude Include="Src\Config\Configuration.hpp" />
@@ -926,6 +940,7 @@
     <ClInclude Include="Src\D3D11\Camera\Camera.hpp" />
     <ClInclude Include="Src\D3D11\Camera\ProjectionInfo.hpp" />
     <ClInclude Include="Src\D3D11\DepthBufferD3D11.h" />
+    <ClInclude Include="Src\D3D11\D3D11Controller.hpp" />
     <ClInclude Include="Src\D3D11\InputLayout.hpp" />
     <ClInclude Include="Src\D3D11\Mesh\Mesh.hpp" />
     <ClInclude Include="Src\D3D11\Mesh\MeshData\IndexInfo.hpp" />
@@ -933,7 +948,7 @@
     <ClInclude Include="Src\D3D11\Mesh\MeshData\SubMeshInfo.hpp" />
     <ClInclude Include="Src\D3D11\Mesh\MeshData\VertexInfo.hpp" />
     <ClInclude Include="Src\D3D11\Mesh\SubMesh.hpp" />
-    <ClInclude Include="Src\D3D11\RenderTargetD3D11.h" />
+    <ClInclude Include="Src\D3D11\RenderTarget.hpp" />
     <ClInclude Include="Src\D3D11\SamplerD3D11.h" />
     <ClInclude Include="Src\D3D11\Scene\Scene.hpp" />
     <ClInclude Include="Src\D3D11\Shader.hpp" />
@@ -975,6 +990,9 @@
     <Content Include="Resources\3D-Objects\XwingObjTriangulated.mtl" />
     <Content Include="Resources\3D-Objects\XwingObjTriangulated.obj" />
     <Content Include="Resources\Images\Pic.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\D3D11\RenderTarget\" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

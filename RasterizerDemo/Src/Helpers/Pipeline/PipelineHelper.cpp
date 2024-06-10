@@ -202,11 +202,11 @@ bool PipelineHelper::SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBu
 		return false;
 	}
 	
-	if (!(CreateVertexBuffer(device, vertexBuffer)))
+	/*if (!(CreateVertexBuffer(device, vertexBuffer)))
 	{
 		std::cerr << "Error creating vertex buffer!" << std::endl;
 		return false;
-	}
+	}*/
 	
 	if (!(CreateTexture(device, texture, textureSRV, imageData)))
 	{

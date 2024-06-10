@@ -19,6 +19,7 @@
 #include "Clock.hpp"
 #include "Input.hpp"
 #include "Scene.hpp"
+#include "Application.hpp"
 
 namespace DX = DirectX;
 
@@ -27,28 +28,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_ LPWSTR    lpCmdLine,
                       _In_ int       nCmdShow)
 {
-	std::vector<MeshData> meshDataList;
-	FileReader fileReader;
-	if (fileReader.ReadFilesFromConfig(meshDataList) == -1)
-	{
-		return -1;
-	}
+	Application app;
+	app.Run(hInstance, nCmdShow);
 	
-	HWND window;
-	WindowHelper windowHelper;
-	if (!windowHelper.SetupWindow(hInstance, nCmdShow, window))
-	{
-		std::cerr << "Failed to setup window!" << std::endl;
-		return -1;
-	}
 
-	ID3D11Device* device;
-	ID3D11DeviceContext* immediateContext;
-	IDXGISwapChain* swapChain;
-	ID3D11RenderTargetView* rtv;
+	
+	//ID3D11Device* device; 
+	//ID3D11DeviceContext* immediateContext;
+	//IDXGISwapChain* swapChain;
+	//ID3D11RenderTargetView* rtv;
 	ID3D11Texture2D* dsTexture;
 	ID3D11DepthStencilView* dsView;
-	D3D11_VIEWPORT viewport;
+	//D3D11_VIEWPORT viewport;
 	ID3D11VertexShader* vShader;
 	ID3D11PixelShader* pShader;
 	ID3D11InputLayout* inputLayout;
@@ -67,12 +58,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	HRESULT hr;
 
+	std::vector<MeshData> meshDataList;
+	FileReader fileReader;
+	if (fileReader.ReadFilesFromConfig(meshDataList) == -1)
+	{
+		return -1;
+	}
+
 	Scene mainScene(hr, device);
 	Camera& mainCam = mainScene.GetCurrentCamera();
 	
 	for (MeshData meshData : meshDataList)
 	{
-		Mesh()
+		Mesh mesh = Mesh(hr, device, meshData);
+		mainScene.AddMesh(mesh);
 	}
 	
 	PipelineHelper pipelineHelper;
@@ -170,16 +169,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	textureSRV->Release();
 	texture->Release();
 	stbi_image_free(imageData);
-	vertexBuffer->Release();
+	//vertexBuffer->Release();
 	inputLayout->Release();
 	pShader->Release();
 	vShader->Release();
 	dsView->Release();
 	dsTexture->Release();
 	rtv->Release();
-	swapChain->Release();
-	immediateContext->Release();
-	device->Release();
+	//swapChain->Release();
+	//immediateContext->Release();
+	//device->Release();
 
 	ManagerHelper::ReleaseManagers();
 

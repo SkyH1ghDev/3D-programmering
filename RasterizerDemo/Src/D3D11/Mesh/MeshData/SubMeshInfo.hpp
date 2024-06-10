@@ -7,10 +7,10 @@ public:
 	SubMeshInfo() = default;
 	
 public:
-	UINT startIndexValue = 0;
-	UINT nrOfIndicesInSubMesh = 0;
+	UINT StartIndexValue = 0;
+	UINT NrOfIndicesInSubMesh = 0;
 	ImageData AmbientTextureData;
 	ImageData DiffuseTextureData;
 	ImageData SpecularTextureData;
-	float specularExponent;
+	float SpecularExponent;
 };

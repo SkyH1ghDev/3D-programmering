@@ -50,7 +50,7 @@ int OBJParser::GetVerticesFromFile(const std::string& filename, MeshData &meshDa
             {
                 SubMeshInfo previousSubMeshInfo = meshData.SubMeshInfoList.at(nrOfSubMeshes - 1);
                 
-               meshData.SubMeshInfoList.at(nrOfSubMeshes - 1).nrOfIndicesInSubMesh = vertexVector.size() - previousSubMeshInfo.startIndexValue;
+               meshData.SubMeshInfoList.at(nrOfSubMeshes - 1).NrOfIndicesInSubMesh = vertexVector.size() - previousSubMeshInfo.StartIndexValue;
             }
             
             materialName = line.at(1);
@@ -59,11 +59,11 @@ int OBJParser::GetVerticesFromFile(const std::string& filename, MeshData &meshDa
             mtlParser.GetMaterialFromFile(materialFileName, materialName, mtlData);
             
             SubMeshInfo subMeshInfo;
-            subMeshInfo.startIndexValue = vertexVector.size();
+            subMeshInfo.StartIndexValue = vertexVector.size();
             subMeshInfo.AmbientTextureData = mtlData.ambientTextureData;
             subMeshInfo.DiffuseTextureData = mtlData.diffuseTextureData;
             subMeshInfo.SpecularTextureData = mtlData.specularTextureData;
-            subMeshInfo.specularExponent = mtlData.specularExponent;
+            subMeshInfo.SpecularExponent = mtlData.specularExponent;
 
             meshData.SubMeshInfoList.push_back(subMeshInfo);
             ++nrOfSubMeshes;
@@ -176,7 +176,7 @@ int OBJParser::GetVerticesFromFile(const std::string& filename, MeshData &meshDa
 
     // Set last SubMeshInfo nrOfIndicesInSubMesh
     SubMeshInfo lastSubMeshInfo = meshData.SubMeshInfoList.back();
-    meshData.SubMeshInfoList.back().nrOfIndicesInSubMesh = vertexVector.size() - lastSubMeshInfo.startIndexValue;
+    meshData.SubMeshInfoList.back().NrOfIndicesInSubMesh = vertexVector.size() - lastSubMeshInfo.StartIndexValue;
     
     return 0;
 }

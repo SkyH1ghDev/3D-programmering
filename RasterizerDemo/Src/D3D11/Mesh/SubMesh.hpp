@@ -2,18 +2,17 @@
 
 #include <d3d11_4.h>
 
+#include "SubMeshInfo.hpp"
+
 class SubMesh
 {
 public:
 	SubMesh() = delete;
-	SubMesh(size_t startIndexValue, size_t nrOfIndicesInSubMesh, float specularExponent,
-		ID3D11ShaderResourceView* ambientTextureSRV, ID3D11Texture2D* ambientTexture2D,
-		ID3D11ShaderResourceView* diffuseTextureSRV, ID3D11Texture2D* diffuseTexture2D,
-		ID3D11ShaderResourceView* specularTextureSRV, ID3D11Texture2D* specularTexture2D);
+	SubMesh(HRESULT& hr, ID3D11Device* device, const SubMeshInfo& subMeshInfo);
 	~SubMesh();
-	SubMesh(const SubMesh& other) = default;
-	SubMesh& operator=(const SubMesh& other) = default;
-	SubMesh(SubMesh&& other) = default;
+	SubMesh(const SubMesh& other) = delete;
+	SubMesh& operator=(const SubMesh& other) = delete;
+	SubMesh(SubMesh&& other) noexcept;
 	SubMesh& operator=(SubMesh&& other) = default;
 
 	void Initialize(size_t startIndexValue, size_t nrOfIndicesInSubMesh,
