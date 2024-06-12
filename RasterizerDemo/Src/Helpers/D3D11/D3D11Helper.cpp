@@ -90,7 +90,7 @@ void D3D11Helper::SetViewport(D3D11_VIEWPORT& viewport, UINT width, UINT height)
 	viewport.MaxDepth = 1;
 }
 
-bool D3D11Helper::SetupD3D11(HWND window, ID3D11Device*& device,
+/*bool D3D11Helper::SetupD3D11(HWND window, ID3D11Device*& device,
 	ID3D11DeviceContext*& immediateContext, IDXGISwapChain*& swapChain, ID3D11RenderTargetView*& rtv,
 	ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView, D3D11_VIEWPORT& viewport)
 {
@@ -117,4 +117,4 @@ bool D3D11Helper::SetupD3D11(HWND window, ID3D11Device*& device,
 	SetViewport(viewport, windowConfig.GetWidth(), windowConfig.GetHeight());
 
 	return true;
-}
+}*/

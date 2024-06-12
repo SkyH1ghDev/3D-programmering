@@ -24,7 +24,7 @@ void Scene::Render()
 {
 }
 
-void Scene::SetMeshes(std::vector<Mesh> meshList)
+void Scene::CreateMeshes(std::vector<Mesh> meshList)
 {
     for (Mesh& mesh : meshList)
     {

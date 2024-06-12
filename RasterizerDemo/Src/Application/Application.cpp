@@ -1,24 +1,36 @@
 ﻿#include "Application.hpp"
 
-#include "SetupHelper.hpp"
 
-int Application::Run(HINSTANCE hInstance, int nCmdShow)
+Application::Application(HINSTANCE hInstance, int nCmdShow) :
+    // Initialize Window
+    _window(SetupHelper::SetupWindow(hInstance, nCmdShow)),
+
+    // Initialize D3D11
+    _controller(SetupHelper::SetupController(this->_window)),
+    _rtv(SetupHelper::SetupRenderTarget(this->_controller)),
+    _scene(SetupHelper::SetupScene(this->_controller)),
+
+    // Initialize Shaders
+    _vertexShader(),
+    _hullShader(),
+    _domainShader(),
+    _geometryShader(),
+    _pixelShader(),
+    _computeShader()
 {
-    Setup(hInstance, nCmdShow); 
+    
+}
+
+int Application::Run()
+{
+    Setup(); 
     Render();
 
     return 0;
 }
 
-void Application::Setup(HINSTANCE hInstance, int nCmdShow)
+void Application::Setup()
 {
-    // Setup Window
-    this->_window = SetupHelper::SetupWindow(hInstance, nCmdShow);
-    
-    this->_controller = SetupHelper::SetupController(this->_window);
-    this->_rtv = SetupHelper::SetupRenderTarget(this->_controller);
-
-    
     
 }
 

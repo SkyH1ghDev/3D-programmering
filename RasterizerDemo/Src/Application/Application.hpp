@@ -1,15 +1,16 @@
 ﻿#pragma once
-#include <windows.h>
-#include "D3D11Controller.hpp"
-#include "RenderTarget.hpp"
+
+#include "SetupHelper.hpp"
 
 class Application
 {
 public:
-    int Run(HINSTANCE hInstance, int nCmdShow);
+    Application(HINSTANCE hInstance, int nCmdShow);
+    ~Application() = default;
+    int Run();
 
 private:
-    void Setup(HINSTANCE hInstance, int nCmdShow);
+    void Setup();
     void Render();
 
 private:
@@ -19,4 +20,13 @@ private:
     // D3D11
     D3D11Controller _controller;
     RenderTarget _rtv;
+    Scene _scene; // Could be expanded to contain multiple scenes
+
+    // Shaders
+    Shader _vertexShader;
+    Shader _hullShader;
+    Shader _domainShader;
+    Shader _geometryShader;
+    Shader _pixelShader;
+    Shader _computeShader;
 };

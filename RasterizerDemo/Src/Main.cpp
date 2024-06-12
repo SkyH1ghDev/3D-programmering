@@ -6,8 +6,8 @@
 
 #include "Configuration.hpp"
 #include "ConstantBuffer.hpp"
-#include "WindowHelper.hpp"
-#include "D3D11Helper.hpp"
+//#include "WindowHelper.hpp"
+//#include "D3D11Helper.hpp"
 #include "PipelineHelper.hpp"
 #include "DirectXMath.h"
 #include "stb_image.h"
@@ -15,10 +15,10 @@
 #include "ManagerHelper.hpp"
 #include "MatrixCreator.hpp"
 #include "Renderer.hpp"
-#include "Camera.hpp"
+//#include "Camera.hpp"
 #include "Clock.hpp"
 #include "Input.hpp"
-#include "Scene.hpp"
+//#include "Scene.hpp"
 #include "Application.hpp"
 
 namespace DX = DirectX;
@@ -28,8 +28,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_ LPWSTR    lpCmdLine,
                       _In_ int       nCmdShow)
 {
-	Application app;
-	app.Run(hInstance, nCmdShow);
+	Application app(hInstance, nCmdShow);
+	
+	app.Run();
 	
 
 	
@@ -37,8 +38,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//ID3D11DeviceContext* immediateContext;
 	//IDXGISwapChain* swapChain;
 	//ID3D11RenderTargetView* rtv;
-	ID3D11Texture2D* dsTexture;
-	ID3D11DepthStencilView* dsView;
+	//ID3D11Texture2D* dsTexture;
+	//ID3D11DepthStencilView* dsView;
 	//D3D11_VIEWPORT viewport;
 	ID3D11VertexShader* vShader;
 	ID3D11PixelShader* pShader;
@@ -49,30 +50,30 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ID3D11ShaderResourceView* textureSRV;
 	ID3D11SamplerState* samplerState;
 
-	D3D11Helper d3d11Helper;
-	if (!d3d11Helper.SetupD3D11(window, device, immediateContext, swapChain, rtv, dsTexture, dsView, viewport))
-	{
-		std::cerr << "Failed to setup d3d11!" << std::endl;
-		return -1;
-	}
+	//D3D11Helper d3d11Helper;
+	//if (!d3d11Helper.SetupD3D11(window, device, immediateContext, swapChain, rtv, dsTexture, dsView, viewport))
+	//{
+		//std::cerr << "Failed to setup d3d11!" << std::endl;
+		//return -1;
+	//}
 
-	HRESULT hr;
+	//HRESULT hr;
 
-	std::vector<MeshData> meshDataList;
-	FileReader fileReader;
-	if (fileReader.ReadFilesFromConfig(meshDataList) == -1)
-	{
-		return -1;
-	}
+	//std::vector<MeshData> meshDataList;
+	//FileReader fileReader;
+	//if (fileReader.ReadFilesFromConfig(meshDataList) == -1)
+	//{
+		//return -1;
+	//}
 
-	Scene mainScene(hr, device);
-	Camera& mainCam = mainScene.GetCurrentCamera();
+	//Scene mainScene(hr, device);
+	//Camera& mainCam = mainScene.GetCurrentCamera();
 	
-	for (MeshData meshData : meshDataList)
-	{
-		Mesh mesh = Mesh(hr, device, meshData);
-		mainScene.AddMesh(mesh);
-	}
+	//for (MeshData meshData : meshDataList)
+	//{
+		//Mesh mesh = Mesh(hr, device, meshData);
+		//mainScene.AddMesh(mesh);
+	//}
 	
 	PipelineHelper pipelineHelper;
 	if (!pipelineHelper.SetupPipeline(device, vertexBuffer, vShader, pShader, inputLayout, texture, textureSRV, samplerState, imageData))

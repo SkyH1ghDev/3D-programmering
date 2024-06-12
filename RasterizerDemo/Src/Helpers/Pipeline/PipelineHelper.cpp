@@ -5,13 +5,92 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <d3dcompiler.h>
 
 #include "stb_image.h"
 
+bool PipelineHelper::LoadShaderBlob(ID3DBlob*& vertexShaderBlob, LPCWSTR csoPath)
+{
+	HRESULT hr = D3DCompileFromFile(csoPath, nullptr, nullptr, "main", "vs_4_0", 0, 0, &vertexShaderBlob, nullptr);
+
+	if (FAILED(hr))
+	{
+		return false; 
+	}
+	
+	return true;
+	
+	/*std::string shaderData;
+	std::ifstream reader;
+    
+	reader.open("Build/VertexShader.cso", std::ios::binary | std::ios::ate);
+	if (!reader.is_open())
+	{
+		std::cerr << "Could not open VS file!" << std::endl;
+		return false;
+	}
+
+	reader.seekg(0, std::ios::end);
+	shaderData.reserve(static_cast<unsigned int>(reader.tellg()));
+	reader.seekg(0, std::ios::beg);
+
+	shaderData.assign((std::istreambuf_iterator<char>(reader)),
+		std::istreambuf_iterator<char>());
+
+	if (FAILED(device->CreateVertexShader(shaderData.c_str(), shaderData.length(), nullptr, &vertexShader)))
+	{
+		std::cerr << "Failed to create vertex shader!" << std::endl;
+		return false;
+	}
+
+	vertexShaderByteCode = shaderData;
+	shaderData.clear();
+	reader.close();
+	
+	return true;*/
+}
+
+bool PipelineHelper::LoadVertexShader(ID3D11Device *device, ID3D11VertexShader *vertexShader, ID3DBlob *vertexShaderBlob, LPCWSTR csoPath)
+{
+	
+}
+
+
+bool PipelineHelper::LoadPixelShader(ID3D11Device *device, ID3D11PixelShader *pixelShader)
+{
+	std::string shaderData;
+	std::ifstream reader;
+	
+	reader.open("Build/PixelShader.cso", std::ios::binary | std::ios::ate);
+	if (!reader.is_open())
+	{
+		std::cerr << "Could not open PS file!" << std::endl;
+		return false;
+	}
+
+	reader.seekg(0, std::ios::end);
+	shaderData.reserve(static_cast<unsigned int>(reader.tellg()));
+	reader.seekg(0, std::ios::beg);
+
+	shaderData.assign((std::istreambuf_iterator<char>(reader)),
+		std::istreambuf_iterator<char>());
+
+	if (FAILED(device->CreatePixelShader(shaderData.c_str(), shaderData.length(), nullptr, &pixelShader)))
+	{
+		std::cerr << "Failed to create pixel shader!" << "\n";
+		return false;
+	}
+
+	return true;
+}
+
+
+/*
 bool PipelineHelper::LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11PixelShader*& pShader, std::string& vShaderByteCode)
 {
 	std::string shaderData;
 	std::ifstream reader;
+
 	reader.open("Build/VertexShader.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
 	{
@@ -57,6 +136,7 @@ bool PipelineHelper::LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vSha
 
 	return true;
 }
+*/
 
 bool PipelineHelper::CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const std::string& vShaderByteCode)
 {

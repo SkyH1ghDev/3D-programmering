@@ -15,7 +15,7 @@ enum class ShaderType
 class Shader
 {
 public:
-	Shader() = default;
+	Shader() = delete;
 	~Shader();
 	Shader(ID3D11Device* device, ShaderType shaderType, const void* dataPtr, size_t dataSize);
 	Shader(ID3D11Device* device, ShaderType shaderType, const char* csoPath);
@@ -34,7 +34,7 @@ public:
 	
 private:
 
-	ShaderType type;
+	ShaderType _type;
 
 	union
 	{
@@ -44,7 +44,7 @@ private:
 		ID3D11GeometryShader* geometry;
 		ID3D11PixelShader* pixel;
 		ID3D11ComputeShader* compute;
-	} shader;
+	} _shader;
 
-	ID3DBlob* shaderBlob = nullptr;
+	ID3DBlob* _shaderBlob = nullptr;
 };
