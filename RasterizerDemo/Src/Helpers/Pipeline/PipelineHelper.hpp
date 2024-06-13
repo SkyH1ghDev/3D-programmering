@@ -13,7 +13,7 @@ public:
     				   ID3D11PixelShader *& pShader, ID3D11InputLayout *& inputLayout, ID3D11Texture2D*& texture,
     				   ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& textureSamplerState, unsigned char*& imageData);
 
-	bool LoadShaderBlob(ID3DBlob*& shaderBlob, ShaderType shaderType, LPCWSTR csoPath);
+	bool LoadShaderBlob(ID3DBlob*& shaderBlob, ShaderType shaderType, LPCWSTR hlslPath);
 	bool LoadVertexShader(ID3D11Device* device, ID3D11VertexShader*& vertexShader, ID3DBlob* vertexShaderBlob);
 	bool LoadHullShader(ID3D11Device* device, ID3D11HullShader*& hullShader, ID3DBlob* hullShaderBlob);
 	bool LoadDomainShader(ID3D11Device* device, ID3D11DomainShader*& domainShader, ID3DBlob* domainShaderBlob);

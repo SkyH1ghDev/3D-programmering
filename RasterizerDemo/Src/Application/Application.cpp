@@ -11,11 +11,11 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
     _scene(Setup::SetupScene(this->_controller)),
 
     // Initialize Shaders
-    _vertexShader(Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"Build/VertexShader.cso")),
+    _vertexShader(Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"Src/Shaders/VertexShader.hlsl")),
     //_hullShader();
     //_domainShader(),
     //_geometryShader(),
-    _pixelShader(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"Build/PixelShader.cso"))
+    _pixelShader(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"Src/Shaders/PixelShader.hlsl"))
     //_computeShader()
 {
     

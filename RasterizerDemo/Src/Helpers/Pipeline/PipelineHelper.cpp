@@ -9,14 +9,14 @@
 
 #include "stb_image.h"
 
-bool PipelineHelper::LoadShaderBlob(ID3DBlob*& shaderBlob, ShaderType shaderType, LPCWSTR csoPath)
+bool PipelineHelper::LoadShaderBlob(ID3DBlob*& shaderBlob, ShaderType shaderType, LPCWSTR hlslPath)
 {
 	std::string target;
 	
 	switch (shaderType)
 	{
 		case ShaderType::VERTEX_SHADER:
-			target = "vs_4_0";
+			target = "vs_5_0";
 			break;
 		
 		case ShaderType::HULL_SHADER:
@@ -47,7 +47,7 @@ bool PipelineHelper::LoadShaderBlob(ID3DBlob*& shaderBlob, ShaderType shaderType
 	}
 
 	ID3DBlob* errorBlob;
-	if (FAILED(D3DCompileFromFile(csoPath, nullptr, nullptr, "main", target.c_str(), 0, 0, &shaderBlob, &errorBlob)))
+	if (FAILED(D3DCompileFromFile(hlslPath, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", target.c_str(), 0, 0, &shaderBlob, &errorBlob)))
 	{
 		std::cerr << "Compilation error " << static_cast<char*>(errorBlob->GetBufferPointer()) << "\n";
 		errorBlob->Release();
