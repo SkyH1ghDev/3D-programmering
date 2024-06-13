@@ -31,6 +31,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Application app(hInstance, nCmdShow);
 	
 	app.Run();
+}
+	/*
 	
 
 	
@@ -41,10 +43,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//ID3D11Texture2D* dsTexture;
 	//ID3D11DepthStencilView* dsView;
 	//D3D11_VIEWPORT viewport;
-	ID3D11VertexShader* vShader;
-	ID3D11PixelShader* pShader;
+	//ID3D11VertexShader* vShader;
+	//ID3D11PixelShader* pShader;
 	ID3D11InputLayout* inputLayout;
-	ID3D11Buffer* vertexBuffer;
+	//ID3D11Buffer* vertexBuffer;
 	unsigned char* imageData;
 	ID3D11Texture2D* texture;
 	ID3D11ShaderResourceView* textureSRV;
@@ -185,3 +187,4 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	return 0;
 }
+*/

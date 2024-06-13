@@ -81,3 +81,22 @@ ConstantBuffer::~ConstantBuffer()
 		this->_buffer->Release();
 	}
 }
+
+ConstantBuffer::ConstantBuffer(const ConstantBuffer &other)
+{
+	this->_buffer = other._buffer; this->_buffer->AddRef();
+	this->_bufferSize = other._bufferSize;
+}
+
+ConstantBuffer& ConstantBuffer::operator=(const ConstantBuffer& other)
+{
+	if (this == &other)
+	{
+		return *this;
+	}
+	
+	this->_buffer = other._buffer; this->_buffer->AddRef();
+	this->_bufferSize = other._bufferSize;
+
+	return *this;
+}

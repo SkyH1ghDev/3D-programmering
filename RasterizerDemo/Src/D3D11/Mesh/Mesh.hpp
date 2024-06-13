@@ -14,8 +14,8 @@ public:
 	Mesh() = default;
 	~Mesh() = default;
 	Mesh(HRESULT& hr, ID3D11Device* device, const MeshData& meshData);
-	Mesh(const Mesh & other) = delete;
-	Mesh& operator=(const Mesh & other) = delete;
+	Mesh(const Mesh & other) = default;
+	Mesh& operator=(const Mesh & other) = default;
 	Mesh(Mesh && other) = default;
 	Mesh& operator=(Mesh && other) = default;
 

@@ -17,8 +17,12 @@ class Shader
 public:
 	Shader() = delete;
 	~Shader();
-	Shader(ID3D11Device* device, ShaderType shaderType, const void* dataPtr, size_t dataSize);
-	Shader(ID3D11Device* device, ShaderType shaderType, const char* csoPath);
+	Shader(ShaderType type, ID3D11VertexShader* vertexShader, ID3DBlob* shaderBlob);
+	Shader(ShaderType type, ID3D11HullShader* hullShader, ID3DBlob* shaderBlob);
+	Shader(ShaderType type, ID3D11DomainShader* domainShader, ID3DBlob* shaderBlob);
+	Shader(ShaderType type, ID3D11GeometryShader* geometryShader, ID3DBlob* shaderBlob);
+	Shader(ShaderType type, ID3D11PixelShader* pixelSHader, ID3DBlob* shaderBlob);
+	Shader(ShaderType type, ID3D11ComputeShader* computeShader, ID3DBlob* shaderBlob);
 	Shader(const Shader& other) = delete;
 	Shader& operator=(const Shader& other) = delete;
 	Shader(Shader&& other) = delete;

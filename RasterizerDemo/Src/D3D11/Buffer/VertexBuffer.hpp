@@ -11,8 +11,8 @@ public:
 	VertexBuffer(HRESULT& hr, ID3D11Device* device, UINT sizeOfVertex, 
 		UINT nrOfVerticesInBuffer, const std::vector<Vertex>& vertexData);
 	~VertexBuffer();
-	VertexBuffer(const VertexBuffer& other) = delete;
-	VertexBuffer& operator=(const VertexBuffer& other) = delete;
+	VertexBuffer(const VertexBuffer& other);
+	VertexBuffer& operator=(const VertexBuffer& other);
 	VertexBuffer(VertexBuffer&& other) = default;
 	VertexBuffer& operator=(VertexBuffer&& other) noexcept;
 

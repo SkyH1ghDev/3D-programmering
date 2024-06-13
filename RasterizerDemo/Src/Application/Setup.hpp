@@ -7,7 +7,7 @@
 #include "Scene.hpp"
 #include "Shader.hpp"
 
-class SetupHelper
+class Setup
 {
 public:
     
@@ -15,5 +15,5 @@ public:
     static D3D11Controller SetupController(HWND window);
     static RenderTarget SetupRenderTarget(D3D11Controller& controller);
     static Scene SetupScene(D3D11Controller& controller);
-    static Shader SetupShader(ShaderType shaderType);
+    static Shader SetupShader(D3D11Controller& controller, ShaderType shaderType, LPCWSTR csoPath);
 };

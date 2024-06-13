@@ -9,12 +9,48 @@
 
 #include "stb_image.h"
 
-bool PipelineHelper::LoadShaderBlob(ID3DBlob*& vertexShaderBlob, LPCWSTR csoPath)
+bool PipelineHelper::LoadShaderBlob(ID3DBlob*& shaderBlob, ShaderType shaderType, LPCWSTR csoPath)
 {
-	HRESULT hr = D3DCompileFromFile(csoPath, nullptr, nullptr, "main", "vs_4_0", 0, 0, &vertexShaderBlob, nullptr);
-
-	if (FAILED(hr))
+	std::string target;
+	
+	switch (shaderType)
 	{
+		case ShaderType::VERTEX_SHADER:
+			target = "vs_4_0";
+			break;
+		
+		case ShaderType::HULL_SHADER:
+			target = "hs_5_0";
+			break;
+		
+		case ShaderType::DOMAIN_SHADER:
+			target = "ds_5_0";
+			break;
+		
+		case ShaderType::GEOMETRY_SHADER:
+			target = "gs_5_0";
+			break;
+		
+		case ShaderType::PIXEL_SHADER:
+			target = "ps_5_0";
+			break;
+		
+		case ShaderType::COMPUTE_SHADER:
+			target = "cs_5_0";
+			break;
+	}
+
+	if (target.empty())
+	{
+		std::cerr << "Could not assign a compilation target \n";
+		return false;
+	}
+
+	ID3DBlob* errorBlob;
+	if (FAILED(D3DCompileFromFile(csoPath, nullptr, nullptr, "main", target.c_str(), 0, 0, &shaderBlob, &errorBlob)))
+	{
+		std::cerr << "Compilation error " << static_cast<char*>(errorBlob->GetBufferPointer()) << "\n";
+		errorBlob->Release();
 		return false; 
 	}
 	
@@ -50,32 +86,21 @@ bool PipelineHelper::LoadShaderBlob(ID3DBlob*& vertexShaderBlob, LPCWSTR csoPath
 	return true;*/
 }
 
-bool PipelineHelper::LoadVertexShader(ID3D11Device *device, ID3D11VertexShader *vertexShader, ID3DBlob *vertexShaderBlob, LPCWSTR csoPath)
+bool PipelineHelper::LoadVertexShader(ID3D11Device *device, ID3D11VertexShader*& vertexShader, ID3DBlob *vertexShaderBlob)
 {
+	if (FAILED(device->CreateVertexShader(vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(), nullptr, &vertexShader)))
+	{
+		std::cerr << "Failed to create vertex shader! \n";
+		return false;
+	}
 	
+	return true;
 }
 
 
-bool PipelineHelper::LoadPixelShader(ID3D11Device *device, ID3D11PixelShader *pixelShader)
+bool PipelineHelper::LoadPixelShader(ID3D11Device *device, ID3D11PixelShader*& pixelShader, ID3DBlob* pixelShaderBlob)
 {
-	std::string shaderData;
-	std::ifstream reader;
-	
-	reader.open("Build/PixelShader.cso", std::ios::binary | std::ios::ate);
-	if (!reader.is_open())
-	{
-		std::cerr << "Could not open PS file!" << std::endl;
-		return false;
-	}
-
-	reader.seekg(0, std::ios::end);
-	shaderData.reserve(static_cast<unsigned int>(reader.tellg()));
-	reader.seekg(0, std::ios::beg);
-
-	shaderData.assign((std::istreambuf_iterator<char>(reader)),
-		std::istreambuf_iterator<char>());
-
-	if (FAILED(device->CreatePixelShader(shaderData.c_str(), shaderData.length(), nullptr, &pixelShader)))
+	if (FAILED(device->CreatePixelShader(pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize(), nullptr, &pixelShader)))
 	{
 		std::cerr << "Failed to create pixel shader!" << "\n";
 		return false;
@@ -270,11 +295,11 @@ bool PipelineHelper::SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBu
 				   ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& samplerState, unsigned char*& imageData)
 {
 	std::string vShaderByteCode;
-	if (!LoadShaders(device, vShader, pShader, vShaderByteCode))
+	/*if (!LoadShaders(device, vShader, pShader, vShaderByteCode))
 	{
 		std::cerr << "Error loading shaders!" << std::endl;
 		return false;
-	}
+	}*/
 
 	if (!CreateInputLayout(device, inputLayout, vShaderByteCode))
 	{

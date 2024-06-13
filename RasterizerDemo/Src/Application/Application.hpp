@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "SetupHelper.hpp"
+#include "Setup.hpp"
 
 class Application
 {
@@ -24,9 +24,9 @@ private:
 
     // Shaders
     Shader _vertexShader;
-    Shader _hullShader;
-    Shader _domainShader;
-    Shader _geometryShader;
+    //Shader _hullShader;
+    //Shader _domainShader;
+    //Shader _geometryShader;
     Shader _pixelShader;
-    Shader _computeShader;
+    //Shader _computeShader;
 };

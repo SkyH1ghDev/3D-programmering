@@ -142,7 +142,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib; d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>python "$(ProjectDir)prebuild.py" "D:/School/3D-programmering/Inl&#228;mning 2/RasterizerDemo/RasterizerDemo.vcxproj"</Command>
@@ -195,7 +195,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\Application\Application.cpp" />
-    <ClCompile Include="Src\Application\SetupHelper.cpp" />
+    <ClCompile Include="Src\Application\Setup.cpp" />
     <ClCompile Include="Src\Clock\Clock.cpp" />
     <ClCompile Include="Src\D3D11\Buffer\ConstantBuffer.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
@@ -1153,7 +1153,7 @@
   <ItemGroup>
     <ClInclude Include="Resources\Libraries\stb_image.h" />
     <ClInclude Include="Src\Application\Application.hpp" />
-    <ClInclude Include="Src\Application\SetupHelper.hpp" />
+    <ClInclude Include="Src\Application\Setup.hpp" />
     <ClInclude Include="Src\Clock\Clock.hpp" />
     <ClInclude Include="Src\Config\IConfigBase.hpp" />
     <ClInclude Include="Src\Config\Configuration.hpp" />

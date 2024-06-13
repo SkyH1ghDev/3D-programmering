@@ -1,4 +1,4 @@
-﻿#include "SetupHelper.hpp"
+﻿#include "Setup.hpp"
 
 #include <iostream>
 #include <d3dcompiler.h>
@@ -8,7 +8,7 @@
 #include "FileReader.hpp"
 #include "PipelineHelper.hpp"
 
-HWND SetupHelper::SetupWindow(HINSTANCE hInstance, int nCmdShow) 
+HWND Setup::SetupWindow(HINSTANCE hInstance, int nCmdShow) 
 {
 	HWND window;
 	WindowHelper windowHelper;
@@ -21,7 +21,7 @@ HWND SetupHelper::SetupWindow(HINSTANCE hInstance, int nCmdShow)
 	return window;
 }
 
-D3D11Controller SetupHelper::SetupController(HWND window)
+D3D11Controller Setup::SetupController(HWND window)
 {
     D3D11Helper d3d11Helper;
     Configuration config;
@@ -49,7 +49,7 @@ D3D11Controller SetupHelper::SetupController(HWND window)
 	return D3D11Controller(device, immediateContext, swapChain, viewport);
 }
 
-RenderTarget SetupHelper::SetupRenderTarget(D3D11Controller &controller)
+RenderTarget Setup::SetupRenderTarget(D3D11Controller &controller)
 {
     D3D11Helper d3d11Helper;
 
@@ -76,7 +76,7 @@ RenderTarget SetupHelper::SetupRenderTarget(D3D11Controller &controller)
 	return RenderTarget(rtv, texture, dsv);
 }
 
-Scene SetupHelper::SetupScene(D3D11Controller &controller)
+Scene Setup::SetupScene(D3D11Controller &controller)
 {
 	
 	std::vector<MeshData> meshDataList;
@@ -103,6 +103,7 @@ Scene SetupHelper::SetupScene(D3D11Controller &controller)
 		if(FAILED(hr))
 		{
 			std::cerr << "Failed to create Mesh \n Exiting... \n";
+			exit(-1);
 		}
 		
 		scene.AddMesh(mesh);
@@ -110,12 +111,13 @@ Scene SetupHelper::SetupScene(D3D11Controller &controller)
 
 	return scene;
 }
-Shader SetupHelper::SetupShader(D3D11Controller& controller, ShaderType shaderType, LPCWSTR csoPath)
+
+Shader Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, LPCWSTR csoPath)
 {
 	PipelineHelper pipelineHelper;
 	ID3DBlob* shaderBlob;
 
-	if (!pipelineHelper.LoadShaderBlob(shaderBlob, csoPath))
+	if (!pipelineHelper.LoadShaderBlob(shaderBlob, shaderType, csoPath))
 	{
 		std::cerr << "Failed to Read Shader Data \n Exiting... \n";
 		shaderBlob->Release();
@@ -124,40 +126,63 @@ Shader SetupHelper::SetupShader(D3D11Controller& controller, ShaderType shaderTy
 	
 	switch (shaderType)
 	{
-		// TODO: Pair up input layout with vertex shader somehow
-		
 		case ShaderType::VERTEX_SHADER:
+			ID3D11VertexShader* vertexShader;
+		
 			if (!pipelineHelper.LoadVertexShader(controller.GetDevice(), vertexShader, shaderBlob))
 			{
 				std::cerr << "Could not Compile Vertex Shader \n Exiting... \n";
+				vertexShader->Release();
 				shaderBlob->Release();
 				exit(-1);
 			}
-		
-			ID3D11VertexShader* vertexShader;
-			std::string vertexShaderByteCode;
-			pipelineHelper.LoadVertexShader(controller.GetDevice(), vertexShader, vertexShaderByteCode);
-			break;
+
+			return Shader(shaderType, vertexShader, shaderBlob);
 		
 		case ShaderType::HULL_SHADER:
+
+			// TODO: Fix loading of hull shader
+			
+			std::cerr << "Not implemented loading (HS) \n Exiting... \n";
+			exit(-1);
 			break;
 		
 		case ShaderType::DOMAIN_SHADER:
+			
+			// TODO: Fix loading of domain shader
+				
+			std::cerr << "Not implemented loading (DS) \n Exiting... \n";
+			exit(-1);
 			break;
 
 		case ShaderType::GEOMETRY_SHADER:
+			
+			// TODO: Fix loading of geometry shader
+				
+			std::cerr << "Not implemented loading (GS) \n Exiting... \n";
+			exit(-1);
 			break;
 
 		case ShaderType::PIXEL_SHADER:
-			break;
+			ID3D11PixelShader* pixelShader;
+
+			if (!pipelineHelper.LoadPixelShader(controller.GetDevice(), pixelShader, shaderBlob))
+			{
+				std::cerr << "Could not Compile Pixel Shader \n Exiting... \n";
+				pixelShader->Release();
+				shaderBlob->Release();
+				exit(-1);
+			}
+
+			return Shader(shaderType, pixelShader, shaderBlob);
 
 		case ShaderType::COMPUTE_SHADER:
-			break;
-		
-		default:
-			std::cerr << "Incorrect Shader Type (How did we get here?) \n Exiting... \n";
+			
+			// TODO: Fix loading of compute shader
+
+			std::cerr << "Not implemented loading (CS) \n Exiting... \n";
 			exit(-1);
+			break;
 	}
-	
 }
 

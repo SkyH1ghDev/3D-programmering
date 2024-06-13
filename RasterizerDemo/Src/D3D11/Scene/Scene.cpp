@@ -14,10 +14,7 @@ Scene::Scene(Camera& camera)
 
 Scene::Scene(std::vector<Camera> cameraList)
 {
-    for (Camera& camera : cameraList)
-    {
-        this->_cameraList.push_back(std::move(camera));
-    }
+    this->_cameraList = cameraList;
 }
 
 void Scene::Render()
@@ -26,10 +23,7 @@ void Scene::Render()
 
 void Scene::CreateMeshes(std::vector<Mesh> meshList)
 {
-    for (Mesh& mesh : meshList)
-    {
-        this->_meshList.emplace_back(std::move(mesh));
-    }
+    this->_meshList = meshList;
 }
 
 void Scene::AddMesh(Mesh& mesh)

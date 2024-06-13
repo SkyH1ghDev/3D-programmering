@@ -34,6 +34,25 @@ VertexBuffer::~VertexBuffer()
 {
     this->_buffer->Release();
 }
+VertexBuffer::VertexBuffer(const VertexBuffer &other)
+{
+	this->_buffer = other._buffer; this->_buffer->AddRef();
+	this->_vertexSize = other._vertexSize;
+	this->_nrOfVertices = other._nrOfVertices;
+}
+VertexBuffer & VertexBuffer::operator=(const VertexBuffer &other)
+{
+	if (this == &other)
+	{
+		return *this;
+	}
+	
+	this->_buffer = other._buffer; this->_buffer->AddRef();
+	this->_vertexSize = other._vertexSize;
+	this->_nrOfVertices = other._nrOfVertices;
+	
+	return *this;
+}
 
 ID3D11Buffer* VertexBuffer::GetBuffer() const
 {

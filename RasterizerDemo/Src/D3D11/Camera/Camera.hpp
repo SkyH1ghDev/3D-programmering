@@ -17,8 +17,8 @@ public:
 		const ProjectionInfo& projectionInfo = ProjectionInfo(ProjectionMatrixConfig()));
 	
 	~Camera() = default;
-	Camera(const Camera& other) = delete;
-	Camera& operator=(const Camera& other) = delete;
+	Camera(const Camera& other) = default;
+	Camera& operator=(const Camera& other) = default;
 	Camera(Camera&& other) = default;
 	Camera& operator=(Camera&& other) = default;
 

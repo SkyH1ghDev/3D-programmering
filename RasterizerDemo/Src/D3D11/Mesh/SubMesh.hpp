@@ -10,8 +10,8 @@ public:
 	SubMesh() = delete;
 	SubMesh(HRESULT& hr, ID3D11Device* device, const SubMeshInfo& subMeshInfo);
 	~SubMesh();
-	SubMesh(const SubMesh& other) = delete;
-	SubMesh& operator=(const SubMesh& other) = delete;
+	SubMesh(const SubMesh& other);
+	SubMesh& operator=(const SubMesh& other);
 	SubMesh(SubMesh&& other) noexcept;
 	SubMesh& operator=(SubMesh&& other) = default;
 

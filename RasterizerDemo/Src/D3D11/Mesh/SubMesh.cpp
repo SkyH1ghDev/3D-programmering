@@ -138,6 +138,44 @@ SubMesh::~SubMesh()
     this->_ambientTextureSRV->Release(); this->_ambientTextureSRV = nullptr;
     this->_ambientTexture2D->Release(); this->_ambientTexture2D = nullptr;
 }
+SubMesh::SubMesh(const SubMesh &other)
+{
+	this->_specularExponent = other._specularExponent;
+	this->_startIndex = other._startIndex;
+	this->_nrOfIndices = other._nrOfIndices;
+	
+	this->_specularTexture2D = other._specularTexture2D; this->_specularTexture2D->AddRef();
+	this->_specularTextureSRV = other._specularTextureSRV; this->_specularTextureSRV->AddRef();
+	
+	this->_ambientTexture2D= other._ambientTexture2D; this->_ambientTexture2D->AddRef();
+	this->_ambientTextureSRV = other._ambientTextureSRV; this->_ambientTextureSRV->AddRef();
+	
+	this->_diffuseTexture2D = other._diffuseTexture2D; this->_diffuseTexture2D->AddRef();
+	this->_diffuseTextureSRV = other._diffuseTextureSRV; this->_diffuseTextureSRV->AddRef();
+}
+
+SubMesh & SubMesh::operator=(const SubMesh &other)
+{
+	if (this == &other)
+	{
+		return *this;
+	}
+	
+	this->_specularExponent = other._specularExponent;
+	this->_startIndex = other._startIndex;
+	this->_nrOfIndices = other._nrOfIndices;
+	
+	this->_specularTexture2D = other._specularTexture2D; this->_specularTexture2D->AddRef();
+	this->_specularTextureSRV = other._specularTextureSRV; this->_specularTextureSRV->AddRef();
+	
+	this->_ambientTexture2D= other._ambientTexture2D; this->_ambientTexture2D->AddRef();
+	this->_ambientTextureSRV = other._ambientTextureSRV; this->_ambientTextureSRV->AddRef();
+	
+	this->_diffuseTexture2D = other._diffuseTexture2D; this->_diffuseTexture2D->AddRef();
+	this->_diffuseTextureSRV = other._diffuseTextureSRV; this->_diffuseTextureSRV->AddRef();
+	
+	return *this;
+}
 
 ID3D11ShaderResourceView *SubMesh::GetAmbientSRV() const
 {
