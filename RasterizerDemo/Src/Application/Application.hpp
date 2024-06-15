@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "InputLayout.hpp"
 #include "Setup.hpp"
 
 class Application
@@ -29,4 +30,6 @@ private:
     //Shader _geometryShader;
     Shader _pixelShader;
     //Shader _computeShader;
+
+    InputLayout _inputLayout;
 };

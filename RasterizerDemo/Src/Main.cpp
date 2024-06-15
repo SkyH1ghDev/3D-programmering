@@ -1,3 +1,10 @@
+// Memory Leak Debugging
+#define _CRTDBG_MAP_ALLOC
+
+#include <cstdlib>
+#include <crtdbg.h>
+
+// Application
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <Windows.h>
@@ -28,12 +35,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_ LPWSTR    lpCmdLine,
                       _In_ int       nCmdShow)
 {
-	Application app(hInstance, nCmdShow);
+
+	// Braces to let the application go out of scope before checking memory leaks
+	{	
+		Application app(hInstance, nCmdShow);
 	
-	app.Run();
+		app.Run();
+	}
+
+	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+	_CrtDumpMemoryLeaks();
+
+	return 0;
 }
-	/*
-	
+/*
 
 	
 	//ID3D11Device* device; 

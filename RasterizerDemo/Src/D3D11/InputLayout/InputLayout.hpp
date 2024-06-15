@@ -15,8 +15,8 @@ public:
 	InputLayout(InputLayout&& other) = delete;
 	InputLayout& operator=(InputLayout&& other) = delete;
 
-	void AddInputElement(const std::string& semanticName, DXGI_FORMAT format);
-	void FinalizeInputLayout(ID3D11Device* device, const void* vsDataPtr, size_t vsDataSize);
+	void AddInputElement(const std::string& semanticName, DXGI_FORMAT format); // Unused
+	void FinalizeInputLayout(ID3D11Device* device, const void* vsDataPtr, size_t vsDataSize); // Unused
 	
 	ID3D11InputLayout* GetInputLayout() const;
 	

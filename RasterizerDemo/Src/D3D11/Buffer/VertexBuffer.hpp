@@ -13,7 +13,7 @@ public:
 	~VertexBuffer();
 	VertexBuffer(const VertexBuffer& other);
 	VertexBuffer& operator=(const VertexBuffer& other);
-	VertexBuffer(VertexBuffer&& other) = default;
+	VertexBuffer(VertexBuffer&& other) noexcept;
 	VertexBuffer& operator=(VertexBuffer&& other) noexcept;
 
 	void Initialize(ID3D11Device* device, UINT sizeOfVertex,

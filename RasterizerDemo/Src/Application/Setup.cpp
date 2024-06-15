@@ -186,3 +186,14 @@ Shader Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, LP
 	}
 }
 
+InputLayout Setup::SetupInputLayout(D3D11Controller &controller, Shader &vertexShader)
+{
+	PipelineHelper pipelineHelper;
+	ID3D11InputLayout* inputLayout;
+
+	ID3DBlob* shaderBlob = vertexShader.GetShaderBlob();
+
+	pipelineHelper.CreateInputLayout(controller.GetDevice(), inputLayout, shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize());
+
+	return InputLayout();
+}

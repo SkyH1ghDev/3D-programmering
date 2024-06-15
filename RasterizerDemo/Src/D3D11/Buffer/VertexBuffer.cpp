@@ -23,9 +23,9 @@ VertexBuffer::VertexBuffer(HRESULT& hr, ID3D11Device *device, UINT sizeOfVertex,
 
 VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) noexcept
 {
-	this->_buffer = std::move(other.GetBuffer());
-	this->_vertexSize = std::move(other.GetVertexSize());
-	this->_nrOfVertices = std::move(other.GetNrOfVertices());
+	this->_buffer = other.GetBuffer(); this->_buffer->AddRef();
+	this->_vertexSize = other.GetVertexSize();
+	this->_nrOfVertices = other.GetNrOfVertices();
 	
 	return *this;
 }
@@ -34,12 +34,21 @@ VertexBuffer::~VertexBuffer()
 {
     this->_buffer->Release();
 }
+
 VertexBuffer::VertexBuffer(const VertexBuffer &other)
 {
 	this->_buffer = other._buffer; this->_buffer->AddRef();
 	this->_vertexSize = other._vertexSize;
 	this->_nrOfVertices = other._nrOfVertices;
 }
+
+VertexBuffer::VertexBuffer(VertexBuffer &&other) noexcept
+{
+	this->_buffer = other._buffer; this->_buffer->AddRef();
+	this->_vertexSize = other._vertexSize;
+	this->_nrOfVertices = other._nrOfVertices;
+}
+
 VertexBuffer & VertexBuffer::operator=(const VertexBuffer &other)
 {
 	if (this == &other)

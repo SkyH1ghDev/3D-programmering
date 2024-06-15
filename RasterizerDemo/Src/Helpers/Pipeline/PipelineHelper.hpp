@@ -21,10 +21,11 @@ public:
 	bool LoadPixelShader(ID3D11Device* device, ID3D11PixelShader*& pixelShader, ID3DBlob* pixelShaderBlob);
 	bool LoadComputeShader(ID3D11Device* device, ID3D11ComputeShader*& computeShader, ID3DBlob* computeShaderBlob);
 	
+	bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const void *vertexShaderByteCode, size_t vertexShaderByteCodeLength);
+	
 private:
 	
 	//bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11PixelShader*& pShader, std::string& vShaderByteCode);
-	bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const std::string& vShaderByteCode);
 	bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer);
 	bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, unsigned char*& imageData);
 	bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& samplerState);

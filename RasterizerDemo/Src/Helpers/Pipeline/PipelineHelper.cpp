@@ -163,7 +163,7 @@ bool PipelineHelper::LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vSha
 }
 */
 
-bool PipelineHelper::CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const std::string& vShaderByteCode)
+bool PipelineHelper::CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const void *vertexShaderByteCode, size_t vertexShaderByteCodeLength)
 {
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
@@ -172,7 +172,7 @@ bool PipelineHelper::CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*&
 		{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	HRESULT hr = device->CreateInputLayout(inputDesc, 3, vShaderByteCode.c_str(), vShaderByteCode.length(), &inputLayout);
+	HRESULT hr = device->CreateInputLayout(inputDesc, 3, vertexShaderByteCode, vertexShaderByteCodeLength, &inputLayout);
 
 	return !FAILED(hr);
 }

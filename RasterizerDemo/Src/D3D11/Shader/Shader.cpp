@@ -47,4 +47,10 @@ Shader::~Shader()
     }
 }
 
+ID3DBlob *Shader::GetShaderBlob() const
+{
+    return this->_shaderBlob;
+}
+
+
 

@@ -31,8 +31,7 @@ public:
 	void Initialize(ID3D11Device* device, ShaderType shaderType, const void* dataPtr, size_t dataSize);
 	void Initialize(ID3D11Device* device, ShaderType shaderType, const char* csoPath);
 
-	const void* GetShaderByteData() const;
-	size_t GetShaderByteSize() const;
+	ID3DBlob* GetShaderBlob() const;
 
 	void BindShader(ID3D11DeviceContext* context) const;
 	
