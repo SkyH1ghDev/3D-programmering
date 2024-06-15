@@ -276,18 +276,18 @@ bool PipelineHelper::CreateTexture(ID3D11Device* device, ID3D11Texture2D*& textu
 bool PipelineHelper::CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& samplerState)
 {
 	D3D11_SAMPLER_DESC samplerDesc;
-    	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-    	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-    	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-    	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-    	samplerDesc.MipLODBias = 0;
-    	samplerDesc.MaxAnisotropy = 16;
-    	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
-    	samplerDesc.MinLOD = 0;
-    	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    
-    	HRESULT hr = device->CreateSamplerState(&samplerDesc, &samplerState);
-    	return !(FAILED(hr));
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0;
+	samplerDesc.MaxAnisotropy = 16;
+	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	HRESULT hr = device->CreateSamplerState(&samplerDesc, &samplerState);
+	return !(FAILED(hr));
 }
 
 bool PipelineHelper::SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBuffer, ID3D11VertexShader*& vShader,

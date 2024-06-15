@@ -846,6 +846,7 @@
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Src\D3D11\Sampler\Sampler.cpp" />
     <ClCompile Include="Src\D3D11\Scene\Scene.cpp" />
     <ClCompile Include="Src\D3D11\Shader\Shader.cpp" />
     <ClCompile Include="Src\FileReader\FileReader.cpp" />
@@ -1327,7 +1328,7 @@
     <ClInclude Include="Src\D3D11\Mesh\MeshData\VertexInfo.hpp" />
     <ClInclude Include="Src\D3D11\Mesh\SubMesh.hpp" />
     <ClInclude Include="Src\D3D11\RenderTarget\RenderTarget.hpp" />
-    <ClInclude Include="Src\D3D11\Sampler\SamplerD3D11.h" />
+    <ClInclude Include="Src\D3D11\Sampler\Sampler.hpp" />
     <ClInclude Include="Src\D3D11\Scene\Scene.hpp" />
     <ClInclude Include="Src\D3D11\Shader\Shader.hpp" />
     <ClInclude Include="Src\FileReader\FileReader.hpp" />

@@ -20,8 +20,10 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
     _inputLayout(Setup::SetupInputLayout(this->_controller, this->_vertexShader))
 {
+    // Window
     assert(&this->_window != nullptr);
-    
+
+    // Controller
     assert(this->_controller.GetContext() != nullptr);
     assert(this->_controller.GetDevice() != nullptr);
     assert(this->_controller.GetSwapChain() != nullptr);
@@ -29,9 +31,21 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
     D3D11_VIEWPORT vp = this->_controller.GetViewPort();
     assert(&vp != nullptr);
 
-    assert(_rtv.GetDSV() != nullptr);
-    assert(_rtv.GetRTV() != nullptr);
+    // RTV
+    assert(this->_rtv.GetDSV() != nullptr);
+    assert(this->_rtv.GetRTV() != nullptr);
+
+    //Scene
+    /*
+     * TODO: Implement asserts for scene, mesh, submesh and camera
+    */
     
+    // Shaders
+    assert(this->_vertexShader.GetShaderBlob() != nullptr);
+    assert(this->_pixelShader.GetShaderBlob() != nullptr);
+
+    // Input layout
+    assert(this->_inputLayout.GetInputLayout() != nullptr);
 }
 
 int Application::Run()

@@ -65,6 +65,10 @@ int OBJParser::GetVerticesFromFile(const std::string& filename, MeshData &meshDa
             subMeshInfo.SpecularTextureData = mtlData.specularTextureData;
             subMeshInfo.SpecularExponent = mtlData.specularExponent;
 
+            // "TEMPORARY" Solution for textures
+            ImageReader imageReader;
+            subMeshInfo.Texture = imageReader.GetImageData("Pic.jpg");
+
             meshData.SubMeshInfoList.push_back(subMeshInfo);
             ++nrOfSubMeshes;
             

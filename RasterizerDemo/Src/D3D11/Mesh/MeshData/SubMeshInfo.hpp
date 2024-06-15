@@ -12,5 +12,6 @@ public:
 	ImageData AmbientTextureData;
 	ImageData DiffuseTextureData;
 	ImageData SpecularTextureData;
+	ImageData Texture;
 	float SpecularExponent;
 };

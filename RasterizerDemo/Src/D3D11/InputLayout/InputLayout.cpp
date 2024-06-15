@@ -1,5 +1,21 @@
 ﻿#include "InputLayout.hpp"
 
+InputLayout::InputLayout(ID3D11InputLayout* inputLayout)
+{
+   this->_inputLayout = inputLayout;
+}
+
+ID3D11InputLayout* InputLayout::GetInputLayout() const
+{
+   return this->_inputLayout;
+}
+
+InputLayout::~InputLayout()
+{
+   this->_inputLayout->Release();
+}
+
+/*
 void InputLayout::AddInputElement(const std::string &semanticName, DXGI_FORMAT format)
 {
    this->_elementList.push_back(std::make_pair(semanticName, format));
@@ -15,14 +31,4 @@ void InputLayout::FinalizeInputLayout(ID3D11Device *device, const void *vsDataPt
       notFirstElement = true;
    }
 }
-
-ID3D11InputLayout* InputLayout::GetInputLayout() const
-{
-   return this->_inputLayout;
-}
-
-InputLayout::~InputLayout()
-{
-   this->_inputLayout->Release();
-}
-
+*/

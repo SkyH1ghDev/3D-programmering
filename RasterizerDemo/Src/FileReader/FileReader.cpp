@@ -35,7 +35,7 @@ int FileReader::ReadFile(const std::string& filename, MeshData &meshData)
     
     if (fileExtension == "obj")
     {
-        if (_objParserPtr->GetVerticesFromFile(filename, meshData) == -1)
+        if (this->_objParserPtr->GetVerticesFromFile(filename, meshData) == -1)
         {
             return -1;
         }

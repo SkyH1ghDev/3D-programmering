@@ -24,6 +24,7 @@ public:
 	ID3D11ShaderResourceView* GetAmbientSRV() const;
 	ID3D11ShaderResourceView* GetDiffuseSRV() const;
 	ID3D11ShaderResourceView* GetSpecularSRV() const;
+	ID3D11ShaderResourceView* GetTextureSRV() const;
 	
 private:
 	size_t _startIndex = 0;
@@ -38,4 +39,7 @@ private:
 	
 	ID3D11ShaderResourceView* _specularTextureSRV = nullptr;
 	ID3D11Texture2D* _specularTexture2D = nullptr;
+
+	ID3D11ShaderResourceView* _textureSRV;
+	ID3D11Texture2D* _texture2D;
 };

@@ -48,7 +48,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	return 0;
 }
-/*
+
 
 	
 	//ID3D11Device* device; 
@@ -60,11 +60,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//D3D11_VIEWPORT viewport;
 	//ID3D11VertexShader* vShader;
 	//ID3D11PixelShader* pShader;
-	ID3D11InputLayout* inputLayout;
+	//ID3D11InputLayout* inputLayout;
 	//ID3D11Buffer* vertexBuffer;
-	unsigned char* imageData;
-	ID3D11Texture2D* texture;
-	ID3D11ShaderResourceView* textureSRV;
+	//unsigned char* imageData;
+	//ID3D11Texture2D* texture;
+	//ID3D11ShaderResourceView* textureSRV;
 	ID3D11SamplerState* samplerState;
 
 	//D3D11Helper d3d11Helper;
