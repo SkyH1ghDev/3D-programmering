@@ -1,5 +1,8 @@
 ﻿#include "Application.hpp"
 
+#include <iostream>
+
+#include "MatrixCreator.hpp"
 
 Application::Application(HINSTANCE hInstance, int nCmdShow) :
     // Initialize Window
@@ -11,14 +14,26 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
     _scene(Setup::SetupScene(this->_controller)),
 
     // Initialize Shaders
-    _vertexShader(Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"Src/Shaders/VertexShader.hlsl")),
+    _vertexShaderPtr(std::unique_ptr<VertexShader>
+    			 (dynamic_cast<VertexShader*>
+    			 (Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"Src/Shaders/VertexShader.hlsl")))),
+
     //_hullShader();
     //_domainShader(),
     //_geometryShader(),
-    _pixelShader(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"Src/Shaders/PixelShader.hlsl")),
+    _pixelShaderPtr(std::unique_ptr<PixelShader>
+    			(dynamic_cast<PixelShader*>
+    			(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"Src/Shaders/PixelShader.hlsl")))),
+
     //_computeShader()
 
-    _inputLayout(Setup::SetupInputLayout(this->_controller, this->_vertexShader))
+    // Initialize InputLayout and Sampler
+    _inputLayout(Setup::SetupInputLayout(this->_controller, *this->_vertexShaderPtr)),
+    _sampler(Setup::SetupSampler(this->_controller)),
+
+	// Initalize ConstantBuffers
+	_worldMatrixConstantBuffer(Setup::CreateWorldMatrixConstantBuffer(this->_controller)),
+	_pixelShaderConstantBuffer(Setup::CreatePixelShaderConstantBuffer(this->_controller, this->_scene))
 {
     // Window
     assert(&this->_window != nullptr);
@@ -41,11 +56,18 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
     */
     
     // Shaders
-    assert(this->_vertexShader.GetShaderBlob() != nullptr);
-    assert(this->_pixelShader.GetShaderBlob() != nullptr);
+	assert(this->_vertexShaderPtr != nullptr);
+	assert(this->_pixelShaderPtr != nullptr);
+    assert(this->_vertexShaderPtr->GetShaderBlob() != nullptr);
+    assert(this->_pixelShaderPtr->GetShaderBlob() != nullptr);
 
-    // Input layout
+    // Input layout + Sampler
     assert(this->_inputLayout.GetInputLayout() != nullptr);
+    assert(this->_sampler.GetSamplerState() != nullptr);
+
+	// Constant Buffers
+	assert(this->_worldMatrixConstantBuffer.GetBuffer() != nullptr);
+	assert(this->_pixelShaderConstantBuffer.GetBuffer() != nullptr);
 }
 
 int Application::Run()
@@ -58,12 +80,47 @@ int Application::Run()
 
 void Application::Setup()
 {
-    
+	ID3D11Buffer* worldMatrixBuffer = this->_worldMatrixConstantBuffer.GetBuffer();
+	ID3D11Buffer* viewProjectionBuffer = this->_scene.GetCurrentCamera().GetConstantBuffer();
+	
+	this->_controller.GetContext()->VSSetConstantBuffers(0, 1, &worldMatrixBuffer);
+	this->_controller.GetContext()->VSSetConstantBuffers(1, 1, &viewProjectionBuffer);
+
+	ID3D11Buffer* pixelShaderConstBuffer = this->_pixelShaderConstantBuffer.GetBuffer();
+	this->_controller.GetContext()->PSSetConstantBuffers(0, 1, &pixelShaderConstBuffer);
 }
 
 void Application::Render()
 {
-    
+    float rotationalSpeed = 0.0f;
+	WorldMatrixConfig worldMatrixConfig;
+	float currentAngle = worldMatrixConfig.GetInitialAngle();
+	MatrixCreator matrixCreator;
+	
+	while (this->_input.Exit(this->_msg))
+	{
+		this->_clock.Start();
+     		
+		if (PeekMessage(&this->_msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&this->_msg);
+			DispatchMessage(&this->_msg);
+		}
+		
+		this->_renderer.Render(this->_controller, this->_rtv, *this->_vertexShaderPtr, *this->_pixelShaderPtr, this->_inputLayout, this->_scene.GetMeshAt(0), this->_sampler); // TODO: ADD GetFirstMesh FOR TESTING PURPOSES
+		this->_controller.GetSwapChain()->Present(0, 0);
+		
+		this->_scene.GetCurrentCamera().UpdateInternalConstantBuffer(this->_controller.GetContext());
+			
+		DX::XMFLOAT4X4 worldMatrixFloat4x4 = matrixCreator.CreateWorldXMFLOAT4X4(currentAngle);
+		this->_worldMatrixConstantBuffer.UpdateBuffer(this->_controller.GetContext(), &worldMatrixFloat4x4, sizeof(worldMatrixFloat4x4));
+
+		this->_clock.End();
+		float deltaTime = this->_clock.GetDeltaTime();
+ 
+		this->_input.ReadInput(this->_scene.GetCurrentCamera(), deltaTime);
+		currentAngle -= rotationalSpeed * deltaTime;
+	}
 }
 
 

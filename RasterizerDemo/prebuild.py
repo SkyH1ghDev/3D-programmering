@@ -44,7 +44,9 @@ def get_all_file_paths(root_dir: str):
             
     for i in range(0, len(all_file_paths)):
         all_file_paths[i] = all_file_paths[i].replace('\\', '/')
-        all_file_paths[i] = all_file_paths[i].removeprefix('D:/School/3D-programmering/Inlämning 2/RasterizerDemo/')
+        all_file_paths[i] = all_file_paths[i].removeprefix(project_path)
+        
+    print(all_file_paths)
         
     all_file_paths.remove("Src/Shaders")
     all_file_paths.append("Resources/Libraries")
@@ -55,5 +57,7 @@ def get_all_file_paths(root_dir: str):
 
 if __name__ == '__main__':
     
-    vcxproj_path = sys.argv[1]
-    add_include_directory(vcxproj_path, get_all_file_paths("D:/School/3D-programmering/Inlämning 2/RasterizerDemo/Src"))
+    project_path: str = sys.argv[1]
+    project_path = project_path[:-1]
+    project_path = project_path.replace('\\', '/')
+    add_include_directory(project_path + "RasterizerDemo.vcxproj", get_all_file_paths(project_path + "Src"))

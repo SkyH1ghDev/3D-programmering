@@ -18,9 +18,11 @@ public:
     void AddMesh(Mesh& mesh);
     
     Camera& GetCurrentCamera();
+    Mesh& GetMeshAt(size_t index);
     
 private:
+    
     uint16_t _currentCameraIndex = 0; // Max 65535 Cameras
     std::vector<Camera> _cameraList;
-    std::vector<Mesh> _meshList;
+    std::vector<Mesh> _meshList; // Should be private, temp public for testing
 };

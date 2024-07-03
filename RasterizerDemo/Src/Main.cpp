@@ -8,19 +8,19 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <Windows.h>
-#include <iostream>
+//#include <iostream>
 #include <d3d11.h>
 
 #include "Configuration.hpp"
 #include "ConstantBuffer.hpp"
 //#include "WindowHelper.hpp"
 //#include "D3D11Helper.hpp"
-#include "PipelineHelper.hpp"
+//#include "PipelineHelper.hpp"
 #include "DirectXMath.h"
 #include "stb_image.h"
 #include "FileReader.hpp"
 #include "ManagerHelper.hpp"
-#include "MatrixCreator.hpp"
+//#include "MatrixCreator.hpp"
 #include "Renderer.hpp"
 //#include "Camera.hpp"
 #include "Clock.hpp"
@@ -49,8 +49,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	return 0;
 }
 
-
-	
 	//ID3D11Device* device; 
 	//ID3D11DeviceContext* immediateContext;
 	//IDXGISwapChain* swapChain;
@@ -65,7 +63,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//unsigned char* imageData;
 	//ID3D11Texture2D* texture;
 	//ID3D11ShaderResourceView* textureSRV;
-	ID3D11SamplerState* samplerState;
+	//ID3D11SamplerState* samplerState;
 
 	//D3D11Helper d3d11Helper;
 	//if (!d3d11Helper.SetupD3D11(window, device, immediateContext, swapChain, rtv, dsTexture, dsView, viewport))
@@ -92,16 +90,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//mainScene.AddMesh(mesh);
 	//}
 	
-	PipelineHelper pipelineHelper;
+	/*PipelineHelper pipelineHelper;
 	if (!pipelineHelper.SetupPipeline(device, vertexBuffer, vShader, pShader, inputLayout, texture, textureSRV, samplerState, imageData))
 	{
 		std::cerr << "Failed to setup pipeline!" << std::endl;
 		return -1;
-	}
+	}*/
 	
-	MatrixCreator matrixCreator;
+	//MatrixCreator matrixCreator;
 	
-	BufferFlagData worldMatrixCBFlags;
+	/*BufferFlagData worldMatrixCBFlags;
 	worldMatrixCBFlags.Usage = D3D11_USAGE_DYNAMIC;
 	worldMatrixCBFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 	
@@ -113,8 +111,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::cerr << "Create worldMatrixBuffer Failed" << std::endl;
 		return -1;
 	}
-
+	*/
 	// Create Constant Buffer For PS
+	/*
 	struct psStruct
 	{
 		DX::XMFLOAT4 lightColour;
@@ -149,9 +148,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	immediateContext->VSSetConstantBuffers(1, 1, &viewProjectionMatrixConstBuffer);
 
 	ID3D11Buffer* pixelShaderConstBuffer = psConstBuffer.GetBuffer();
-	immediateContext->PSSetConstantBuffers(0, 1, &pixelShaderConstBuffer);
+	immediateContext->PSSetConstantBuffers(0, 1, &pixelShaderConstBuffer);*/
 
-	Input input;
+	/*Input input;
 	Clock clock;
 	Renderer renderer;
 	float rotationalSpeed = 0.0f;
@@ -183,17 +182,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		currentAngle -= rotationalSpeed * deltaTime;
 	}
 
-	samplerState->Release();
-	textureSRV->Release();
-	texture->Release();
-	stbi_image_free(imageData);
+	//samplerState->Release();
+	//textureSRV->Release();
+	//texture->Release();
+	//stbi_image_free(imageData);
 	//vertexBuffer->Release();
-	inputLayout->Release();
-	pShader->Release();
-	vShader->Release();
-	dsView->Release();
-	dsTexture->Release();
-	rtv->Release();
+	//inputLayout->Release();
+	//pShader->Release();
+	//vShader->Release();
+	//dsView->Release();
+	//dsTexture->Release();
+	//rtv->Release();
 	//swapChain->Release();
 	//immediateContext->Release();
 	//device->Release();

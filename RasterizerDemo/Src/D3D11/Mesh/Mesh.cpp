@@ -38,6 +38,12 @@ size_t Mesh::GetNrOfSubMeshes() const
 	return this->_subMeshes.size();
 }
 
+VertexBuffer Mesh::GetVertexBuffer()
+{
+	return this->_vertexBuffer;
+}
+
+
 ID3D11ShaderResourceView *Mesh::GetAmbientSRV(size_t subMeshIndex) const
 {
 	return this->_subMeshes.at(subMeshIndex).GetAmbientSRV();
@@ -52,6 +58,12 @@ ID3D11ShaderResourceView *Mesh::GetSpecularSRV(size_t subMeshIndex) const
 {
 	return this->_subMeshes.at(subMeshIndex).GetSpecularSRV();
 }
+
+ID3D11ShaderResourceView *Mesh::GetTextureSRV(size_t subMeshIndex) const
+{
+	return this->_subMeshes.at(subMeshIndex).GetColourTextureSRV();
+}
+
 
 
 

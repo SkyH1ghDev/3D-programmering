@@ -1,6 +1,6 @@
 ﻿#include "Shader.hpp"
 
-Shader::Shader(ShaderType type, ID3D11VertexShader *vertexShader, ID3DBlob *shaderBlob)
+/*Shader::Shader(ShaderType type, ID3D11VertexShader *vertexShader, ID3DBlob *shaderBlob)
 {
     this->_shader.vertex = vertexShader;
     this->_type = type;
@@ -13,13 +13,18 @@ Shader::Shader(ShaderType type, ID3D11PixelShader *pixelShader, ID3DBlob *shader
     this->_shader.pixel = pixelShader;
     this->_type = type;
     this->_shaderBlob = shaderBlob;
+}*/
+
+Shader::Shader(Shader&& other) noexcept
+{
+    this->_shaderBlob = other._shaderBlob;
 }
 
 Shader::~Shader()
 {
     this->_shaderBlob->Release();
     
-    switch (this->_type)
+    /*switch (this->_type)
     {
         case ShaderType::VERTEX_SHADER:
             this->_shader.vertex->Release();
@@ -44,13 +49,13 @@ Shader::~Shader()
         case ShaderType::COMPUTE_SHADER:
             this->_shader.compute->Release();
             break;
-    }
+    }*/
 }
 
-ID3DBlob *Shader::GetShaderBlob() const
+/*ID3DBlob *Shader::GetShaderBlob() const
 {
     return this->_shaderBlob;
-}
+}*/
 
 
 

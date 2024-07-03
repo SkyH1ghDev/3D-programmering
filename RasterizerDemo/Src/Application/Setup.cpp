@@ -7,6 +7,10 @@
 #include "Configuration.hpp"
 #include "FileReader.hpp"
 #include "PipelineHelper.hpp"
+#include "PixelShader.hpp"
+#include "VertexShader.hpp"
+#include "MatrixCreator.hpp"
+#include "PixelShaderData.hpp"
 
 HWND Setup::SetupWindow(HINSTANCE hInstance, int nCmdShow) 
 {
@@ -112,7 +116,7 @@ Scene Setup::SetupScene(D3D11Controller &controller)
 	return scene;
 }
 
-Shader Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, LPCWSTR csoPath)
+Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, LPCWSTR csoPath)
 {
 	PipelineHelper pipelineHelper;
 	ID3DBlob* shaderBlob;
@@ -137,7 +141,7 @@ Shader Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, LP
 				exit(-1);
 			}
 
-			return Shader(shaderType, vertexShader, shaderBlob);
+			return new VertexShader(vertexShader, shaderBlob);
 		
 		case ShaderType::HULL_SHADER:
 
@@ -174,7 +178,7 @@ Shader Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, LP
 				exit(-1);
 			}
 
-			return Shader(shaderType, pixelShader, shaderBlob);
+			return new PixelShader(pixelShader, shaderBlob);
 
 		case ShaderType::COMPUTE_SHADER:
 			
@@ -200,5 +204,61 @@ InputLayout Setup::SetupInputLayout(D3D11Controller &controller, const Shader &v
 
 Sampler Setup::SetupSampler(D3D11Controller &controller)
 {
-	
+	PipelineHelper pipelineHelper;
+	ID3D11SamplerState* sampler;
+
+	pipelineHelper.CreateSamplerState(controller.GetDevice(), sampler);
+
+	return Sampler(sampler);
 }
+
+ConstantBuffer Setup::CreateWorldMatrixConstantBuffer(D3D11Controller &controller)
+{
+    HRESULT hr;
+    
+    MatrixCreator matrixCreator;
+
+    BufferFlagData worldMatrixBufferFlagData;
+    worldMatrixBufferFlagData.Usage = D3D11_USAGE_DYNAMIC;
+    worldMatrixBufferFlagData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+   
+	DX::XMFLOAT4X4 worldMatrixFloat4x4 = matrixCreator.CreateWorldXMFLOAT4X4();
+	ConstantBuffer cbWorldMatrix = ConstantBuffer(hr, controller.GetDevice(), sizeof(worldMatrixFloat4x4),
+	                                                &worldMatrixFloat4x4, 0, 0, 0,
+	                                                worldMatrixBufferFlagData);
+
+	if (FAILED(hr))
+	{
+		std::cerr << "Create worldMatrixBuffer Failed" << std::endl;
+		exit(-1);
+	}
+
+	return cbWorldMatrix;
+}
+
+ConstantBuffer Setup::CreatePixelShaderConstantBuffer(D3D11Controller &controller, Scene& scene)
+{
+	HRESULT hr;
+	
+	PixelShaderData psData;
+	
+	psData.LightColour = {1.0f, 1.0f, 1.0f, 1.0f};
+	psData.LightPosition = {0.0f, 1.0f, -10.0f, 1.0f};
+	psData.EyePosition = DX::XMFLOAT4(scene.GetCurrentCamera().GetPosition());
+	psData.AmbientLightIntensity = 0.1f;
+	psData.Shininess = 10000.0f;
+
+	BufferFlagData psBufferFlags;
+	psBufferFlags.Usage = D3D11_USAGE_IMMUTABLE;
+	
+	ConstantBuffer psConstBuffer = ConstantBuffer(hr, controller.GetDevice(), sizeof(psData), &psData, 0, 0, 0, psBufferFlags);
+    
+	if (FAILED(hr))
+	{
+		std::cerr << "Create psBuffer Failed" << std::endl;
+		exit(-1);
+	}
+
+	return psConstBuffer;
+}
+

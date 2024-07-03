@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "ImageData.hpp"
+
+#include "MTLData.hpp"
 
 class SubMeshInfo
 {
@@ -9,9 +10,5 @@ public:
 public:
 	UINT StartIndexValue = 0;
 	UINT NrOfIndicesInSubMesh = 0;
-	ImageData AmbientTextureData;
-	ImageData DiffuseTextureData;
-	ImageData SpecularTextureData;
-	ImageData Texture;
-	float SpecularExponent;
+	MTLData MTLData;
 };

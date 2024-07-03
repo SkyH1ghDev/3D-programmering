@@ -25,14 +25,15 @@ public:
 	void PerformSubMeshDrawCall(ID3D11DeviceContext* context, size_t subMeshIndex) const;
 
 	size_t GetNrOfSubMeshes() const;
+	VertexBuffer GetVertexBuffer();
 	ID3D11ShaderResourceView* GetAmbientSRV(size_t subMeshIndex) const;
 	ID3D11ShaderResourceView* GetDiffuseSRV(size_t subMeshIndex) const;
 	ID3D11ShaderResourceView* GetSpecularSRV(size_t subMeshIndex) const;
+	ID3D11ShaderResourceView* GetTextureSRV(size_t subMeshIndex) const;
 	
 private:
 	std::vector<SubMesh> _subMeshes;
-	VertexBuffer _vertexBuffer = VertexBuffer();
-	
+	VertexBuffer _vertexBuffer;
 	// IndexBuffer is unused as the current implementation uses the Triangle List topology rather than indexed
 	// IndexBuffer _indexBuffer;
 };

@@ -89,6 +89,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/std:c++20</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -116,7 +118,6 @@
 		Src/Helpers; 
 		Src/Input; 
 		Src/Material; 
-		Src/Pixel; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -131,6 +132,7 @@
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
 		Src/D3D11/Mesh/MeshData; 
+		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
 		Src/Helpers/Manager; 
@@ -142,6 +144,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalOptions>/std:c++20</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -149,7 +152,7 @@
       <AdditionalDependencies>d3d11.lib; d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>python "$(ProjectDir)prebuild.py" "D:/School/3D-programmering/Inl&#228;mning 2/RasterizerDemo/RasterizerDemo.vcxproj"</Command>
+      <Command>python "$(ProjectDir)prebuild.py" "$(ProjectDir) </Command>
     </PreBuildEvent>
     <FxCompile>
       <AdditionalIncludeDirectories>Src/Shaders</AdditionalIncludeDirectories>
@@ -164,6 +167,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/std:c++20</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -185,6 +190,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/std:c++20</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -283,7 +290,6 @@
 		Src/Helpers; 
 		Src/Input; 
 		Src/Material; 
-		Src/Pixel; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -298,6 +304,7 @@
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
 		Src/D3D11/Mesh/MeshData; 
+		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
 		Src/Helpers/Manager; 
@@ -391,7 +398,6 @@
 		Src/Helpers; 
 		Src/Input; 
 		Src/Material; 
-		Src/Pixel; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -406,6 +412,7 @@
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
 		Src/D3D11/Mesh/MeshData; 
+		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
 		Src/Helpers/Manager; 
@@ -498,7 +505,6 @@
 		Src/Helpers; 
 		Src/Input; 
 		Src/Material; 
-		Src/Pixel; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -513,6 +519,7 @@
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
 		Src/D3D11/Mesh/MeshData; 
+		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
 		Src/Helpers/Manager; 
@@ -605,7 +612,6 @@
 		Src/Helpers; 
 		Src/Input; 
 		Src/Material; 
-		Src/Pixel; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -620,6 +626,7 @@
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
 		Src/D3D11/Mesh/MeshData; 
+		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
 		Src/Helpers/Manager; 
@@ -712,7 +719,6 @@
 		Src/Helpers; 
 		Src/Input; 
 		Src/Material; 
-		Src/Pixel; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -727,6 +733,7 @@
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
 		Src/D3D11/Mesh/MeshData; 
+		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
 		Src/Helpers/Manager; 
@@ -821,7 +828,6 @@
 		Src/Helpers; 
 		Src/Input; 
 		Src/Material; 
-		Src/Pixel; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -836,6 +842,7 @@
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
 		Src/D3D11/Mesh/MeshData; 
+		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
 		Src/Helpers/Manager; 
@@ -848,7 +855,13 @@
     </ClCompile>
     <ClCompile Include="Src\D3D11\Sampler\Sampler.cpp" />
     <ClCompile Include="Src\D3D11\Scene\Scene.cpp" />
+    <ClCompile Include="Src\D3D11\Shader\ComputeShader.cpp" />
+    <ClCompile Include="Src\D3D11\Shader\DomainShader.cpp" />
+    <ClCompile Include="Src\D3D11\Shader\GeometryShader.cpp" />
+    <ClCompile Include="Src\D3D11\Shader\HullShader.cpp" />
+    <ClCompile Include="Src\D3D11\Shader\PixelShader.cpp" />
     <ClCompile Include="Src\D3D11\Shader\Shader.cpp" />
+    <ClCompile Include="Src\D3D11\Shader\VertexShader.cpp" />
     <ClCompile Include="Src\FileReader\FileReader.cpp" />
     <ClCompile Include="Src\FileReader\ImageReader.cpp" />
     <ClCompile Include="Src\FileReader\Parsers\MTLParser.cpp">
@@ -933,7 +946,6 @@
 		Src/Helpers; 
 		Src/Input; 
 		Src/Material; 
-		Src/Pixel; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -948,6 +960,7 @@
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
 		Src/D3D11/Mesh/MeshData; 
+		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
 		Src/Helpers/Manager; 
@@ -1040,7 +1053,6 @@
 		Src/Helpers; 
 		Src/Input; 
 		Src/Material; 
-		Src/Pixel; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -1055,6 +1067,7 @@
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
 		Src/D3D11/Mesh/MeshData; 
+		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
 		Src/Helpers/Manager; 
@@ -1151,7 +1164,6 @@
 		Src/Helpers; 
 		Src/Input; 
 		Src/Material; 
-		Src/Pixel; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -1166,6 +1178,7 @@
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
 		Src/D3D11/Mesh/MeshData; 
+		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
 		Src/Helpers/Manager; 
@@ -1258,7 +1271,6 @@
 		Src/Helpers; 
 		Src/Input; 
 		Src/Material; 
-		Src/Pixel; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -1273,6 +1285,7 @@
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
 		Src/D3D11/Mesh/MeshData; 
+		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
 		Src/Helpers/Manager; 
@@ -1284,7 +1297,6 @@
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Src\Material\MaterialManager.cpp" />
-    <ClCompile Include="Src\Pixel\PixelShaderData.cpp" />
     <ClCompile Include="Src\Renderer\Renderer.cpp" />
     <FxCompile Include="Src\Shaders\PixelShader.hlsl">
       <FileType>Document</FileType>
@@ -1330,7 +1342,14 @@
     <ClInclude Include="Src\D3D11\RenderTarget\RenderTarget.hpp" />
     <ClInclude Include="Src\D3D11\Sampler\Sampler.hpp" />
     <ClInclude Include="Src\D3D11\Scene\Scene.hpp" />
+    <ClInclude Include="Src\D3D11\Shader\ComputeShader.hpp" />
+    <ClInclude Include="Src\D3D11\Shader\DomainShader.hpp" />
+    <ClInclude Include="Src\D3D11\Shader\GeometryShader.hpp" />
+    <ClInclude Include="Src\D3D11\Shader\HullShader.hpp" />
+    <ClInclude Include="Src\D3D11\Shader\PixelShader.hpp" />
     <ClInclude Include="Src\D3D11\Shader\Shader.hpp" />
+    <ClInclude Include="Src\D3D11\Shader\ShaderData\PixelShaderData.hpp" />
+    <ClInclude Include="Src\D3D11\Shader\VertexShader.hpp" />
     <ClInclude Include="Src\FileReader\FileReader.hpp" />
     <ClInclude Include="Src\FileReader\ImageReader.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\IFileParser.hpp" />
@@ -1347,7 +1366,6 @@
     <ClInclude Include="Src\Material\Material.hpp" />
     <ClInclude Include="Src\Material\MaterialManager.hpp" />
     <ClInclude Include="Src\Material\MaterialData.hpp" />
-    <ClInclude Include="Src\Pixel\PixelShaderData.hpp" />
     <ClInclude Include="Src\Renderer\Renderer.hpp" />
     <ClInclude Include="Src\Vertex\Face.hpp" />
     <ClInclude Include="Src\Vertex\Vertex.hpp" />
@@ -1357,6 +1375,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="prebuild.py" />
+    <Content Include="Resources\3D-Objects\cube.mtl" />
     <Content Include="Resources\3D-Objects\cube.obj" />
     <Content Include="Resources\3D-Objects\lego.mtl" />
     <Content Include="Resources\3D-Objects\lego.obj" />

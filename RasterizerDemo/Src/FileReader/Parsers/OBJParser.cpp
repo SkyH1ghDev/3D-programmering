@@ -60,14 +60,11 @@ int OBJParser::GetVerticesFromFile(const std::string& filename, MeshData &meshDa
             
             SubMeshInfo subMeshInfo;
             subMeshInfo.StartIndexValue = vertexVector.size();
-            subMeshInfo.AmbientTextureData = mtlData.ambientTextureData;
-            subMeshInfo.DiffuseTextureData = mtlData.diffuseTextureData;
-            subMeshInfo.SpecularTextureData = mtlData.specularTextureData;
-            subMeshInfo.SpecularExponent = mtlData.specularExponent;
+            subMeshInfo.MTLData = mtlData;
 
             // "TEMPORARY" Solution for textures
             ImageReader imageReader;
-            subMeshInfo.Texture = imageReader.GetImageData("Pic.jpg");
+            subMeshInfo.MTLData.colourTextureData = imageReader.GetImageData("Pic.jpg");
 
             meshData.SubMeshInfoList.push_back(subMeshInfo);
             ++nrOfSubMeshes;
@@ -164,7 +161,15 @@ int OBJParser::GetVerticesFromFile(const std::string& filename, MeshData &meshDa
 
             for (int i = 0; i < 3; ++i)
             {
-                vertexVector.push_back(Vertex(positionVector.at(i), normalVector.at(i), uvVector.at(i)));
+                //std::cout << "positionIndexVector at " << i << " = " << positionIndexVector.at(i) << "\n";
+                //std::cout << "normalIndexVector at " << i << " = " << normalIndexVector.at(i) << "\n";
+                //std::cout << "uvIndexVector at " << i << " = " << uvIndexVector.at(i) << "\n";
+
+                int positionIndex = positionIndexVector.at(i);
+                int normalIndex = normalIndexVector.at(i);
+                int uvIndex = uvIndexVector.at(i);
+                
+                vertexVector.push_back(Vertex(positionVector.at(positionIndex), normalVector.at(normalIndex), uvVector.at(uvIndex)));
                 ++nrOfIndicesInSubMesh;
             }
             
@@ -179,6 +184,7 @@ int OBJParser::GetVerticesFromFile(const std::string& filename, MeshData &meshDa
     meshData.VertexInfo = vertexInfo;
 
     // Set last SubMeshInfo nrOfIndicesInSubMesh
+
     SubMeshInfo lastSubMeshInfo = meshData.SubMeshInfoList.back();
     meshData.SubMeshInfoList.back().NrOfIndicesInSubMesh = vertexVector.size() - lastSubMeshInfo.StartIndexValue;
     

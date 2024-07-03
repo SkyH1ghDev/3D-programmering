@@ -17,10 +17,6 @@ Scene::Scene(std::vector<Camera> cameraList)
     this->_cameraList = cameraList;
 }
 
-void Scene::Render()
-{
-}
-
 void Scene::CreateMeshes(std::vector<Mesh> meshList)
 {
     this->_meshList = meshList;
@@ -31,8 +27,12 @@ void Scene::AddMesh(Mesh& mesh)
     this->_meshList.emplace_back(std::move(mesh));
 }
 
-
 Camera& Scene::GetCurrentCamera()
 {
     return this->_cameraList.at(this->_currentCameraIndex);
+}
+
+Mesh& Scene::GetMeshAt(size_t index)
+{
+    return this->_meshList.at(index);
 }

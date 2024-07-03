@@ -294,18 +294,18 @@ bool PipelineHelper::SetupPipeline(ID3D11Device* device, ID3D11Buffer*& vertexBu
 				   ID3D11PixelShader*& pShader, ID3D11InputLayout*& inputLayout, ID3D11Texture2D*& texture,
 				   ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& samplerState, unsigned char*& imageData)
 {
-	std::string vShaderByteCode;
+	//std::string vShaderByteCode;
 	/*if (!LoadShaders(device, vShader, pShader, vShaderByteCode))
 	{
 		std::cerr << "Error loading shaders!" << std::endl;
 		return false;
 	}*/
 
-	if (!CreateInputLayout(device, inputLayout, vShaderByteCode))
+	/*if (!CreateInputLayout(device, inputLayout, vShaderByteCode))
 	{
 		std::cerr << "Error creating input layout!" << std::endl;
 		return false;
-	}
+	}*/
 	
 	/*if (!(CreateVertexBuffer(device, vertexBuffer)))
 	{

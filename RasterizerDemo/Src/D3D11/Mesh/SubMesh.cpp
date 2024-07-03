@@ -1,15 +1,16 @@
 ﻿#include "SubMesh.hpp"
 
+#include "ImageData.hpp"
 #include <iostream>
 
 SubMesh::SubMesh(HRESULT& hr, ID3D11Device* device, const SubMeshInfo& subMeshInfo)
 {
     this->_startIndex = subMeshInfo.StartIndexValue;
     this->_nrOfIndices = subMeshInfo.NrOfIndicesInSubMesh;
-    this->_specularExponent = subMeshInfo.SpecularExponent;
+    this->_specularExponent = subMeshInfo.MTLData.specularExponent;
 
 	// AMBIENT
-	ImageData ambientData = subMeshInfo.AmbientTextureData;
+	ImageData ambientData = subMeshInfo.MTLData.ambientTextureData;
     	
 	D3D11_TEXTURE2D_DESC ambientTexture2DDesc;
 	ambientTexture2DDesc.Width = static_cast<UINT>(ambientData.Width);
@@ -43,7 +44,7 @@ SubMesh::SubMesh(HRESULT& hr, ID3D11Device* device, const SubMeshInfo& subMeshIn
 	}
 	
 	// DIFFUSE
-	ImageData diffuseData = subMeshInfo.DiffuseTextureData;
+	ImageData diffuseData = subMeshInfo.MTLData.diffuseTextureData;
 			
 	D3D11_TEXTURE2D_DESC diffuseTexture2DDesc;
 	diffuseTexture2DDesc.Width = static_cast<UINT>(diffuseData.Width);
@@ -77,7 +78,7 @@ SubMesh::SubMesh(HRESULT& hr, ID3D11Device* device, const SubMeshInfo& subMeshIn
 	}
 	
 	// SPECULAR 
-	ImageData specularData = subMeshInfo.SpecularTextureData;
+	ImageData specularData = subMeshInfo.MTLData.specularTextureData;
 				
 	D3D11_TEXTURE2D_DESC specularTexture2DDesc;
 	specularTexture2DDesc.Width = static_cast<UINT>(specularData.Width);
@@ -109,6 +110,40 @@ SubMesh::SubMesh(HRESULT& hr, ID3D11Device* device, const SubMeshInfo& subMeshIn
 	{
 		std::cerr << "Failed To Create Specular SRV \n";
 	}
+	
+	// COLOUR 
+	ImageData colourData = subMeshInfo.MTLData.colourTextureData;
+				
+	D3D11_TEXTURE2D_DESC colourTexture2DDesc;
+	colourTexture2DDesc.Width = static_cast<UINT>(colourData.Width);
+	colourTexture2DDesc.Height = static_cast<UINT>(colourData.Height);
+	colourTexture2DDesc.MipLevels = 1;
+	colourTexture2DDesc.ArraySize = 1;
+	colourTexture2DDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	colourTexture2DDesc.SampleDesc = DXGI_SAMPLE_DESC{1, 0};
+	colourTexture2DDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	colourTexture2DDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	colourTexture2DDesc.CPUAccessFlags = 0;
+	colourTexture2DDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA colourTexture2DData;
+	colourTexture2DData.pSysMem = colourData.TextureData.data(); 
+	colourTexture2DData.SysMemPitch = static_cast<UINT>(colourData.Width) * colourData.RGBAChannels;
+	colourTexture2DData.SysMemSlicePitch = 0;
+
+	hr = device->CreateTexture2D(&colourTexture2DDesc, &colourTexture2DData, &this->_colourTexture2D);
+
+	if (FAILED(hr))
+	{
+		std::cerr << "Failed To Create Colour Texture2D \n";
+	}
+            	
+	device->CreateShaderResourceView(this->_colourTexture2D, nullptr, &this->_colourTextureSRV);
+
+	if (FAILED(hr))
+	{
+		std::cerr << "Failed To Create Colour SRV \n";
+	}
 }
 
 SubMesh::SubMesh(SubMesh&& other) noexcept
@@ -125,6 +160,9 @@ SubMesh::SubMesh(SubMesh&& other) noexcept
 	
 	this->_diffuseTexture2D = other._diffuseTexture2D; this->_diffuseTexture2D->AddRef();
 	this->_diffuseTextureSRV = other._diffuseTextureSRV; this->_diffuseTextureSRV->AddRef();
+
+	this->_colourTexture2D = other._colourTexture2D; this->_colourTexture2D->AddRef();
+	this->_colourTextureSRV = other._colourTextureSRV; this->_colourTextureSRV->AddRef();
 }
 
 SubMesh::~SubMesh()
@@ -137,6 +175,9 @@ SubMesh::~SubMesh()
     
     this->_ambientTextureSRV->Release(); this->_ambientTextureSRV = nullptr;
     this->_ambientTexture2D->Release(); this->_ambientTexture2D = nullptr;
+
+    this->_colourTextureSRV->Release(); this->_colourTextureSRV = nullptr;
+    this->_colourTexture2D->Release(); this->_colourTexture2D = nullptr;
 }
 SubMesh::SubMesh(const SubMesh &other)
 {
@@ -152,6 +193,9 @@ SubMesh::SubMesh(const SubMesh &other)
 	
 	this->_diffuseTexture2D = other._diffuseTexture2D; this->_diffuseTexture2D->AddRef();
 	this->_diffuseTextureSRV = other._diffuseTextureSRV; this->_diffuseTextureSRV->AddRef();
+
+	this->_colourTexture2D = other._colourTexture2D; this->_colourTexture2D->AddRef();
+	this->_colourTextureSRV = other._colourTextureSRV; this->_colourTextureSRV->AddRef();
 }
 
 SubMesh & SubMesh::operator=(const SubMesh &other)
@@ -173,6 +217,9 @@ SubMesh & SubMesh::operator=(const SubMesh &other)
 	
 	this->_diffuseTexture2D = other._diffuseTexture2D; this->_diffuseTexture2D->AddRef();
 	this->_diffuseTextureSRV = other._diffuseTextureSRV; this->_diffuseTextureSRV->AddRef();
+
+	this->_colourTexture2D = other._colourTexture2D; this->_colourTexture2D->AddRef();
+	this->_colourTextureSRV = other._colourTextureSRV; this->_colourTextureSRV->AddRef();
 	
 	return *this;
 }
@@ -191,6 +238,12 @@ ID3D11ShaderResourceView *SubMesh::GetSpecularSRV() const
 {
 	return this->_specularTextureSRV;
 }
+
+ID3D11ShaderResourceView *SubMesh::GetColourTextureSRV() const
+{
+	return this->_colourTextureSRV;
+}
+
 
 void SubMesh::PerformDrawCall(ID3D11DeviceContext *context) const
 {
