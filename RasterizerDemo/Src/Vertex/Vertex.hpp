@@ -2,7 +2,7 @@
 
 #include <array>
 
-class Vertex
+class alignas(16) Vertex
 {
 public:
     

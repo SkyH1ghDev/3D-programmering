@@ -24,6 +24,7 @@ public:
 	void BindMeshBuffers(ID3D11DeviceContext* context) const;
 	void PerformSubMeshDrawCall(ID3D11DeviceContext* context, size_t subMeshIndex) const;
 
+	SubMesh& GetSubMeshAt(size_t index);
 	size_t GetNrOfSubMeshes() const;
 	VertexBuffer GetVertexBuffer();
 	ID3D11ShaderResourceView* GetAmbientSRV(size_t subMeshIndex) const;

@@ -15,7 +15,7 @@ class Renderer
 public:
 
     void Setup(const Configuration& configuration);
-    void Render(D3D11Controller& controller, RenderTarget& rtv, VertexShader& vertexShader, PixelShader& pixelShader, InputLayout& inputLayout, Mesh& mesh, Sampler& samplerState);
+    void Render(D3D11Controller& controller, RenderTarget& rtv, VertexShader& vertexShader, PixelShader& pixelShader, InputLayout& inputLayout, Scene& scene, Sampler& samplerState);
 
 private:
 

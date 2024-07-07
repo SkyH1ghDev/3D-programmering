@@ -9,6 +9,6 @@ public:
     
 public:
     UINT SizeOfVertex = sizeof(Vertex);
-    UINT NrOfVerticesInBuffer;
+    size_t NrOfVerticesInBuffer;
     std::vector<Vertex> VertexVector;
 };

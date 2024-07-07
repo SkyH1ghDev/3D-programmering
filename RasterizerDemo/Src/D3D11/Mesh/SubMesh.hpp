@@ -25,6 +25,9 @@ public:
 	ID3D11ShaderResourceView* GetDiffuseSRV() const;
 	ID3D11ShaderResourceView* GetSpecularSRV() const;
 	ID3D11ShaderResourceView* GetColourTextureSRV() const;
+
+	size_t GetStartIndex();
+	size_t GetNumIndices();
 	
 private:
 	size_t _startIndex = 0;

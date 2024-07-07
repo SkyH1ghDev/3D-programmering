@@ -8,7 +8,7 @@ public:
 	SubMeshInfo() = default;
 	
 public:
-	UINT StartIndexValue = 0;
-	UINT NrOfIndicesInSubMesh = 0;
+	size_t StartIndexValue = 0;
+	size_t NrOfIndicesInSubMesh = 0;
 	MTLData MTLData;
 };

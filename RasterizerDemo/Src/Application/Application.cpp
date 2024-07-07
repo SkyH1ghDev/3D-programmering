@@ -54,6 +54,9 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
     /*
      * TODO: Implement asserts for scene, mesh, submesh and camera
     */
+
+	// Vertex
+	assert(sizeof(Vertex) % 16 == 0);
     
     // Shaders
 	assert(this->_vertexShaderPtr != nullptr);
@@ -107,7 +110,7 @@ void Application::Render()
 			DispatchMessage(&this->_msg);
 		}
 		
-		this->_renderer.Render(this->_controller, this->_rtv, *this->_vertexShaderPtr, *this->_pixelShaderPtr, this->_inputLayout, this->_scene.GetMeshAt(0), this->_sampler); // TODO: ADD GetFirstMesh FOR TESTING PURPOSES
+		this->_renderer.Render(this->_controller, this->_rtv, *this->_vertexShaderPtr, *this->_pixelShaderPtr, this->_inputLayout, this->_scene, this->_sampler);
 		this->_controller.GetSwapChain()->Present(0, 0);
 		
 		this->_scene.GetCurrentCamera().UpdateInternalConstantBuffer(this->_controller.GetContext());

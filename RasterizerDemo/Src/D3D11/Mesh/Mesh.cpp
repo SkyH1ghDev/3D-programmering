@@ -6,7 +6,7 @@ Mesh::Mesh(HRESULT &hr, ID3D11Device *device, const MeshData &meshData)
 {
     VertexInfo vertexInfo = meshData.VertexInfo;
     
-    this->_vertexBuffer = VertexBuffer(hr, device, vertexInfo.SizeOfVertex, vertexInfo.NrOfVerticesInBuffer, vertexInfo.VertexVector); // Might work, unsure
+    this->_vertexBuffer = VertexBuffer(hr, device, vertexInfo.SizeOfVertex, vertexInfo.NrOfVerticesInBuffer, vertexInfo.VertexVector);
 
 	if (FAILED(hr))
 	{
@@ -31,6 +31,11 @@ void Mesh::BindMeshBuffers(ID3D11DeviceContext *context) const
 void Mesh::PerformSubMeshDrawCall(ID3D11DeviceContext *context, size_t subMeshIndex) const
 {
 	
+}
+
+SubMesh& Mesh::GetSubMeshAt(size_t index)
+{
+	return this->_subMeshes.at(index);
 }
 
 size_t Mesh::GetNrOfSubMeshes() const

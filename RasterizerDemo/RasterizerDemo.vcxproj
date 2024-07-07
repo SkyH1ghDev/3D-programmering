@@ -117,7 +117,6 @@
 		Src/FileReader; 
 		Src/Helpers; 
 		Src/Input; 
-		Src/Material; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -135,7 +134,6 @@
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
 		Src/Helpers/MatrixCreator; 
 		Src/Helpers/Pipeline; 
 		Src/Helpers/Window; 
@@ -289,7 +287,6 @@
 		Src/FileReader; 
 		Src/Helpers; 
 		Src/Input; 
-		Src/Material; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -307,7 +304,6 @@
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
 		Src/Helpers/MatrixCreator; 
 		Src/Helpers/Pipeline; 
 		Src/Helpers/Window; 
@@ -397,7 +393,6 @@
 		Src/FileReader; 
 		Src/Helpers; 
 		Src/Input; 
-		Src/Material; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -415,7 +410,6 @@
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
 		Src/Helpers/MatrixCreator; 
 		Src/Helpers/Pipeline; 
 		Src/Helpers/Window; 
@@ -504,7 +498,6 @@
 		Src/FileReader; 
 		Src/Helpers; 
 		Src/Input; 
-		Src/Material; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -522,7 +515,6 @@
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
 		Src/Helpers/MatrixCreator; 
 		Src/Helpers/Pipeline; 
 		Src/Helpers/Window; 
@@ -611,7 +603,6 @@
 		Src/FileReader; 
 		Src/Helpers; 
 		Src/Input; 
-		Src/Material; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -629,7 +620,6 @@
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
 		Src/Helpers/MatrixCreator; 
 		Src/Helpers/Pipeline; 
 		Src/Helpers/Window; 
@@ -718,7 +708,6 @@
 		Src/FileReader; 
 		Src/Helpers; 
 		Src/Input; 
-		Src/Material; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -736,7 +725,6 @@
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
 		Src/Helpers/MatrixCreator; 
 		Src/Helpers/Pipeline; 
 		Src/Helpers/Window; 
@@ -827,7 +815,6 @@
 		Src/FileReader; 
 		Src/Helpers; 
 		Src/Input; 
-		Src/Material; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -845,7 +832,6 @@
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
 		Src/Helpers/MatrixCreator; 
 		Src/Helpers/Pipeline; 
 		Src/Helpers/Window; 
@@ -945,7 +931,6 @@
 		Src/FileReader; 
 		Src/Helpers; 
 		Src/Input; 
-		Src/Material; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -963,7 +948,6 @@
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
 		Src/Helpers/MatrixCreator; 
 		Src/Helpers/Pipeline; 
 		Src/Helpers/Window; 
@@ -1052,7 +1036,6 @@
 		Src/FileReader; 
 		Src/Helpers; 
 		Src/Input; 
-		Src/Material; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -1070,7 +1053,6 @@
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
 		Src/Helpers/MatrixCreator; 
 		Src/Helpers/Pipeline; 
 		Src/Helpers/Window; 
@@ -1163,7 +1145,6 @@
 		Src/FileReader; 
 		Src/Helpers; 
 		Src/Input; 
-		Src/Material; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -1181,7 +1162,6 @@
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
 		Src/Helpers/MatrixCreator; 
 		Src/Helpers/Pipeline; 
 		Src/Helpers/Window; 
@@ -1270,7 +1250,6 @@
 		Src/FileReader; 
 		Src/Helpers; 
 		Src/Input; 
-		Src/Material; 
 		Src/Renderer; 
 		Src/Vertex; 
 		Src/D3D11/Buffer; 
@@ -1288,7 +1267,6 @@
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
 		Src/Helpers/D3D11; 
-		Src/Helpers/Manager; 
 		Src/Helpers/MatrixCreator; 
 		Src/Helpers/Pipeline; 
 		Src/Helpers/Window; 
@@ -1296,7 +1274,6 @@
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="Src\Material\MaterialManager.cpp" />
     <ClCompile Include="Src\Renderer\Renderer.cpp" />
     <FxCompile Include="Src\Shaders\PixelShader.hlsl">
       <FileType>Document</FileType>
@@ -1307,7 +1284,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
     </FxCompile>
     <ClCompile Include="Src\Vertex\Vertex.cpp" />
-    <ClCompile Include="Src\Vertex\VertexManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resources\Libraries\stb_image.h" />
@@ -1358,25 +1334,18 @@
     <ClInclude Include="Src\FileReader\Parsers\MTLParser.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\OBJParser.hpp" />
     <ClInclude Include="Src\Helpers\D3D11\D3D11Helper.hpp" />
-    <ClInclude Include="Src\Helpers\Manager\ManagerHelper.hpp" />
     <ClInclude Include="Src\Helpers\MatrixCreator\MatrixCreator.hpp" />
     <ClInclude Include="Src\Helpers\Pipeline\PipelineHelper.hpp" />
     <ClInclude Include="Src\Helpers\Window\WindowHelper.hpp" />
     <ClInclude Include="Src\Input\Input.hpp" />
-    <ClInclude Include="Src\Material\Material.hpp" />
-    <ClInclude Include="Src\Material\MaterialManager.hpp" />
-    <ClInclude Include="Src\Material\MaterialData.hpp" />
     <ClInclude Include="Src\Renderer\Renderer.hpp" />
-    <ClInclude Include="Src\Vertex\Face.hpp" />
     <ClInclude Include="Src\Vertex\Vertex.hpp" />
-    <ClInclude Include="Src\Vertex\VertexGroupData.hpp" />
-    <ClInclude Include="Src\Vertex\VertexManager.hpp" />
-    <ClInclude Include="Src\Vertex\VertexMaterialData.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="prebuild.py" />
     <Content Include="Resources\3D-Objects\cube.mtl" />
     <Content Include="Resources\3D-Objects\cube.obj" />
+    <Content Include="Resources\3D-Objects\cube_material.mtl" />
     <Content Include="Resources\3D-Objects\lego.mtl" />
     <Content Include="Resources\3D-Objects\lego.obj" />
     <Content Include="Resources\3D-Objects\teapot.obj" />

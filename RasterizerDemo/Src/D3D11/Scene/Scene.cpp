@@ -36,3 +36,9 @@ Mesh& Scene::GetMeshAt(size_t index)
 {
     return this->_meshList.at(index);
 }
+
+size_t Scene::GetNumMeshes() const
+{
+    return this->_meshList.size();
+}
+

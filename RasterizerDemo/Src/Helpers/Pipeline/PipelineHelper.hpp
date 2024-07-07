@@ -8,11 +8,6 @@ class PipelineHelper
 public:
 	PipelineHelper() = default;
 
-	// DEPRECATED
-	bool SetupPipeline(ID3D11Device * device, ID3D11Buffer *& vertexBuffer, ID3D11VertexShader *& vShader,
-    				   ID3D11PixelShader *& pShader, ID3D11InputLayout *& inputLayout, ID3D11Texture2D*& texture,
-    				   ID3D11ShaderResourceView*& textureSRV, ID3D11SamplerState*& textureSamplerState, unsigned char*& imageData);
-
 	bool LoadShaderBlob(ID3DBlob*& shaderBlob, ShaderType shaderType, LPCWSTR hlslPath);
 	bool LoadVertexShader(ID3D11Device* device, ID3D11VertexShader*& vertexShader, ID3DBlob* vertexShaderBlob);
 	bool LoadHullShader(ID3D11Device* device, ID3D11HullShader*& hullShader, ID3DBlob* hullShaderBlob);
@@ -23,10 +18,4 @@ public:
 	
 	bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const void *vertexShaderByteCode, size_t vertexShaderByteCodeLength);
 	bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& samplerState);
-	
-private:
-	
-	//bool LoadShaders(ID3D11Device* device, ID3D11VertexShader*& vShader, ID3D11PixelShader*& pShader, std::string& vShaderByteCode);
-	bool CreateVertexBuffer(ID3D11Device* device, ID3D11Buffer*& vertexBuffer);
-	bool CreateTexture(ID3D11Device* device, ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& textureSRV, unsigned char*& imageData);
 };

@@ -10,6 +10,6 @@ public:
     std::vector<std::string> GetFilenameList() const { return this->_filenameList; }
 
 private:
-    std::vector<std::string> _filenameList = {"lego.obj"};
+    std::vector<std::string> _filenameList = {"cube.obj"};
 
 };

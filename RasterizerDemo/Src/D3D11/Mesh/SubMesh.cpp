@@ -224,6 +224,16 @@ SubMesh & SubMesh::operator=(const SubMesh &other)
 	return *this;
 }
 
+size_t SubMesh::GetNumIndices()
+{
+	return this->_nrOfIndices;
+}
+
+size_t SubMesh::GetStartIndex()
+{
+	return this->_startIndex;
+}
+
 ID3D11ShaderResourceView *SubMesh::GetAmbientSRV() const
 {
 	return this->_ambientTextureSRV;

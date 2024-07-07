@@ -1,4 +1,6 @@
-﻿#include "ImageReader.hpp"
+﻿#define STB_IMAGE_IMPLEMENTATION
+
+#include "ImageReader.hpp"
 #include "stb_image.h"
 #include <vector>
 #include <memory>

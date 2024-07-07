@@ -1,7 +1,6 @@
 ﻿#include "Renderer.hpp"
-#include "VertexManager.hpp"
 
-void Renderer::Render(D3D11Controller &controller, RenderTarget &rtv, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Mesh& mesh, Sampler& samplerState)
+void Renderer::Render(D3D11Controller &controller, RenderTarget &rtv, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	ID3D11RenderTargetView* rTargetView = rtv.GetRTV();
@@ -9,30 +8,44 @@ void Renderer::Render(D3D11Controller &controller, RenderTarget &rtv, VertexShad
 	
 	ClearScreen(context, rTargetView, dStencilView);
 
-	VertexBuffer vertexBuffer = mesh.GetVertexBuffer();
+	for (size_t i = 0; i < scene.GetNumMeshes(); ++i)
+	{
+		Mesh& mesh = scene.GetMeshAt(i);
+		
+		VertexBuffer vertexBuffer = mesh.GetVertexBuffer();
 	
-	ID3D11Buffer* vBuffer = vertexBuffer.GetBuffer();
-	ID3D11InputLayout* iLayout = inputLayout.GetInputLayout();
+		ID3D11Buffer* vBuffer = vertexBuffer.GetBuffer();
+		ID3D11InputLayout* iLayout = inputLayout.GetInputLayout();
 	
-	SetupInputAssembler(context, vBuffer, iLayout, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		SetupInputAssembler(context, vBuffer, iLayout, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
+		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
 
-	SetupVertexShader(context, vShader);
+		SetupVertexShader(context, vShader);
 
-	ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
-	ID3D11ShaderResourceView* tShaderResourceView = mesh.GetTextureSRV(0); // INDEX IS JUST FOR TESTING PURPOSES
-	ID3D11SamplerState* sState = samplerState.GetSamplerState();
+		ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
+		ID3D11ShaderResourceView* tShaderResourceView = mesh.GetTextureSRV(0);
+		ID3D11SamplerState* sState = samplerState.GetSamplerState();
 	
-	SetupPixelShader(context, pShader, tShaderResourceView, sState);
+		SetupPixelShader(context, pShader, tShaderResourceView, sState);
 
-	D3D11_VIEWPORT viewport = controller.GetViewPort();
+		D3D11_VIEWPORT viewport = controller.GetViewPort();
 	
-	SetupRasterizer(context, viewport);
+		SetupRasterizer(context, viewport);
 
-	SetupOutputMerger(context, rTargetView, dStencilView);
+		SetupOutputMerger(context, rTargetView, dStencilView);
 
-	context->Draw(vertexBuffer.GetNrOfVertices(), 0);
+		for (size_t j = 0; j < mesh.GetNrOfSubMeshes(); ++j)
+		{
+			SubMesh& subMesh = mesh.GetSubMeshAt(j);
+
+			if (subMesh.GetNumIndices() == 0)
+			{
+				continue;
+			}
+			context->Draw(subMesh.GetNumIndices(),subMesh.GetStartIndex());
+		}
+	}
 }
 
 

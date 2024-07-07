@@ -19,6 +19,7 @@ public:
     
     Camera& GetCurrentCamera();
     Mesh& GetMeshAt(size_t index);
+    size_t GetNumMeshes() const;
     
 private:
     
