@@ -20,7 +20,8 @@ public:
 	ID3D11DepthStencilView *GetDSV() const;
 	
 private:
-	ID3D11Texture2D* _dsTexture = nullptr; // Deferred rendering. Render lighting information to this for example.
+	ID3D11Texture2D* _texture = nullptr; // Deferred rendering. Render lighting information to this for example.
 	ID3D11RenderTargetView* _rtv = nullptr;
-	ID3D11DepthStencilView* _dsv = nullptr; //ID3D11ShaderResourceView* _srv = nullptr; (ORIGINALLY)
+	ID3D11ShaderResourceView* _srv = nullptr;
+	ID3D11DepthStencilView* _dsv = nullptr;
 };

@@ -30,7 +30,7 @@ private:
 
     // D3D11
     D3D11Controller _controller;
-    RenderTarget _rtv;
+    RenderTarget _windowRTV;
     Scene _scene; // Could be expanded to contain multiple scenes
 
     // Shaders

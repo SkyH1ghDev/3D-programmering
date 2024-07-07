@@ -18,7 +18,7 @@ bool D3D11Helper::CreateInterfaces(ID3D11Device*& device, ID3D11DeviceContext*& 
 	swapChainDesc.BufferDesc.Height = height;
 	swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
 	swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
@@ -89,32 +89,3 @@ void D3D11Helper::SetViewport(D3D11_VIEWPORT& viewport, UINT width, UINT height)
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = 1;
 }
-
-/*bool D3D11Helper::SetupD3D11(HWND window, ID3D11Device*& device,
-	ID3D11DeviceContext*& immediateContext, IDXGISwapChain*& swapChain, ID3D11RenderTargetView*& rtv,
-	ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView, D3D11_VIEWPORT& viewport)
-{
-	WindowConfig windowConfig;
-	
-	if (!CreateInterfaces(device, immediateContext, swapChain, windowConfig.GetWidth(), windowConfig.GetHeight(), window))
-	{
-		std::cerr << "Error creating interfaces!" << std::endl;
-		return false;
-	}
-
-	if (!CreateRenderTargetView(device, swapChain, rtv))
-	{
-		std::cerr << "Error creating rtv!" << std::endl;
-		return false;
-	}
-
-	if (!CreateDepthStencil(device, windowConfig.GetWidth(), windowConfig.GetHeight(), dsTexture, dsView))
-	{
-		std::cerr << "Error creating depth stencil view!" << std::endl;
-		return false;
-	}
-
-	SetViewport(viewport, windowConfig.GetWidth(), windowConfig.GetHeight());
-
-	return true;
-}*/

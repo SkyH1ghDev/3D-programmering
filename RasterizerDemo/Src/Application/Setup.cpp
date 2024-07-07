@@ -18,8 +18,7 @@ HWND Setup::SetupWindow(HINSTANCE hInstance, int nCmdShow)
 	WindowHelper windowHelper;
 	if (!windowHelper.SetupWindow(hInstance, nCmdShow, window))
 	{
-		std::cerr << "Failed to setup window! \n Exiting... \n";
-		exit(-1);	
+		throw std::runtime_error("Failed to setup Window");
 	}
 
 	return window;
@@ -41,11 +40,10 @@ D3D11Controller Setup::SetupController(HWND window)
 	
 	if (!d3d11Helper.CreateInterfaces(device, immediateContext, swapChain, width, height, window))
 	{
-		std::cerr << "Failed to setup Device, ImmediateContext and SwapChain \n Exiting... \n";
 		device->Release();
 		immediateContext->Release();
 		swapChain->Release();
-		exit(-1);
+		throw std::runtime_error("Failed to setup Device, Context and Swap Chain");
 	}
 	
     d3d11Helper.SetViewport(viewport, width, height);
@@ -53,16 +51,15 @@ D3D11Controller Setup::SetupController(HWND window)
 	return D3D11Controller(device, immediateContext, swapChain, viewport);
 }
 
-RenderTarget Setup::SetupRenderTarget(D3D11Controller &controller)
+RenderTarget Setup::SetupDepthStencilRTV(D3D11Controller &controller)
 {
     D3D11Helper d3d11Helper;
 
 	ID3D11RenderTargetView* rtv;
 	if (!d3d11Helper.CreateRenderTargetView(controller.GetDevice(), controller.GetSwapChain(), rtv))
 	{
-		std::cerr << "Failed to setup Render Target View \n Exiting... \n";
 		rtv->Release();
-		exit(-1);
+		throw std::runtime_error("Failed to create RTV");
 	}
 
 	Configuration configuration;
@@ -71,10 +68,9 @@ RenderTarget Setup::SetupRenderTarget(D3D11Controller &controller)
 	ID3D11DepthStencilView* dsv;
 	if (!d3d11Helper.CreateDepthStencil(controller.GetDevice(), windowConfig.GetWidth(), windowConfig.GetHeight(), texture, dsv))
 	{
-		std::cerr << "Failed to setup Depth Stencil View \n Exiting... \n";
 		texture->Release();
 		dsv->Release();
-		exit(-1);
+		throw std::runtime_error("Failed to Create DSV");
 	}
 
 	return RenderTarget(rtv, texture, dsv);
@@ -87,8 +83,7 @@ Scene Setup::SetupScene(D3D11Controller &controller)
 	FileReader fileReader;
 	if (fileReader.ReadFilesFromConfig(meshDataList) == -1)
 	{
-		std::cerr << "Failed to Read OBJ-Files \n Exiting... \n";
-		exit(-1);
+		throw std::runtime_error("Failed to Read OBJ-Files");
 	}
 
 	HRESULT hr;
@@ -96,8 +91,7 @@ Scene Setup::SetupScene(D3D11Controller &controller)
 	Scene scene(hr, controller.GetDevice());
 	if (FAILED(hr))
 	{
-		std::cerr << "Failed to create Scene \n Exiting... \n";
-		exit(-1);
+		throw std::runtime_error("Failed to Create Scene");
 	}
 	
 	for (MeshData meshData : meshDataList)
@@ -106,8 +100,7 @@ Scene Setup::SetupScene(D3D11Controller &controller)
 
 		if(FAILED(hr))
 		{
-			std::cerr << "Failed to create Mesh \n Exiting... \n";
-			exit(-1);
+			throw std::runtime_error("Failed to create Mesh");
 		}
 		
 		scene.AddMesh(mesh);
@@ -123,9 +116,8 @@ Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, L
 
 	if (!pipelineHelper.LoadShaderBlob(shaderBlob, shaderType, csoPath))
 	{
-		std::cerr << "Failed to Read Shader Data \n Exiting... \n";
 		shaderBlob->Release();
-		exit(-1);
+		throw std::runtime_error("Failed to Read Shader Data");
 	}
 	
 	switch (shaderType)
@@ -138,7 +130,7 @@ Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, L
 				std::cerr << "Could not Compile Vertex Shader \n Exiting... \n";
 				vertexShader->Release();
 				shaderBlob->Release();
-				exit(-1);
+				throw std::runtime_error("Could not Compile Vertex Shader");
 			}
 
 			return new VertexShader(vertexShader, shaderBlob);
@@ -172,10 +164,9 @@ Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, L
 
 			if (!pipelineHelper.LoadPixelShader(controller.GetDevice(), pixelShader, shaderBlob))
 			{
-				std::cerr << "Could not Compile Pixel Shader \n Exiting... \n";
 				pixelShader->Release();
 				shaderBlob->Release();
-				exit(-1);
+				throw std::runtime_error("Could not Compile Pixel Shader");
 			}
 
 			return new PixelShader(pixelShader, shaderBlob);
@@ -197,7 +188,10 @@ InputLayout Setup::SetupInputLayout(D3D11Controller &controller, const Shader &v
 
 	ID3DBlob* shaderBlob = vertexShader.GetShaderBlob();
 
-	pipelineHelper.CreateInputLayout(controller.GetDevice(), inputLayout, shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize());
+	if (FAILED(pipelineHelper.CreateInputLayout(controller.GetDevice(), inputLayout, shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize())))
+	{
+		throw std::runtime_error("Failed to create Input Layout");
+	}
 
 	return InputLayout(inputLayout);
 }
@@ -207,10 +201,43 @@ Sampler Setup::SetupSampler(D3D11Controller &controller)
 	PipelineHelper pipelineHelper;
 	ID3D11SamplerState* sampler;
 
-	pipelineHelper.CreateSamplerState(controller.GetDevice(), sampler);
+	if (FAILED(pipelineHelper.CreateSamplerState(controller.GetDevice(), sampler)))
+	{
+		throw std::runtime_error("Failed to Create Sampler State");
+	}
 
 	return Sampler(sampler);
 }
+
+RenderTarget Setup::SetupGBuffer(D3D11Controller& controller)
+{
+	WindowConfig windowConfig;
+	
+	D3D11_TEXTURE2D_DESC texture2DDesc;
+	texture2DDesc.Width = windowConfig.GetWidth();
+	texture2DDesc.Height = windowConfig.GetHeight();
+	texture2DDesc.MipLevels = 1;
+	texture2DDesc.ArraySize = 1;
+	texture2DDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	texture2DDesc.SampleDesc.Count = 1;
+	texture2DDesc.SampleDesc.Quality = 0;
+	texture2DDesc.Usage = D3D11_USAGE_DEFAULT;
+	texture2DDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	texture2DDesc.CPUAccessFlags = 0;
+	texture2DDesc.MiscFlags = 0;
+
+	ID3D11Device* device = controller.GetDevice();
+	
+	ID3D11Texture2D* texture = nullptr;
+	if (FAILED(device->CreateTexture2D(&texture2DDesc, nullptr, &texture)))
+	{
+		throw std::runtime_error("Failed to create G-Buffer Texture");
+	}
+
+	ID3D11ShaderResourceView* srv = nullptr;
+	if (FAILED(device->CreateShaderResourceView(texture, nullptr, &srv)));
+}
+
 
 ConstantBuffer Setup::CreateWorldMatrixConstantBuffer(D3D11Controller &controller)
 {
@@ -229,8 +256,7 @@ ConstantBuffer Setup::CreateWorldMatrixConstantBuffer(D3D11Controller &controlle
 
 	if (FAILED(hr))
 	{
-		std::cerr << "Create worldMatrixBuffer Failed" << std::endl;
-		exit(-1);
+		throw std::runtime_error("Failed to create World Matrix Constant Buffer");
 	}
 
 	return cbWorldMatrix;
@@ -255,8 +281,7 @@ ConstantBuffer Setup::CreatePixelShaderConstantBuffer(D3D11Controller &controlle
     
 	if (FAILED(hr))
 	{
-		std::cerr << "Create psBuffer Failed" << std::endl;
-		exit(-1);
+		throw std::runtime_error("Failed to create Pixel Shader Constant Buffer");
 	}
 
 	return psConstBuffer;

@@ -10,7 +10,7 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
     // Initialize D3D11
     _controller(Setup::SetupController(this->_window)),
-    _rtv(Setup::SetupRenderTarget(this->_controller)),
+    _windowRTV(Setup::SetupDepthStencilRTV(this->_controller)),
     _scene(Setup::SetupScene(this->_controller)),
 
     // Initialize Shaders
@@ -47,8 +47,8 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
     assert(&vp != nullptr);
 
     // RTV
-    assert(this->_rtv.GetDSV() != nullptr);
-    assert(this->_rtv.GetRTV() != nullptr);
+    assert(this->_windowRTV.GetDSV() != nullptr);
+    assert(this->_windowRTV.GetRTV() != nullptr);
 
     //Scene
     /*
@@ -110,7 +110,7 @@ void Application::Render()
 			DispatchMessage(&this->_msg);
 		}
 		
-		this->_renderer.Render(this->_controller, this->_rtv, *this->_vertexShaderPtr, *this->_pixelShaderPtr, this->_inputLayout, this->_scene, this->_sampler);
+		this->_renderer.Render(this->_controller, this->_windowRTV, *this->_vertexShaderPtr, *this->_pixelShaderPtr, this->_inputLayout, this->_scene, this->_sampler);
 		this->_controller.GetSwapChain()->Present(0, 0);
 		
 		this->_scene.GetCurrentCamera().UpdateInternalConstantBuffer(this->_controller.GetContext());
