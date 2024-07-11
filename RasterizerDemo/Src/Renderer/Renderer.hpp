@@ -5,7 +5,7 @@
 #include "D3D11Controller.hpp"
 #include "InputLayout.hpp"
 #include "PixelShader.hpp"
-#include "RenderTarget.hpp"
+#include "RenderTargetView.hpp"
 #include "Sampler.hpp"
 #include "Scene.hpp"
 #include "VertexShader.hpp"
@@ -15,7 +15,13 @@ class Renderer
 public:
 
     void Setup(const Configuration& configuration);
-    void Render(D3D11Controller& controller, RenderTarget& rtv, VertexShader& vertexShader, PixelShader& pixelShader, InputLayout& inputLayout, Scene& scene, Sampler& samplerState);
+
+    // Forward Rendering
+    void RenderForward(D3D11Controller& controller, RenderTargetView& rtv, VertexShader& vertexShader, PixelShader& pixelShader, InputLayout& inputLayout, Scene& scene, Sampler& samplerState);
+
+    // Deferred Rendering
+    void PerformGeometryPass(D3D11Controller &controller, std::vector<RenderTargetView>& rtv, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState);
+    void PerformLightPass();
 
 private:
 
@@ -28,7 +34,8 @@ private:
     void SetupGeometryShader();
     void SetupRasterizer(ID3D11DeviceContext* context, const D3D11_VIEWPORT& viewport);
     void SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* samplerState);
-    void SetupOutputMerger(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv);
+    void SetupGBuffers(ID3D11DeviceContext* context, ID3D11DepthStencilView* dsv, ID3D11RenderTargetView**& gBuffers, size_t numGBuffers);
+    void SetupOutputMerger(ID3D11DeviceContext* context, ID3D11DepthStencilView* dsv, ID3D11RenderTargetView* rtv);
 
     void SetupComputeShader();
 };

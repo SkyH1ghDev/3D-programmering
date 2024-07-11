@@ -5,6 +5,7 @@
 #include "ConstantBuffer.hpp"
 #include "ProjectionInfo.hpp"
 #include "ViewMatrixConfig.hpp"
+#include "DepthBuffer.hpp"
 
 namespace DX = DirectX;
 
@@ -46,7 +47,9 @@ public:
 	const DX::XMFLOAT4& GetUp() const;
 
 	void UpdateInternalConstantBuffer(ID3D11DeviceContext* context);
-	ID3D11Buffer* GetConstantBuffer() const;
+	ID3D11Buffer* GetConstantBuffer() const; // TODO: Refactor this to return ConstantBuffer
+	DepthBuffer GetDepthBuffer() const;
+	
 	
 	DX::XMFLOAT4X4 GetViewProjectionMatrix() const;
 
@@ -71,6 +74,5 @@ private:
 	DX::XMFLOAT4X4 _viewProjectionMatrix;
 	
 	ConstantBuffer _cameraBuffer;
-
-
+	DepthBuffer _depthBuffer;
 };

@@ -1,28 +1,4 @@
-﻿  compilation object save succeeded; see D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Build\PixelShader.cso
-  compilation object save succeeded; see D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Build\VertexShader.cso
-  Vertex.cpp
-  VertexManager.cpp
-  Generating Code...
-  MTLParser.cpp
-D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Src\FileReader\Parsers\IFileParser.hpp(44,51): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  (compiling source file 'Src/FileReader/Parsers/MTLParser.cpp')
+﻿  ['Src', 'Src/Application', 'Src/Clock', 'Src/Config', 'Src/D3D11', 'Src/FileReader', 'Src/Helpers', 'Src/Input', 'Src/Renderer', 'Src/Shaders', 'Src/Vertex', 'Src/D3D11/Buffer', 'Src/D3D11/Camera', 'Src/D3D11/Controller', 'Src/D3D11/InputLayout', 'Src/D3D11/Light', 'Src/D3D11/Mesh', 'Src/D3D11/RenderTargetView', 'Src/D3D11/Sampler', 'Src/D3D11/Scene', 'Src/D3D11/Shader', 'Src/D3D11/ShaderResourceTexture', 'Src/D3D11/Mesh/MeshData', 'Src/D3D11/Shader/ShaderData', 'Src/FileReader/Parsers', 'Src/Helpers/D3D11', 'Src/Helpers/MatrixCreator', 'Src/Helpers/Pipeline', 'Src/Helpers/Window']
+D:\School\3D-programmering\Inl�mning 2\RasterizerDemo\Src\Shaders\pShaderGeometryPass.hlsl(15,23-27): error X4502: Shader model ps_4_0_level_9_3 doesn't allow reading from position semantics.
   
-D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Src\FileReader\Parsers\IFileParser.hpp(46,32): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  (compiling source file 'Src/FileReader/Parsers/MTLParser.cpp')
-  
-  OBJParser.cpp
-D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Src\FileReader\Parsers\IFileParser.hpp(44,51): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  (compiling source file 'Src/FileReader/Parsers/OBJParser.cpp')
-  
-D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Src\FileReader\Parsers\IFileParser.hpp(46,32): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  (compiling source file 'Src/FileReader/Parsers/OBJParser.cpp')
-  
-  Main.cpp
-D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Src\FileReader\Parsers\IFileParser.hpp(44,51): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  (compiling source file 'Src/Main.cpp')
-  
-D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Src\FileReader\Parsers\IFileParser.hpp(46,32): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  (compiling source file 'Src/Main.cpp')
-  
-  Generating Code...
-  RasterizerDemo.vcxproj -> D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Build\RasterizerDemo.exe
+  compilation failed; no code produced

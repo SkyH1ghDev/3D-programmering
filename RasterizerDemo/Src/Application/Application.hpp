@@ -23,6 +23,7 @@ public:
 private:
     void Setup();
     void Render();
+    void RunAsserts();
 
 private:
     // Window
@@ -30,15 +31,16 @@ private:
 
     // D3D11
     D3D11Controller _controller;
-    RenderTarget _windowRTV;
+    RenderTargetView _windowRTV;
+    std::vector<RenderTargetView> _gBuffers;
     Scene _scene; // Could be expanded to contain multiple scenes
 
     // Shaders
-    std::unique_ptr<VertexShader> _vertexShaderPtr;
+    std::unique_ptr<VertexShader> _vShaderGeometryPass;
     //std::unique_ptr<HullShader> _hullShader;
     //std::unique_ptr<DomainShader> _domainShader;
     //std::unique_ptr<GeometryShader> _geometryShader;
-    std::unique_ptr<PixelShader> _pixelShaderPtr;
+    std::unique_ptr<PixelShader> _pShaderGeometryPass;
     //std::unique_ptr<ComputeShader> _computeShader;
 
     // Input Layout and Sampler

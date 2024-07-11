@@ -14,8 +14,6 @@ public:
 	bool CreateInterfaces(ID3D11Device*& device, ID3D11DeviceContext*& immediateContext, IDXGISwapChain*& swapChain, UINT width, UINT height, HWND window);
 	void SetViewport(D3D11_VIEWPORT& viewport, UINT width, UINT height);
 	bool CreateRenderTargetView(ID3D11Device* device, IDXGISwapChain* swapChain, ID3D11RenderTargetView*& rtv);
-    bool CreateDepthStencil(ID3D11Device* device, UINT width, UINT height, ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView);
-	
-private:
-    
+	bool CreateGBuffer(ID3D11Device* device, ID3D11RenderTargetView*& rtv, ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv, UINT width, UINT height);
+    bool CreateDepthStencil(ID3D11Device* device, UINT width, UINT height, ID3D11Texture2D*& dsTexture, ID3D11DepthStencilView*& dsView, ID3D11ShaderResourceView*& srv);
 };

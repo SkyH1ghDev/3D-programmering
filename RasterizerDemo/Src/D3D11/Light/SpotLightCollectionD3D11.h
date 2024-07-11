@@ -6,7 +6,7 @@
 #include <DirectXMath.h>
 
 #include "StructuredBufferD3D11.h"
-#include "DepthBufferD3D11.h"
+#include "DepthBuffer.hpp"
 #include "Camera.hpp"
 
 struct SpotLightData
@@ -38,7 +38,7 @@ public:
 	SpotLightCollectionD3D11(const SpotLightCollectionD3D11& other) = delete;
 	SpotLightCollectionD3D11& operator=(const SpotLightCollectionD3D11& other) = delete;
 	SpotLightCollectionD3D11(SpotLightCollectionD3D11&& other) = delete;
-	SpotLightCollectionD3D11& operator=(DepthBufferD3D11 && other) = delete;
+	SpotLightCollectionD3D11& operator=(DepthBuffer && other) = delete;
 
 	void Initialize(ID3D11Device* device, const SpotLightData& lightInfo);
 
@@ -62,7 +62,7 @@ private:
 
 	std::vector<LightBuffer> bufferData;
 
-	DepthBufferD3D11 shadowMaps;
+	DepthBuffer shadowMaps;
 	StructuredBufferD3D11 lightBuffer;
 	std::vector<Camera> shadowCameras;
 };

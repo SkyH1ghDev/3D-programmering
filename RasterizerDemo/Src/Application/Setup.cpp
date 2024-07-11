@@ -51,7 +51,7 @@ D3D11Controller Setup::SetupController(HWND window)
 	return D3D11Controller(device, immediateContext, swapChain, viewport);
 }
 
-RenderTarget Setup::SetupDepthStencilRTV(D3D11Controller &controller)
+RenderTargetView Setup::SetupRenderTargetView(D3D11Controller &controller)
 {
     D3D11Helper d3d11Helper;
 
@@ -62,19 +62,31 @@ RenderTarget Setup::SetupDepthStencilRTV(D3D11Controller &controller)
 		throw std::runtime_error("Failed to create RTV");
 	}
 
-	Configuration configuration;
-	WindowConfig windowConfig = configuration.GetWindowConfig();
-	ID3D11Texture2D* texture;
-	ID3D11DepthStencilView* dsv;
-	if (!d3d11Helper.CreateDepthStencil(controller.GetDevice(), windowConfig.GetWidth(), windowConfig.GetHeight(), texture, dsv))
+	return RenderTargetView(rtv);
+}
+
+RenderTargetView Setup::SetupGBuffer(D3D11Controller& controller)
+{
+	D3D11Helper d3d11Helper;
+	Configuration config;
+
+	WindowConfig windowConfig = config.GetWindowConfig();
+
+	
+	ID3D11RenderTargetView* rtv = nullptr;
+	ID3D11ShaderResourceView* srv = nullptr;
+	ID3D11Texture2D* texture = nullptr;
+	if (!d3d11Helper.CreateGBuffer(controller.GetDevice(), rtv, texture, srv, windowConfig.GetWidth(), windowConfig.GetHeight()))
 	{
-		texture->Release();
-		dsv->Release();
-		throw std::runtime_error("Failed to Create DSV");
+		if (rtv != nullptr) { rtv->Release(); }
+		if (texture != nullptr) { texture->Release(); }
+		if (srv != nullptr) { srv->Release(); }
+		throw std::runtime_error("Failed to create GBuffer");
 	}
 
-	return RenderTarget(rtv, texture, dsv);
+	return RenderTargetView(rtv, texture, srv);
 }
+
 
 Scene Setup::SetupScene(D3D11Controller &controller)
 {
@@ -116,7 +128,6 @@ Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, L
 
 	if (!pipelineHelper.LoadShaderBlob(shaderBlob, shaderType, csoPath))
 	{
-		shaderBlob->Release();
 		throw std::runtime_error("Failed to Read Shader Data");
 	}
 	
@@ -209,7 +220,7 @@ Sampler Setup::SetupSampler(D3D11Controller &controller)
 	return Sampler(sampler);
 }
 
-RenderTarget Setup::SetupGBuffer(D3D11Controller& controller)
+/*RenderTargetView Setup::SetupGBuffer(D3D11Controller& controller)
 {
 	WindowConfig windowConfig;
 	
@@ -236,7 +247,7 @@ RenderTarget Setup::SetupGBuffer(D3D11Controller& controller)
 
 	ID3D11ShaderResourceView* srv = nullptr;
 	if (FAILED(device->CreateShaderResourceView(texture, nullptr, &srv)));
-}
+}*/
 
 
 ConstantBuffer Setup::CreateWorldMatrixConstantBuffer(D3D11Controller &controller)

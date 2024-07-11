@@ -10,30 +10,50 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
     // Initialize D3D11
     _controller(Setup::SetupController(this->_window)),
-    _windowRTV(Setup::SetupDepthStencilRTV(this->_controller)),
+    _windowRTV(Setup::SetupRenderTargetView(this->_controller)),
     _scene(Setup::SetupScene(this->_controller)),
 
     // Initialize Shaders
-    _vertexShaderPtr(std::unique_ptr<VertexShader>
+    _vShaderGeometryPass(std::unique_ptr<VertexShader>
     			 (dynamic_cast<VertexShader*>
     			 (Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"Src/Shaders/VertexShader.hlsl")))),
 
     //_hullShader();
     //_domainShader(),
     //_geometryShader(),
-    _pixelShaderPtr(std::unique_ptr<PixelShader>
+    _pShaderGeometryPass(std::unique_ptr<PixelShader>
     			(dynamic_cast<PixelShader*>
-    			(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"Src/Shaders/PixelShader.hlsl")))),
+    			(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"Src/Shaders/pShaderGeometryPass.hlsl")))),
 
     //_computeShader()
 
     // Initialize InputLayout and Sampler
-    _inputLayout(Setup::SetupInputLayout(this->_controller, *this->_vertexShaderPtr)),
+    _inputLayout(Setup::SetupInputLayout(this->_controller, *this->_vShaderGeometryPass)),
     _sampler(Setup::SetupSampler(this->_controller)),
 
 	// Initalize ConstantBuffers
 	_worldMatrixConstantBuffer(Setup::CreateWorldMatrixConstantBuffer(this->_controller)),
 	_pixelShaderConstantBuffer(Setup::CreatePixelShaderConstantBuffer(this->_controller, this->_scene))
+{
+	const size_t numGBuffers = 3;
+	for (size_t i = 0; i < numGBuffers; ++i )
+	{
+		this->_gBuffers.emplace_back(Setup::SetupGBuffer(this->_controller));
+	}
+
+	
+}
+
+int Application::Run()
+{
+	RunAsserts();
+    Setup(); 
+    Render();
+
+    return 0;
+}
+
+void Application::RunAsserts()
 {
     // Window
     assert(&this->_window != nullptr);
@@ -47,22 +67,18 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
     assert(&vp != nullptr);
 
     // RTV
-    assert(this->_windowRTV.GetDSV() != nullptr);
     assert(this->_windowRTV.GetRTV() != nullptr);
-
+	
     //Scene
     /*
      * TODO: Implement asserts for scene, mesh, submesh and camera
     */
 
-	// Vertex
-	assert(sizeof(Vertex) % 16 == 0);
-    
     // Shaders
-	assert(this->_vertexShaderPtr != nullptr);
-	assert(this->_pixelShaderPtr != nullptr);
-    assert(this->_vertexShaderPtr->GetShaderBlob() != nullptr);
-    assert(this->_pixelShaderPtr->GetShaderBlob() != nullptr);
+	assert(this->_vShaderGeometryPass != nullptr);
+	assert(this->_pShaderGeometryPass != nullptr);
+    assert(this->_vShaderGeometryPass->GetShaderBlob() != nullptr);
+    assert(this->_pShaderGeometryPass->GetShaderBlob() != nullptr);
 
     // Input layout + Sampler
     assert(this->_inputLayout.GetInputLayout() != nullptr);
@@ -73,13 +89,6 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
 	assert(this->_pixelShaderConstantBuffer.GetBuffer() != nullptr);
 }
 
-int Application::Run()
-{
-    Setup(); 
-    Render();
-
-    return 0;
-}
 
 void Application::Setup()
 {
@@ -110,7 +119,8 @@ void Application::Render()
 			DispatchMessage(&this->_msg);
 		}
 		
-		this->_renderer.Render(this->_controller, this->_windowRTV, *this->_vertexShaderPtr, *this->_pixelShaderPtr, this->_inputLayout, this->_scene, this->_sampler);
+		//this->_renderer.RenderForward(this->_controller, this->_windowRTV, *this->_vShaderGeometryPass, *this->_pShaderGeometryPass, this->_inputLayout, this->_scene, this->_sampler);
+		this->_renderer.PerformGeometryPass(this->_controller, this->_gBuffers, *this->_vShaderGeometryPass, *this->_pShaderGeometryPass, this->_inputLayout, this->_scene, this->_sampler);
 		this->_controller.GetSwapChain()->Present(0, 0);
 		
 		this->_scene.GetCurrentCamera().UpdateInternalConstantBuffer(this->_controller.GetContext());

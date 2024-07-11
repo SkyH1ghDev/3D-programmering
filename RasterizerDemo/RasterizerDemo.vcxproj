@@ -98,7 +98,8 @@
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <AdditionalIncludeDirectories>Src/Shaders;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src/Shaders</AdditionalIncludeDirectories>
+      <ShaderModel>5.0</ShaderModel>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -125,7 +126,7 @@
 		Src/D3D11/InputLayout; 
 		Src/D3D11/Light; 
 		Src/D3D11/Mesh; 
-		Src/D3D11/RenderTarget; 
+		Src/D3D11/RenderTargetView; 
 		Src/D3D11/Sampler; 
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
@@ -154,6 +155,7 @@
     </PreBuildEvent>
     <FxCompile>
       <AdditionalIncludeDirectories>Src/Shaders</AdditionalIncludeDirectories>
+      <ShaderModel>5.0</ShaderModel>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -176,7 +178,8 @@
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <AdditionalIncludeDirectories>Src/Shaders;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src/Shaders</AdditionalIncludeDirectories>
+      <ShaderModel>5.0</ShaderModel>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -199,7 +202,8 @@
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <AdditionalIncludeDirectories>Src/Shaders;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src/Shaders</AdditionalIncludeDirectories>
+      <ShaderModel>5.0</ShaderModel>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -295,7 +299,7 @@
 		Src/D3D11/InputLayout; 
 		Src/D3D11/Light; 
 		Src/D3D11/Mesh; 
-		Src/D3D11/RenderTarget; 
+		Src/D3D11/RenderTargetView; 
 		Src/D3D11/Sampler; 
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
@@ -311,6 +315,7 @@
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Src\D3D11\Buffer\DepthBuffer.cpp" />
     <ClCompile Include="Src\D3D11\Buffer\VertexBuffer.cpp" />
     <ClCompile Include="Src\D3D11\Camera\Camera.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
@@ -401,7 +406,7 @@
 		Src/D3D11/InputLayout; 
 		Src/D3D11/Light; 
 		Src/D3D11/Mesh; 
-		Src/D3D11/RenderTarget; 
+		Src/D3D11/RenderTargetView; 
 		Src/D3D11/Sampler; 
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
@@ -506,7 +511,7 @@
 		Src/D3D11/InputLayout; 
 		Src/D3D11/Light; 
 		Src/D3D11/Mesh; 
-		Src/D3D11/RenderTarget; 
+		Src/D3D11/RenderTargetView; 
 		Src/D3D11/Sampler; 
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
@@ -611,7 +616,7 @@
 		Src/D3D11/InputLayout; 
 		Src/D3D11/Light; 
 		Src/D3D11/Mesh; 
-		Src/D3D11/RenderTarget; 
+		Src/D3D11/RenderTargetView; 
 		Src/D3D11/Sampler; 
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
@@ -716,7 +721,7 @@
 		Src/D3D11/InputLayout; 
 		Src/D3D11/Light; 
 		Src/D3D11/Mesh; 
-		Src/D3D11/RenderTarget; 
+		Src/D3D11/RenderTargetView; 
 		Src/D3D11/Sampler; 
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
@@ -734,7 +739,7 @@
     </ClCompile>
     <ClCompile Include="Src\D3D11\Mesh\Mesh.cpp" />
     <ClCompile Include="Src\D3D11\Mesh\SubMesh.cpp" />
-    <ClCompile Include="Src\D3D11\RenderTarget\RenderTarget.cpp">
+    <ClCompile Include="Src\D3D11\RenderTargetView\RenderTargetView.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -823,7 +828,7 @@
 		Src/D3D11/InputLayout; 
 		Src/D3D11/Light; 
 		Src/D3D11/Mesh; 
-		Src/D3D11/RenderTarget; 
+		Src/D3D11/RenderTargetView; 
 		Src/D3D11/Sampler; 
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
@@ -939,7 +944,7 @@
 		Src/D3D11/InputLayout; 
 		Src/D3D11/Light; 
 		Src/D3D11/Mesh; 
-		Src/D3D11/RenderTarget; 
+		Src/D3D11/RenderTargetView; 
 		Src/D3D11/Sampler; 
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
@@ -1044,7 +1049,7 @@
 		Src/D3D11/InputLayout; 
 		Src/D3D11/Light; 
 		Src/D3D11/Mesh; 
-		Src/D3D11/RenderTarget; 
+		Src/D3D11/RenderTargetView; 
 		Src/D3D11/Sampler; 
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
@@ -1153,7 +1158,7 @@
 		Src/D3D11/InputLayout; 
 		Src/D3D11/Light; 
 		Src/D3D11/Mesh; 
-		Src/D3D11/RenderTarget; 
+		Src/D3D11/RenderTargetView; 
 		Src/D3D11/Sampler; 
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
@@ -1258,7 +1263,7 @@
 		Src/D3D11/InputLayout; 
 		Src/D3D11/Light; 
 		Src/D3D11/Mesh; 
-		Src/D3D11/RenderTarget; 
+		Src/D3D11/RenderTargetView; 
 		Src/D3D11/Sampler; 
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
@@ -1275,14 +1280,15 @@
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Src\Renderer\Renderer.cpp" />
-    <FxCompile Include="Src\Shaders\PixelShader.hlsl">
+    <None Include="Src\Shaders\PixelShader.hlsl">
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="Src\Shaders\VertexShader.hlsl">
+    </None>
+    <None Include="Src\Shaders\VertexShader.hlsl">
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-    </FxCompile>
+    </None>
+    <None Include="Src\Shaders\pShaderGeometryPass.hlsl" />
     <ClCompile Include="Src\Vertex\Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -1300,7 +1306,7 @@
     <ClInclude Include="Src\Config\WorldMatrixConfig.hpp" />
     <ClInclude Include="Src\D3D11\Buffer\BufferFlagData.hpp" />
     <ClInclude Include="Src\D3D11\Buffer\ConstantBuffer.hpp" />
-    <ClInclude Include="Src\D3D11\Buffer\DepthBufferD3D11.h" />
+    <ClInclude Include="Src\D3D11\Buffer\DepthBuffer.hpp" />
     <ClInclude Include="Src\D3D11\Buffer\IndexBuffer.hpp" />
     <ClInclude Include="Src\D3D11\Buffer\StructuredBufferD3D11.h" />
     <ClInclude Include="Src\D3D11\Buffer\VertexBuffer.hpp" />
@@ -1315,7 +1321,7 @@
     <ClInclude Include="Src\D3D11\Mesh\MeshData\SubMeshInfo.hpp" />
     <ClInclude Include="Src\D3D11\Mesh\MeshData\VertexInfo.hpp" />
     <ClInclude Include="Src\D3D11\Mesh\SubMesh.hpp" />
-    <ClInclude Include="Src\D3D11\RenderTarget\RenderTarget.hpp" />
+    <ClInclude Include="Src\D3D11\RenderTargetView\RenderTargetView.hpp" />
     <ClInclude Include="Src\D3D11\Sampler\Sampler.hpp" />
     <ClInclude Include="Src\D3D11\Scene\Scene.hpp" />
     <ClInclude Include="Src\D3D11\Shader\ComputeShader.hpp" />

@@ -12,6 +12,6 @@ public:
     DX::XMFLOAT4 GetDirectionVector() const { return this->_directionVector; }
     
 private:
-    DX::XMFLOAT4 _camPosition = {0.0f, 0.0f, -40.0f, 1.0f};
+    DX::XMFLOAT4 _camPosition = {0.0f, 0.0f, -10.0f, 1.0f};
     DX::XMFLOAT4 _directionVector = {-1.0f, 0.0f, 0.0f, 1.0f};
 };

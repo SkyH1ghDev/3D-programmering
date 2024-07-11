@@ -16,7 +16,8 @@ Camera::Camera(HRESULT& hr, ID3D11Device* device, const DX::XMFLOAT4& initialPos
 	_projInfo(projectionInfo),
 	_position(initialPosition),
 	_viewProjectionMatrix(CreateViewProjectionMatrix(this->_position, this->_forward, this->_projInfo)),
-	_cameraBuffer(ConstantBuffer(hr, device, sizeof(this->_viewProjectionMatrix), &this->_viewProjectionMatrix, 0, 0, 0, GetBufferFlags()))
+	_cameraBuffer(ConstantBuffer(hr, device, sizeof(this->_viewProjectionMatrix), &this->_viewProjectionMatrix, 0, 0, 0, GetBufferFlags())),
+	_depthBuffer(DepthBuffer(hr, device))
 {
 }
 
@@ -168,6 +169,11 @@ void Camera::UpdateInternalConstantBuffer(ID3D11DeviceContext *context)
 ID3D11Buffer* Camera::GetConstantBuffer() const
 {
 	return this->_cameraBuffer.GetBuffer();
+}
+
+DepthBuffer Camera::GetDepthBuffer() const
+{
+	return this->_depthBuffer;
 }
 
 
