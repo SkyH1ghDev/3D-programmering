@@ -12,7 +12,6 @@ cbuffer ConstBuffer: register(b0)
 
 struct PixelShaderInput
 {
-	float4 position : SV_POSITION;
 	float4 worldPosition : POSITION;
 	float4 normal : NORMAL;
 	float2 uv : UV;
@@ -27,21 +26,21 @@ float4 main(PixelShaderInput input): SV_TARGET
 	float4 diffuseComponent = lightColour * diffuseIntensity;
 
 	// BLINN-PHONG
-
-	/*
+	
 	float4 viewDirection = normalize(eyePosition - input.worldPosition);
 	float4 halfway = normalize(viewDirection + lightDirection);
-	float shininess = 10000.0f;
 	float specularIntensity = pow(max(dot(input.normal, halfway), 0.0f), shininess);
 	float4 specularComponent = lightColour * specularIntensity;
-	*/
-	
+
+	// PHONG
+
+	/*
 	float4 reflection = reflect(-lightDirection, input.normal);
 	float4 vectorToEye = normalize(eyePosition - input.worldPosition);
 	float specularIntensity = pow(max(dot(vectorToEye, reflection), 0.0f), shininess);
 	float4 specularComponent = lightColour * specularIntensity;
+	*/
 	
 	float4 result = (ambientComponent + diffuseComponent + specularComponent) * testTexture.Sample(testSampler, input.uv);
 	return result; 
-    //return float4(result);
 }

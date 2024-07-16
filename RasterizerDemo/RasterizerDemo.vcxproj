@@ -1280,15 +1280,20 @@
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Src\Renderer\Renderer.cpp" />
-    <None Include="Src\Shaders\PixelShader.hlsl">
+    <None Include="Src\Shaders\DeferredComputeShaderLight.hlsl" />
+    <None Include="Src\Shaders\ForwardVertexShader.hlsl">
+      <FileType>Document</FileType>
+      <ShaderType>Vertex</ShaderType>
+    </None>
+    <None Include="Src\Shaders\ForwardPixelShader.hlsl">
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
     </None>
-    <None Include="Src\Shaders\VertexShader.hlsl">
+    <None Include="Src\Shaders\DeferredVertexShaderGeometry.hlsl">
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
     </None>
-    <None Include="Src\Shaders\pShaderGeometryPass.hlsl" />
+    <None Include="Src\Shaders\DeferredPixelShaderGeometry.hlsl" />
     <ClCompile Include="Src\Vertex\Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>

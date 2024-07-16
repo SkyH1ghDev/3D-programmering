@@ -1,7 +1,10 @@
 ﻿#include "Setup.hpp"
 
+#include <codecvt>
 #include <iostream>
 #include <d3dcompiler.h>
+
+#include "ComputeShader.hpp"
 #include "WindowHelper.hpp"
 #include "D3D11Helper.hpp"
 #include "Configuration.hpp"
@@ -121,12 +124,14 @@ Scene Setup::SetupScene(D3D11Controller &controller)
 	return scene;
 }
 
-Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, LPCWSTR csoPath)
+Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, std::wstring hlslFilename)
 {
 	PipelineHelper pipelineHelper;
 	ID3DBlob* shaderBlob;
 
-	if (!pipelineHelper.LoadShaderBlob(shaderBlob, shaderType, csoPath))
+	std::wstring hlslFilepath = L"Src/Shaders/" + hlslFilename;
+	
+	if (!pipelineHelper.LoadShaderBlob(shaderBlob, shaderType, hlslFilepath.c_str()))
 	{
 		throw std::runtime_error("Failed to Read Shader Data");
 	}
@@ -134,7 +139,7 @@ Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, L
 	switch (shaderType)
 	{
 		case ShaderType::VERTEX_SHADER:
-			ID3D11VertexShader* vertexShader;
+			ID3D11VertexShader* vertexShader = nullptr;
 		
 			if (!pipelineHelper.LoadVertexShader(controller.GetDevice(), vertexShader, shaderBlob))
 			{
@@ -171,7 +176,7 @@ Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, L
 			break;
 
 		case ShaderType::PIXEL_SHADER:
-			ID3D11PixelShader* pixelShader;
+			ID3D11PixelShader* pixelShader = nullptr;
 
 			if (!pipelineHelper.LoadPixelShader(controller.GetDevice(), pixelShader, shaderBlob))
 			{
@@ -183,12 +188,16 @@ Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, L
 			return new PixelShader(pixelShader, shaderBlob);
 
 		case ShaderType::COMPUTE_SHADER:
+			ID3D11ComputeShader* computeShader = nullptr;
 			
-			// TODO: Fix loading of compute shader
-
-			std::cerr << "Not implemented loading (CS) \n Exiting... \n";
-			exit(-1);
-			break;
+			if (!pipelineHelper.LoadComputeShader(controller.GetDevice(), computeShader, shaderBlob))
+			{
+				computeShader->Release();
+				shaderBlob->Release();
+				throw std::runtime_error("Could not Compile Compute Shader");
+			}
+			return new ComputeShader(computeShader, shaderBlob);
+		
 	}
 }
 
@@ -298,3 +307,12 @@ ConstantBuffer Setup::CreatePixelShaderConstantBuffer(D3D11Controller &controlle
 	return psConstBuffer;
 }
 
+void Setup::AppendLPCWSTR(LPCWSTR& newStr, LPCWSTR first, LPCWSTR second)
+{
+	std::wstring wString1 = first;
+	std::wstring wString2 = second;
+	
+	std::wstring result = wString1.append(wString2);
+
+	newStr = result.c_str();
+}

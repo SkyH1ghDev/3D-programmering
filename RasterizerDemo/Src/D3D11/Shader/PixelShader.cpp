@@ -12,15 +12,22 @@ PixelShader::~PixelShader()
     this->_pixelShader->Release();
 }
 
-void PixelShader::BindShader(ID3D11DeviceContext *context) const
+void PixelShader::AddConstantBuffer(ID3D11Buffer* buffer)
 {
-    
+    this->_constantBuffers.emplace_back(buffer);
 }
+
 
 ID3DBlob *PixelShader::GetShaderBlob() const
 {
     return this->_shaderBlob;
 }
+
+std::vector<ID3D11Buffer*> PixelShader::GetConstantBuffers()
+{
+    return this->_constantBuffers;
+}
+
 
 ID3D11PixelShader *PixelShader::GetPixelShader()
 {

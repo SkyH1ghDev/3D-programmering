@@ -23,14 +23,16 @@ void Renderer::RenderForward(D3D11Controller &controller, RenderTargetView &rtv,
 		SetupInputAssembler(context, vBuffer, iLayout, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
+		std::vector<ID3D11Buffer*> vertexShaderBuffers = vertexShader.GetConstantBuffers();
 
-		SetupVertexShader(context, vShader);
+		SetupVertexShader(context, vShader, vertexShaderBuffers);
 
 		ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
 		ID3D11ShaderResourceView* tShaderResourceView = mesh.GetTextureSRV(0);
 		ID3D11SamplerState* sState = samplerState.GetSamplerState();
+		std::vector<ID3D11Buffer*> pixelShaderBuffers = pixelShader.GetConstantBuffers();
 	
-		SetupPixelShader(context, pShader, tShaderResourceView, sState);
+		SetupPixelShader(context, pShader, tShaderResourceView, sState, pixelShaderBuffers);
 
 		D3D11_VIEWPORT viewport = controller.GetViewPort();
 	
@@ -63,26 +65,38 @@ void Renderer::PerformGeometryPass(D3D11Controller &controller, std::vector<Rend
 	{
 		Mesh& mesh = scene.GetMeshAt(i);
 		
+		// Setup InputAssembler
+		
 		VertexBuffer vertexBuffer = mesh.GetVertexBuffer();
-	
+		
 		ID3D11Buffer* vBuffer = vertexBuffer.GetBuffer();
 		ID3D11InputLayout* iLayout = inputLayout.GetInputLayout();
 	
 		SetupInputAssembler(context, vBuffer, iLayout, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+		// Setup Vertex Shader
+		
 		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
+		std::vector<ID3D11Buffer*> vertexShaderBuffers = vertexShader.GetConstantBuffers();
+		
+		SetupVertexShader(context, vShader, vertexShaderBuffers);
 
-		SetupVertexShader(context, vShader);
-
+		// Setup Pixel Shader
+		
 		ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
 		ID3D11ShaderResourceView* tShaderResourceView = mesh.GetTextureSRV(0);
 		ID3D11SamplerState* sState = samplerState.GetSamplerState();
+		std::vector<ID3D11Buffer*> pixelShaderBuffers = pixelShader.GetConstantBuffers();
 	
-		SetupPixelShader(context, pShader, tShaderResourceView, sState);
+		SetupPixelShader(context, pShader, tShaderResourceView, sState, pixelShaderBuffers);
 
+		// Setup Rasterizer
+		
 		D3D11_VIEWPORT viewport = controller.GetViewPort();
 	
 		SetupRasterizer(context, viewport);
+
+		// Setup G-Buffers
 		
 		ID3D11DepthStencilView* dsv = depthBuffer.GetDSV();
 		std::vector<ID3D11RenderTargetView*> gBuffersVec;
@@ -95,6 +109,8 @@ void Renderer::PerformGeometryPass(D3D11Controller &controller, std::vector<Rend
 		ID3D11RenderTargetView** gBuffersArray = gBuffersVec.data();
 		SetupGBuffers(context, dsv, gBuffersArray, gBuffersVec.size());
 
+		// Render to G-Buffers
+		
 		for (size_t j = 0; j < mesh.GetNrOfSubMeshes(); ++j)
 		{
 			SubMesh& subMesh = mesh.GetSubMeshAt(j);
@@ -105,6 +121,11 @@ void Renderer::PerformGeometryPass(D3D11Controller &controller, std::vector<Rend
 			}
 			context->Draw(subMesh.GetNumIndices(),subMesh.GetStartIndex());
 		}
+
+		// Unbind G-Buffers
+		
+		UnbindGBuffers(context, gBuffersVec.size());
+		
 	}
 }
 
@@ -127,16 +148,22 @@ void Renderer::SetupInputAssembler(ID3D11DeviceContext *context, ID3D11Buffer *v
 	context->IASetPrimitiveTopology(topology);
 }
 
-void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShader* vertexShader)
+void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShader* vertexShader, std::vector<ID3D11Buffer*> buffers)
 {
 	context->VSSetShader(vertexShader, nullptr, 0);
+
+	ID3D11Buffer** buffersArr = buffers.data();
+	context->VSSetConstantBuffers(0, buffers.size(), buffersArr);
 }
 
-void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* samplerState)
+void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* samplerState, std::vector<ID3D11Buffer*> buffers)
 {
 	context->PSSetShader(pixelShader, nullptr, 0);
 	context->PSSetShaderResources(0, 1, &textureSRV);
 	context->PSSetSamplers(0, 1, &samplerState);
+
+	ID3D11Buffer** buffersArr = buffers.data();
+	context->PSSetConstantBuffers(0, buffers.size(), buffersArr);
 }
 
 void Renderer::SetupRasterizer(ID3D11DeviceContext* context, const D3D11_VIEWPORT& viewport)
@@ -155,3 +182,14 @@ void Renderer::SetupOutputMerger(ID3D11DeviceContext* context, ID3D11DepthStenci
 	context->OMSetRenderTargets(1, &rtv, dsv);
 }
 
+void Renderer::UnbindGBuffers(ID3D11DeviceContext* context, size_t numGBuffers)
+{
+	std::vector<ID3D11RenderTargetView*> nulledVec;
+	for (size_t i = 0; i < numGBuffers; ++i)
+	{
+		nulledVec.emplace_back(nullptr);
+	}
+
+	ID3D11RenderTargetView** nulledArr = nulledVec.data();
+	context->OMSetRenderTargets(numGBuffers, nulledArr, nullptr);
+}

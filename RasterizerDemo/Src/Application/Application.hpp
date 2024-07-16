@@ -36,11 +36,33 @@ private:
     Scene _scene; // Could be expanded to contain multiple scenes
 
     // Shaders
-    std::unique_ptr<VertexShader> _vShaderGeometryPass;
+
+    /*
+     * Forward Rendering
+     */
+
+    std::unique_ptr<VertexShader> _forwardVertexShader;
+    std::unique_ptr<PixelShader> _forwardPixelShader;
+    
+    /*
+     * Deferred Rendering
+     */
+    
+    // Geometry Pass
+    std::unique_ptr<VertexShader> _deferredVertexShaderGeometry;
+    std::unique_ptr<PixelShader> _deferredPixelShaderGeometry;
+    
     //std::unique_ptr<HullShader> _hullShader;
     //std::unique_ptr<DomainShader> _domainShader;
     //std::unique_ptr<GeometryShader> _geometryShader;
-    std::unique_ptr<PixelShader> _pShaderGeometryPass;
+
+    // Light Pass
+    
+    std::unique_ptr<ComputeShader> _computeShader;
+    
+    //std::unique_ptr<HullShader> _hullShader;
+    //std::unique_ptr<DomainShader> _domainShader;
+    //std::unique_ptr<GeometryShader> _geometryShader;
     //std::unique_ptr<ComputeShader> _computeShader;
 
     // Input Layout and Sampler

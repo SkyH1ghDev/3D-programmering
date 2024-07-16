@@ -13,5 +13,5 @@ public:
    RenderMode GetRenderMode() const { return this->_renderMode; }
    
 private:
-   RenderMode _renderMode = Forward;
+   RenderMode _renderMode = Deferred;
 };

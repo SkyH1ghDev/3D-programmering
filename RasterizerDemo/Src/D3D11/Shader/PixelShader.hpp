@@ -14,8 +14,10 @@ public:
     PixelShader(PixelShader&& other) = delete;
     PixelShader& operator=(PixelShader&& other) = delete;
 
-    void BindShader(ID3D11DeviceContext *context) const override;
+    void AddConstantBuffer(ID3D11Buffer* buffer) override;
+
     ID3DBlob* GetShaderBlob() const override;
+    std::vector<ID3D11Buffer*> GetConstantBuffers() override;
     
     ID3D11PixelShader* GetPixelShader();
     

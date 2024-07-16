@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <windows.h>
+#include <xstring>
 
 #include "D3D11Controller.hpp"
 #include "InputLayout.hpp"
@@ -18,9 +19,13 @@ public:
     static RenderTargetView SetupRenderTargetView(D3D11Controller& controller);
     static RenderTargetView SetupGBuffer(D3D11Controller& controller);
     static Scene SetupScene(D3D11Controller& controller);
-    static Shader* SetupShader(D3D11Controller& controller, ShaderType shaderType, LPCWSTR csoPath);
+    static Shader* SetupShader(D3D11Controller& controller, ShaderType shaderType, std::wstring hlslFilename);
     static InputLayout SetupInputLayout(D3D11Controller& controller, const Shader& vertexShader);
     static Sampler SetupSampler(D3D11Controller& controller);
     static ConstantBuffer CreateWorldMatrixConstantBuffer(D3D11Controller& controller);
     static ConstantBuffer CreatePixelShaderConstantBuffer(D3D11Controller& controller, Scene& scene);
+
+private:
+
+    static void AppendLPCWSTR(LPCWSTR& newStr, LPCWSTR first, LPCWSTR second);
 };

@@ -5,6 +5,7 @@
 #include "MatrixCreator.hpp"
 
 Application::Application(HINSTANCE hInstance, int nCmdShow) :
+
     // Initialize Window
     _window(Setup::SetupWindow(hInstance, nCmdShow)),
 
@@ -12,23 +13,50 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
     _controller(Setup::SetupController(this->_window)),
     _windowRTV(Setup::SetupRenderTargetView(this->_controller)),
     _scene(Setup::SetupScene(this->_controller)),
-
+	
     // Initialize Shaders
-    _vShaderGeometryPass(std::unique_ptr<VertexShader>
-    			 (dynamic_cast<VertexShader*>
-    			 (Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"Src/Shaders/VertexShader.hlsl")))),
+
+	/*
+	 * Forward Rendering 
+	 */
+
+	_forwardVertexShader(std::unique_ptr<VertexShader>
+		(dynamic_cast<VertexShader*>
+		(Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"ForwardVertexShader.hlsl")))),
+		
+	_forwardPixelShader(std::unique_ptr<PixelShader>
+		(dynamic_cast<PixelShader*>
+		(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"ForwardPixelShader.hlsl")))),
+
+	/*
+	 * Deferred Rendering
+	 */
+
+	/*
+	 * Geometry Pass
+	 */
+
+    _deferredVertexShaderGeometry(std::unique_ptr<VertexShader>
+		(dynamic_cast<VertexShader*>
+		(Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"DeferredVertexShaderGeometry.hlsl")))),
 
     //_hullShader();
     //_domainShader(),
     //_geometryShader(),
-    _pShaderGeometryPass(std::unique_ptr<PixelShader>
-    			(dynamic_cast<PixelShader*>
-    			(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"Src/Shaders/pShaderGeometryPass.hlsl")))),
+    _deferredPixelShaderGeometry(std::unique_ptr<PixelShader>
+		(dynamic_cast<PixelShader*>
+		(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"DeferredPixelShaderGeometry.hlsl")))),
 
-    //_computeShader()
+	/*
+	 * Light Pass
+	 */
+
+    _computeShader(std::unique_ptr<ComputeShader>
+    	(dynamic_cast<ComputeShader*>
+    	(Setup::SetupShader(this->_controller, ShaderType::COMPUTE_SHADER, L"DeferredComputeShaderLight.hlsl")))),
 
     // Initialize InputLayout and Sampler
-    _inputLayout(Setup::SetupInputLayout(this->_controller, *this->_vShaderGeometryPass)),
+    _inputLayout(Setup::SetupInputLayout(this->_controller, *this->_deferredVertexShaderGeometry)),
     _sampler(Setup::SetupSampler(this->_controller)),
 
 	// Initalize ConstantBuffers
@@ -75,10 +103,10 @@ void Application::RunAsserts()
     */
 
     // Shaders
-	assert(this->_vShaderGeometryPass != nullptr);
-	assert(this->_pShaderGeometryPass != nullptr);
-    assert(this->_vShaderGeometryPass->GetShaderBlob() != nullptr);
-    assert(this->_pShaderGeometryPass->GetShaderBlob() != nullptr);
+	assert(this->_deferredVertexShaderGeometry != nullptr);
+	assert(this->_deferredPixelShaderGeometry != nullptr);
+    assert(this->_deferredVertexShaderGeometry->GetShaderBlob() != nullptr);
+    assert(this->_deferredPixelShaderGeometry->GetShaderBlob() != nullptr);
 
     // Input layout + Sampler
     assert(this->_inputLayout.GetInputLayout() != nullptr);
@@ -92,21 +120,40 @@ void Application::RunAsserts()
 
 void Application::Setup()
 {
-	ID3D11Buffer* worldMatrixBuffer = this->_worldMatrixConstantBuffer.GetBuffer();
-	ID3D11Buffer* viewProjectionBuffer = this->_scene.GetCurrentCamera().GetConstantBuffer();
-	
-	this->_controller.GetContext()->VSSetConstantBuffers(0, 1, &worldMatrixBuffer);
-	this->_controller.GetContext()->VSSetConstantBuffers(1, 1, &viewProjectionBuffer);
+	/*
+	 * Forward Rendering
+	 */
 
-	ID3D11Buffer* pixelShaderConstBuffer = this->_pixelShaderConstantBuffer.GetBuffer();
-	this->_controller.GetContext()->PSSetConstantBuffers(0, 1, &pixelShaderConstBuffer);
+	// Vertex Shader
+	this->_forwardVertexShader->AddConstantBuffer(this->_worldMatrixConstantBuffer.GetBuffer());
+	this->_forwardVertexShader->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
+
+	// Pixel Shader
+	this->_forwardPixelShader->AddConstantBuffer(this->_pixelShaderConstantBuffer.GetBuffer());
+	
+	/*
+	 * Deferred Rendering
+	 */
+	
+	//Geometry Pass Shader Constant Buffers
+
+	// Vertex Shader
+	this->_deferredVertexShaderGeometry->AddConstantBuffer(this->_worldMatrixConstantBuffer.GetBuffer());
+	this->_deferredVertexShaderGeometry->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
+
+	// Pixel Shader
+	this->_deferredPixelShaderGeometry->AddConstantBuffer(this->_pixelShaderConstantBuffer.GetBuffer());
 }
 
 void Application::Render()
 {
+	RenderConfig renderConfig;
+	RenderMode renderMode = renderConfig.GetRenderMode();
+	
     float rotationalSpeed = 0.0f;
 	WorldMatrixConfig worldMatrixConfig;
 	float currentAngle = worldMatrixConfig.GetInitialAngle();
+	
 	MatrixCreator matrixCreator;
 	
 	while (this->_input.Exit(this->_msg))
@@ -118,9 +165,16 @@ void Application::Render()
 			TranslateMessage(&this->_msg);
 			DispatchMessage(&this->_msg);
 		}
+
+		if (renderMode == Forward)
+		{
+			this->_renderer.RenderForward(this->_controller, this->_windowRTV, *this->_forwardVertexShader, *this->_forwardPixelShader, this->_inputLayout, this->_scene, this->_sampler);
+		}
+		if (renderMode == Deferred)
+		{
+			this->_renderer.PerformGeometryPass(this->_controller, this->_gBuffers, *this->_deferredVertexShaderGeometry, *this->_deferredPixelShaderGeometry, this->_inputLayout, this->_scene, this->_sampler);
+		}
 		
-		//this->_renderer.RenderForward(this->_controller, this->_windowRTV, *this->_vShaderGeometryPass, *this->_pShaderGeometryPass, this->_inputLayout, this->_scene, this->_sampler);
-		this->_renderer.PerformGeometryPass(this->_controller, this->_gBuffers, *this->_vShaderGeometryPass, *this->_pShaderGeometryPass, this->_inputLayout, this->_scene, this->_sampler);
 		this->_controller.GetSwapChain()->Present(0, 0);
 		
 		this->_scene.GetCurrentCamera().UpdateInternalConstantBuffer(this->_controller.GetContext());

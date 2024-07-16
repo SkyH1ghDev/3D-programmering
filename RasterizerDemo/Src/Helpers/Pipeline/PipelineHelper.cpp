@@ -75,6 +75,18 @@ bool PipelineHelper::LoadPixelShader(ID3D11Device *device, ID3D11PixelShader*& p
 	return true;
 }
 
+bool PipelineHelper::LoadComputeShader(ID3D11Device* device, ID3D11ComputeShader*& computeShader, ID3DBlob* computeShaderBlob)
+{
+	if (FAILED(device->CreateComputeShader(computeShaderBlob->GetBufferPointer(), computeShaderBlob->GetBufferSize(), nullptr, &computeShader)))
+	{
+		std::cerr << "Failed to create compute shader!" << "\n";
+		return false;
+	}
+
+	return true;
+}
+
+
 bool PipelineHelper::CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const void *vertexShaderByteCode, size_t vertexShaderByteCodeLength)
 {
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =

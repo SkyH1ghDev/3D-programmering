@@ -17,10 +17,13 @@ struct VertexShaderInput
 
 struct VertexShaderOutput
 {
-	float4 position : SV_POSITION;
-	float4 worldPosition : POSITION;
+	// Passed to Pixel Shader
+	float4 worldPosition : WORLD_POSITION;
 	float4 normal : NORMAL;
 	float2 uv : UV;
+
+	// Set system values
+	float4 position : SV_POSITION;
 };
 
 VertexShaderOutput main(VertexShaderInput input)
