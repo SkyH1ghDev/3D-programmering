@@ -11,7 +11,8 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
     // Initialize D3D11
     _controller(Setup::SetupController(this->_window)),
-    _windowRTV(Setup::SetupRenderTargetView(this->_controller)),
+	_swapChain(Setup::SetupSwapChain(this->_controller, this->_window)),
+    _windowRTV(Setup::SetupRenderTargetView(this->_controller, this->_swapChain)),
     _scene(Setup::SetupScene(this->_controller)),
 	
     // Initialize Shaders
@@ -89,7 +90,7 @@ void Application::RunAsserts()
     // Controller
     assert(this->_controller.GetContext() != nullptr);
     assert(this->_controller.GetDevice() != nullptr);
-    assert(this->_controller.GetSwapChain() != nullptr);
+    assert(this->_swapChain.GetSwapChain() != nullptr);
 
     D3D11_VIEWPORT vp = this->_controller.GetViewPort();
     assert(&vp != nullptr);
@@ -135,8 +136,8 @@ void Application::Setup()
 	 * Deferred Rendering
 	 */
 	
-	//Geometry Pass Shader Constant Buffers
-
+	// Geometry Pass Shader Constant Buffers
+	
 	// Vertex Shader
 	this->_deferredVertexShaderGeometry->AddConstantBuffer(this->_worldMatrixConstantBuffer.GetBuffer());
 	this->_deferredVertexShaderGeometry->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
@@ -175,7 +176,7 @@ void Application::Render()
 			this->_renderer.PerformGeometryPass(this->_controller, this->_gBuffers, *this->_deferredVertexShaderGeometry, *this->_deferredPixelShaderGeometry, this->_inputLayout, this->_scene, this->_sampler);
 		}
 		
-		this->_controller.GetSwapChain()->Present(0, 0);
+		this->_swapChain.GetSwapChain()->Present(0, 0);
 		
 		this->_scene.GetCurrentCamera().UpdateInternalConstantBuffer(this->_controller.GetContext());
 			

@@ -38,28 +38,47 @@ D3D11Controller Setup::SetupController(HWND window)
 
 	ID3D11Device* device;
 	ID3D11DeviceContext* immediateContext;
-	IDXGISwapChain* swapChain;
 	D3D11_VIEWPORT viewport;
 	
-	if (!d3d11Helper.CreateInterfaces(device, immediateContext, swapChain, width, height, window))
+	if (!d3d11Helper.CreateController(device, immediateContext))
 	{
 		device->Release();
 		immediateContext->Release();
-		swapChain->Release();
 		throw std::runtime_error("Failed to setup Device, Context and Swap Chain");
 	}
 	
     d3d11Helper.SetViewport(viewport, width, height);
 
-	return D3D11Controller(device, immediateContext, swapChain, viewport);
+	return D3D11Controller(device, immediateContext, viewport);
 }
 
-RenderTargetView Setup::SetupRenderTargetView(D3D11Controller &controller)
+SwapChain Setup::SetupSwapChain(D3D11Controller& controller, HWND window)
+{
+	Configuration config;
+
+	WindowConfig windowConfig = config.GetWindowConfig();
+	UINT width = windowConfig.GetWidth();
+	UINT height = windowConfig.GetHeight();
+	
+	D3D11Helper d3d11Helper;
+	
+	IDXGISwapChain* swapChain;
+	ID3D11Texture2D* backBuffer;
+	ID3D11UnorderedAccessView* uav;
+	
+	d3d11Helper.CreateSwapChain(controller.GetDevice(), swapChain, backBuffer, uav, window, width, height);
+	
+	return SwapChain(swapChain, backBuffer, uav);
+}
+
+
+RenderTargetView Setup::SetupRenderTargetView(D3D11Controller &controller, SwapChain& swapChain)
 {
     D3D11Helper d3d11Helper;
 
 	ID3D11RenderTargetView* rtv;
-	if (!d3d11Helper.CreateRenderTargetView(controller.GetDevice(), controller.GetSwapChain(), rtv))
+	ID3D11Texture2D* backBuffer = swapChain.GetBackBuffer();
+	if (!d3d11Helper.CreateRenderTargetView(controller.GetDevice(), backBuffer, rtv))
 	{
 		rtv->Release();
 		throw std::runtime_error("Failed to create RTV");
@@ -129,6 +148,18 @@ Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, s
 	PipelineHelper pipelineHelper;
 	ID3DBlob* shaderBlob;
 
+	union Shader
+	{
+		ID3D11VertexShader* vertexShader = nullptr;
+		ID3D11HullShader* hullShader;
+		ID3D11DomainShader* domainShader;
+		ID3D11GeometryShader* geometryShader;
+		ID3D11PixelShader* pixelShader;
+		ID3D11ComputeShader* computeShader;
+	};
+
+	Shader shader;
+	
 	std::wstring hlslFilepath = L"Src/Shaders/" + hlslFilename;
 	
 	if (!pipelineHelper.LoadShaderBlob(shaderBlob, shaderType, hlslFilepath.c_str()))
@@ -139,17 +170,15 @@ Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, s
 	switch (shaderType)
 	{
 		case ShaderType::VERTEX_SHADER:
-			ID3D11VertexShader* vertexShader = nullptr;
-		
-			if (!pipelineHelper.LoadVertexShader(controller.GetDevice(), vertexShader, shaderBlob))
+			if (!pipelineHelper.LoadVertexShader(controller.GetDevice(), shader.vertexShader, shaderBlob))
 			{
 				std::cerr << "Could not Compile Vertex Shader \n Exiting... \n";
-				vertexShader->Release();
+				shader.vertexShader->Release();
 				shaderBlob->Release();
 				throw std::runtime_error("Could not Compile Vertex Shader");
 			}
 
-			return new VertexShader(vertexShader, shaderBlob);
+			return new VertexShader(shader.vertexShader, shaderBlob);
 		
 		case ShaderType::HULL_SHADER:
 
@@ -176,27 +205,23 @@ Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, s
 			break;
 
 		case ShaderType::PIXEL_SHADER:
-			ID3D11PixelShader* pixelShader = nullptr;
-
-			if (!pipelineHelper.LoadPixelShader(controller.GetDevice(), pixelShader, shaderBlob))
+			if (!pipelineHelper.LoadPixelShader(controller.GetDevice(), shader.pixelShader, shaderBlob))
 			{
-				pixelShader->Release();
+				shader.pixelShader->Release();
 				shaderBlob->Release();
 				throw std::runtime_error("Could not Compile Pixel Shader");
 			}
 
-			return new PixelShader(pixelShader, shaderBlob);
+			return new PixelShader(shader.pixelShader, shaderBlob);
 
 		case ShaderType::COMPUTE_SHADER:
-			ID3D11ComputeShader* computeShader = nullptr;
-			
-			if (!pipelineHelper.LoadComputeShader(controller.GetDevice(), computeShader, shaderBlob))
+			if (!pipelineHelper.LoadComputeShader(controller.GetDevice(), shader.computeShader, shaderBlob))
 			{
-				computeShader->Release();
+				shader.computeShader->Release();
 				shaderBlob->Release();
 				throw std::runtime_error("Could not Compile Compute Shader");
 			}
-			return new ComputeShader(computeShader, shaderBlob);
+			return new ComputeShader(shader.computeShader, shaderBlob);
 		
 	}
 }
@@ -305,14 +330,4 @@ ConstantBuffer Setup::CreatePixelShaderConstantBuffer(D3D11Controller &controlle
 	}
 
 	return psConstBuffer;
-}
-
-void Setup::AppendLPCWSTR(LPCWSTR& newStr, LPCWSTR first, LPCWSTR second)
-{
-	std::wstring wString1 = first;
-	std::wstring wString2 = second;
-	
-	std::wstring result = wString1.append(wString2);
-
-	newStr = result.c_str();
 }

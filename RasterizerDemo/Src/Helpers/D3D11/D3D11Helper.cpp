@@ -4,7 +4,7 @@
 
 #include "WindowConfig.hpp"
 
-bool D3D11Helper::CreateInterfaces(ID3D11Device*& device, ID3D11DeviceContext*& immediateContext, IDXGISwapChain*& swapChain, UINT width, UINT height, HWND window)
+bool D3D11Helper::CreateController(ID3D11Device*& device, ID3D11DeviceContext*& immediateContext)
 {
 	UINT flags = 0;
 	if (_DEBUG)
@@ -12,6 +12,23 @@ bool D3D11Helper::CreateInterfaces(ID3D11Device*& device, ID3D11DeviceContext*& 
 
 	D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
 
+
+
+	HRESULT hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags, featureLevels, 1, D3D11_SDK_VERSION, &device, nullptr, &immediateContext);
+	
+	return !(FAILED(hr));
+}
+
+bool D3D11Helper::CreateSwapChain(ID3D11Device* device, IDXGISwapChain*& swapChain, ID3D11Texture2D*& backBuffer, ID3D11UnorderedAccessView*& uav, HWND window, UINT width, UINT height)
+{
+	IDXGIFactory* factory = nullptr;
+	HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), reinterpret_cast<void**>(&factory));
+
+	if (FAILED(hr))
+	{
+		return false;
+	}
+	
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 
 	swapChainDesc.BufferDesc.Width = width;
@@ -26,34 +43,38 @@ bool D3D11Helper::CreateInterfaces(ID3D11Device*& device, ID3D11DeviceContext*& 
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.SampleDesc.Quality = 0;
 
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_UNORDERED_ACCESS;
 	swapChainDesc.BufferCount = 1;
 	swapChainDesc.OutputWindow = window;
 	swapChainDesc.Windowed = true;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	swapChainDesc.Flags = 0;
 
-	HRESULT hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags, featureLevels, 1, D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &device, nullptr, &immediateContext);
+	hr = factory->CreateSwapChain(device, &swapChainDesc, &swapChain);
 
-	return !(FAILED(hr));
-}
-
-bool D3D11Helper::CreateRenderTargetView(ID3D11Device* device, IDXGISwapChain* swapChain, ID3D11RenderTargetView*& rtv)
-{
-	// get the address of the back buffer
-	ID3D11Texture2D* backBuffer = nullptr;
-	if (FAILED(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer))))
+	if (FAILED(hr))
+	{
+		std::cerr << "Failed to Create Swap Chain \n";
+		return false;
+	}
+	
+	hr = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
+	
+	if (FAILED(hr))
 	{
 		std::cerr << "Failed to get back buffer!" << std::endl;
 		return false;
 	}
 
-	// use the back buffer address to create the render target
-	// null as description to base it on the backbuffers values
-	HRESULT hr = device->CreateRenderTargetView(backBuffer, nullptr, &rtv);
-	backBuffer->Release();
-	return !(FAILED(hr));
+	hr = device->CreateUnorderedAccessView(backBuffer, nullptr, &uav);
 
+	return !(FAILED(hr));
+}
+
+bool D3D11Helper::CreateRenderTargetView(ID3D11Device* device, ID3D11Texture2D*& backBuffer, ID3D11RenderTargetView*& rtv)
+{
+	HRESULT hr = device->CreateRenderTargetView(backBuffer, nullptr, &rtv);
+	return !(FAILED(hr));
 }
 
 bool D3D11Helper::CreateGBuffer(ID3D11Device* device, ID3D11RenderTargetView*& rtv, ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv, UINT width, UINT height)
@@ -101,7 +122,7 @@ bool D3D11Helper::CreateDepthStencil(ID3D11Device* device, UINT width, UINT heig
 	textureDesc.Height = height;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R32_TYPELESS; //DXGI_FORMAT_D24_UNORM_S8_UINT;
+	textureDesc.Format = DXGI_FORMAT_R32_TYPELESS; 
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;

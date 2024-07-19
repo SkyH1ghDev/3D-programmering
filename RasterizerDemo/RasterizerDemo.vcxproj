@@ -95,7 +95,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib; DXGI.lib; %(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <AdditionalIncludeDirectories>Src/Shaders</AdditionalIncludeDirectories>
@@ -131,6 +131,7 @@
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
+		Src/D3D11/SwapChain; 
 		Src/D3D11/Mesh/MeshData; 
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
@@ -148,7 +149,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>d3d11.lib; d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib; d3dcompiler.lib; DXGI.lib; %(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>python "$(ProjectDir)prebuild.py" "$(ProjectDir) </Command>
@@ -175,7 +176,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib; DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <AdditionalIncludeDirectories>Src/Shaders</AdditionalIncludeDirectories>
@@ -199,7 +200,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <AdditionalIncludeDirectories>Src/Shaders</AdditionalIncludeDirectories>
@@ -304,6 +305,7 @@
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
+		Src/D3D11/SwapChain; 
 		Src/D3D11/Mesh/MeshData; 
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
@@ -411,6 +413,7 @@
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
+		Src/D3D11/SwapChain; 
 		Src/D3D11/Mesh/MeshData; 
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
@@ -516,6 +519,7 @@
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
+		Src/D3D11/SwapChain; 
 		Src/D3D11/Mesh/MeshData; 
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
@@ -621,6 +625,7 @@
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
+		Src/D3D11/SwapChain; 
 		Src/D3D11/Mesh/MeshData; 
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
@@ -726,6 +731,7 @@
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
+		Src/D3D11/SwapChain; 
 		Src/D3D11/Mesh/MeshData; 
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
@@ -833,6 +839,7 @@
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
+		Src/D3D11/SwapChain; 
 		Src/D3D11/Mesh/MeshData; 
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
@@ -853,6 +860,7 @@
     <ClCompile Include="Src\D3D11\Shader\PixelShader.cpp" />
     <ClCompile Include="Src\D3D11\Shader\Shader.cpp" />
     <ClCompile Include="Src\D3D11\Shader\VertexShader.cpp" />
+    <ClCompile Include="Src\D3D11\SwapChain\SwapChain.cpp" />
     <ClCompile Include="Src\FileReader\FileReader.cpp" />
     <ClCompile Include="Src\FileReader\ImageReader.cpp" />
     <ClCompile Include="Src\FileReader\Parsers\MTLParser.cpp">
@@ -949,6 +957,7 @@
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
+		Src/D3D11/SwapChain; 
 		Src/D3D11/Mesh/MeshData; 
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
@@ -1054,6 +1063,7 @@
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
+		Src/D3D11/SwapChain; 
 		Src/D3D11/Mesh/MeshData; 
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
@@ -1163,6 +1173,7 @@
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
+		Src/D3D11/SwapChain; 
 		Src/D3D11/Mesh/MeshData; 
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
@@ -1268,6 +1279,7 @@
 		Src/D3D11/Scene; 
 		Src/D3D11/Shader; 
 		Src/D3D11/ShaderResourceTexture; 
+		Src/D3D11/SwapChain; 
 		Src/D3D11/Mesh/MeshData; 
 		Src/D3D11/Shader/ShaderData; 
 		Src/FileReader/Parsers; 
@@ -1337,6 +1349,7 @@
     <ClInclude Include="Src\D3D11\Shader\Shader.hpp" />
     <ClInclude Include="Src\D3D11\Shader\ShaderData\PixelShaderData.hpp" />
     <ClInclude Include="Src\D3D11\Shader\VertexShader.hpp" />
+    <ClInclude Include="Src\D3D11\SwapChain\SwapChain.hpp" />
     <ClInclude Include="Src\FileReader\FileReader.hpp" />
     <ClInclude Include="Src\FileReader\ImageReader.hpp" />
     <ClInclude Include="Src\FileReader\Parsers\IFileParser.hpp" />

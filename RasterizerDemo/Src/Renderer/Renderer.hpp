@@ -37,7 +37,7 @@ private:
     void SetupGBuffers(ID3D11DeviceContext* context, ID3D11DepthStencilView* dsv, ID3D11RenderTargetView**& gBuffers, size_t numGBuffers);
     void SetupOutputMerger(ID3D11DeviceContext* context, ID3D11DepthStencilView* dsv, ID3D11RenderTargetView* rtv);
 
-    void SetupComputeShader();
+    void SetupComputeShader(ID3D11DeviceContext* context, ID3D11ShaderResourceView** gBufferSRVs, size_t numGBuffers, ID3D11UnorderedAccessView* uav);
 
     void UnbindGBuffers(ID3D11DeviceContext* context, size_t numGBuffers);
 };

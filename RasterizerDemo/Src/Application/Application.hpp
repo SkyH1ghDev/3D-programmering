@@ -12,6 +12,7 @@
 #include "Renderer.hpp"
 
 #include "Setup.hpp"
+#include "SwapChain/SwapChain.hpp"
 
 class Application
 {
@@ -31,6 +32,7 @@ private:
 
     // D3D11
     D3D11Controller _controller;
+    SwapChain _swapChain;
     RenderTargetView _windowRTV;
     std::vector<RenderTargetView> _gBuffers;
     Scene _scene; // Could be expanded to contain multiple scenes

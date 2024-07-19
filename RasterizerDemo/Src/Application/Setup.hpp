@@ -9,6 +9,7 @@
 #include "Sampler.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
+#include "SwapChain.hpp"
 
 class Setup
 {
@@ -16,7 +17,8 @@ public:
     
     static HWND SetupWindow(HINSTANCE hInstance, int nCmdShow);
     static D3D11Controller SetupController(HWND window);
-    static RenderTargetView SetupRenderTargetView(D3D11Controller& controller);
+    static SwapChain SetupSwapChain(D3D11Controller& controller, HWND window);
+    static RenderTargetView SetupRenderTargetView(D3D11Controller& controller, SwapChain& swapChain);
     static RenderTargetView SetupGBuffer(D3D11Controller& controller);
     static Scene SetupScene(D3D11Controller& controller);
     static Shader* SetupShader(D3D11Controller& controller, ShaderType shaderType, std::wstring hlslFilename);
@@ -24,8 +26,4 @@ public:
     static Sampler SetupSampler(D3D11Controller& controller);
     static ConstantBuffer CreateWorldMatrixConstantBuffer(D3D11Controller& controller);
     static ConstantBuffer CreatePixelShaderConstantBuffer(D3D11Controller& controller, Scene& scene);
-
-private:
-
-    static void AppendLPCWSTR(LPCWSTR& newStr, LPCWSTR first, LPCWSTR second);
 };

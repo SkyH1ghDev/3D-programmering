@@ -122,10 +122,7 @@ void Renderer::PerformGeometryPass(D3D11Controller &controller, std::vector<Rend
 			context->Draw(subMesh.GetNumIndices(),subMesh.GetStartIndex());
 		}
 
-		// Unbind G-Buffers
-		
 		UnbindGBuffers(context, gBuffersVec.size());
-		
 	}
 }
 
@@ -192,4 +189,10 @@ void Renderer::UnbindGBuffers(ID3D11DeviceContext* context, size_t numGBuffers)
 
 	ID3D11RenderTargetView** nulledArr = nulledVec.data();
 	context->OMSetRenderTargets(numGBuffers, nulledArr, nullptr);
+}
+
+void Renderer::SetupComputeShader(ID3D11DeviceContext* context, ID3D11ShaderResourceView** gBufferSRVs, size_t numGBuffers, ID3D11UnorderedAccessView* uav)
+{
+	context->CSSetShaderResources(0, numGBuffers, gBufferSRVs);
+	context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
 }
