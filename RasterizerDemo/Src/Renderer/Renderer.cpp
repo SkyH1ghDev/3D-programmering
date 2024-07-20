@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void Renderer::RenderForward(D3D11Controller &controller, RenderTargetView &rtv, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
+void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	ID3D11RenderTargetView* rTargetView = rtv.GetRTV();
@@ -55,7 +55,27 @@ void Renderer::RenderForward(D3D11Controller &controller, RenderTargetView &rtv,
 	}
 }
 
-void Renderer::PerformGeometryPass(D3D11Controller &controller, std::vector<RenderTargetView>& gBuffers, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
+void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, RenderTargetView& rtv, std::vector<RenderTargetView>& gBuffers, VertexShader &vertexShader, PixelShader &pixelShader, ComputeShader& computeShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
+{
+	ID3D11DeviceContext* context = controller.GetContext();
+	ID3D11RenderTargetView* rTargetView = rtv.GetRTV();
+	Camera& currCamera = scene.GetCurrentCamera();
+	DepthBuffer depthBuffer = currCamera.GetDepthBuffer();
+
+	std::vector<ID3D11RenderTargetView*> gBufferRTVVec;
+	for (RenderTargetView rtv : gBuffers)
+	{
+		gBufferRTVVec.emplace_back(rtv.GetRTV());
+	}
+	
+	ClearScreen(context, rTargetView, depthBuffer.GetDSV(), gBufferRTVVec);
+	
+	PerformGeometryPass(controller, gBuffers, vertexShader, pixelShader, inputLayout, scene, samplerState);
+	PerformLightPass(controller, swapChain, gBuffers, computeShader);
+}
+
+
+void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTargetView>& gBuffers, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	Camera& currCamera = scene.GetCurrentCamera();
@@ -122,16 +142,52 @@ void Renderer::PerformGeometryPass(D3D11Controller &controller, std::vector<Rend
 			context->Draw(subMesh.GetNumIndices(),subMesh.GetStartIndex());
 		}
 
-		UnbindGBuffers(context, gBuffersVec.size());
+		UnbindGBuffersOM(context, gBuffersVec.size());
 	}
 }
 
+void Renderer::PerformLightPass(Controller& controller, SwapChain& swapChain, std::vector<RenderTargetView>& gBuffers, ComputeShader& computeShader)
+{
+	ID3D11DeviceContext* context = controller.GetContext();
+	
+	size_t numSRVs = gBuffers.size();
+	std::vector<ID3D11ShaderResourceView*> SRVs;
+	
+	for (size_t i = 0; i < numSRVs ; ++i)
+	{
+		SRVs.emplace_back(gBuffers.at(i).GetSRV());
+	}
+
+	ID3D11ComputeShader* cShader = computeShader.GetComputeShader();
+	ID3D11ShaderResourceView** SRVarr = SRVs.data();
+	ID3D11UnorderedAccessView* uav = swapChain.GetUAV();
+	std::vector<ID3D11Buffer*> computeBuffers = computeShader.GetConstantBuffers();
+	
+	SetupComputeShader(context, cShader, SRVarr, numSRVs, uav, computeBuffers);
+
+	context->Dispatch(160, 90, 1);
+
+	UnbindGBuffersCS(context, numSRVs);
+}
+
+
+void Renderer::ClearScreen(ID3D11DeviceContext *context, ID3D11RenderTargetView *rtv, ID3D11DepthStencilView *dsv, std::vector<ID3D11RenderTargetView*> gBuffers)
+{
+	constexpr float clearColour[] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+	for(size_t i = 0; i < gBuffers.size(); ++i)
+	{
+		context->ClearRenderTargetView(gBuffers.at(i), clearColour);
+	}
+	context->ClearRenderTargetView(rtv, clearColour);
+	context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+}
 
 
 void Renderer::ClearScreen(ID3D11DeviceContext *context, ID3D11RenderTargetView *rtv, ID3D11DepthStencilView *dsv)
 {
 	constexpr float clearColour[] = {0.0f, 0.0f, 0.0f, 0.0f};
-	
+
 	context->ClearRenderTargetView(rtv, clearColour);
 	context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
@@ -170,7 +226,7 @@ void Renderer::SetupRasterizer(ID3D11DeviceContext* context, const D3D11_VIEWPOR
 
 void Renderer::SetupGBuffers(ID3D11DeviceContext* context, ID3D11DepthStencilView* dsv, ID3D11RenderTargetView**& gBuffers, size_t numGBuffers)
 {
-	context->OMSetRenderTargets(numGBuffers, &gBuffers[0], dsv);
+	context->OMSetRenderTargets(numGBuffers, gBuffers, dsv);
 }
 
 
@@ -179,7 +235,7 @@ void Renderer::SetupOutputMerger(ID3D11DeviceContext* context, ID3D11DepthStenci
 	context->OMSetRenderTargets(1, &rtv, dsv);
 }
 
-void Renderer::UnbindGBuffers(ID3D11DeviceContext* context, size_t numGBuffers)
+void Renderer::UnbindGBuffersOM(ID3D11DeviceContext* context, size_t numGBuffers)
 {
 	std::vector<ID3D11RenderTargetView*> nulledVec;
 	for (size_t i = 0; i < numGBuffers; ++i)
@@ -191,8 +247,24 @@ void Renderer::UnbindGBuffers(ID3D11DeviceContext* context, size_t numGBuffers)
 	context->OMSetRenderTargets(numGBuffers, nulledArr, nullptr);
 }
 
-void Renderer::SetupComputeShader(ID3D11DeviceContext* context, ID3D11ShaderResourceView** gBufferSRVs, size_t numGBuffers, ID3D11UnorderedAccessView* uav)
+void Renderer::UnbindGBuffersCS(ID3D11DeviceContext* context, size_t numGBuffers)
 {
+	std::vector<ID3D11ShaderResourceView*> nulledVec;
+	for (size_t i = 0; i < numGBuffers; ++i)
+	{
+		nulledVec.emplace_back(nullptr);
+	}
+
+	ID3D11ShaderResourceView** nulledArr = nulledVec.data();
+	context->CSSetShaderResources(0, numGBuffers, nulledArr);
+}
+
+void Renderer::SetupComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* computeShader, ID3D11ShaderResourceView** gBufferSRVs, size_t numGBuffers, ID3D11UnorderedAccessView* uav, std::vector<ID3D11Buffer*> buffers)
+{
+	context->CSSetShader(computeShader, nullptr, 0);
 	context->CSSetShaderResources(0, numGBuffers, gBufferSRVs);
 	context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+
+	ID3D11Buffer** buffersArr = buffers.data();
+	context->CSSetConstantBuffers(0, buffers.size(), buffersArr);
 }

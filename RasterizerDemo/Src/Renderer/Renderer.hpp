@@ -2,13 +2,15 @@
 
 #include <d3d11.h>
 #include "Configuration.hpp"
-#include "D3D11Controller.hpp"
+#include "Controller.hpp"
 #include "InputLayout.hpp"
 #include "PixelShader.hpp"
 #include "RenderTargetView.hpp"
 #include "Sampler.hpp"
 #include "Scene.hpp"
+#include "SwapChain.hpp"
 #include "VertexShader.hpp"
+#include "ComputeShader.hpp"
 
 class Renderer
 {
@@ -17,15 +19,18 @@ public:
     void Setup(const Configuration& configuration);
 
     // Forward Rendering
-    void RenderForward(D3D11Controller& controller, RenderTargetView& rtv, VertexShader& vertexShader, PixelShader& pixelShader, InputLayout& inputLayout, Scene& scene, Sampler& samplerState);
-
+    void RenderForward(Controller& controller, RenderTargetView& rtv, VertexShader& vertexShader, PixelShader& pixelShader, InputLayout& inputLayout, Scene& scene, Sampler& samplerState);
+    
     // Deferred Rendering
-    void PerformGeometryPass(D3D11Controller &controller, std::vector<RenderTargetView>& rtv, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState);
-    void PerformLightPass();
+    void RenderDeferred(Controller &controller, SwapChain& swapChain, RenderTargetView& rtv, std::vector<RenderTargetView>& gBuffers, VertexShader &vertexShader, PixelShader &pixelShader, ComputeShader& computeShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState);
 
 private:
+    void PerformGeometryPass(Controller &controller, std::vector<RenderTargetView>& rtv, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState);
+    void PerformLightPass(Controller& controller, SwapChain& swapChain, std::vector<RenderTargetView>& gBuffers, ComputeShader& computeShader);
 
     void ClearScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv);
+    void ClearScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv, std::vector<ID3D11RenderTargetView*> gBuffers);
+    
     void SetupInputAssembler(ID3D11DeviceContext* context, ID3D11Buffer* vertexShader, ID3D11InputLayout* inputLayout, D3D_PRIMITIVE_TOPOLOGY topology);
     void SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShader* vertexShader, std::vector<ID3D11Buffer*> buffers);
     void SetupHullShader();
@@ -37,7 +42,8 @@ private:
     void SetupGBuffers(ID3D11DeviceContext* context, ID3D11DepthStencilView* dsv, ID3D11RenderTargetView**& gBuffers, size_t numGBuffers);
     void SetupOutputMerger(ID3D11DeviceContext* context, ID3D11DepthStencilView* dsv, ID3D11RenderTargetView* rtv);
 
-    void SetupComputeShader(ID3D11DeviceContext* context, ID3D11ShaderResourceView** gBufferSRVs, size_t numGBuffers, ID3D11UnorderedAccessView* uav);
+    void SetupComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* computeShader, ID3D11ShaderResourceView** gBufferSRVs, size_t numGBuffers, ID3D11UnorderedAccessView* uav, std::vector<ID3D11Buffer*> buffers);
 
-    void UnbindGBuffers(ID3D11DeviceContext* context, size_t numGBuffers);
+    void UnbindGBuffersOM(ID3D11DeviceContext* context, size_t numGBuffers);
+    void UnbindGBuffersCS(ID3D11DeviceContext* context, size_t numGBuffers);
 };

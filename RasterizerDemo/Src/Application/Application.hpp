@@ -12,7 +12,7 @@
 #include "Renderer.hpp"
 
 #include "Setup.hpp"
-#include "SwapChain/SwapChain.hpp"
+#include "SwapChain.hpp"
 
 class Application
 {
@@ -31,7 +31,7 @@ private:
     HWND _window;
 
     // D3D11
-    D3D11Controller _controller;
+    Controller _controller;
     SwapChain _swapChain;
     RenderTargetView _windowRTV;
     std::vector<RenderTargetView> _gBuffers;
@@ -72,7 +72,7 @@ private:
     Sampler _sampler;
 
     ConstantBuffer _worldMatrixConstantBuffer;
-    ConstantBuffer _pixelShaderConstantBuffer;
+    ConstantBuffer _lightingConstants;
 
     Input _input;
     Clock _clock;

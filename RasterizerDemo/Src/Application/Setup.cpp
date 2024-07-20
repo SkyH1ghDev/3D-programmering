@@ -27,7 +27,7 @@ HWND Setup::SetupWindow(HINSTANCE hInstance, int nCmdShow)
 	return window;
 }
 
-D3D11Controller Setup::SetupController(HWND window)
+Controller Setup::SetupController(HWND window)
 {
     D3D11Helper d3d11Helper;
     Configuration config;
@@ -49,10 +49,10 @@ D3D11Controller Setup::SetupController(HWND window)
 	
     d3d11Helper.SetViewport(viewport, width, height);
 
-	return D3D11Controller(device, immediateContext, viewport);
+	return Controller(device, immediateContext, viewport);
 }
 
-SwapChain Setup::SetupSwapChain(D3D11Controller& controller, HWND window)
+SwapChain Setup::SetupSwapChain(Controller& controller, HWND window)
 {
 	Configuration config;
 
@@ -72,7 +72,7 @@ SwapChain Setup::SetupSwapChain(D3D11Controller& controller, HWND window)
 }
 
 
-RenderTargetView Setup::SetupRenderTargetView(D3D11Controller &controller, SwapChain& swapChain)
+RenderTargetView Setup::SetupRenderTargetView(Controller &controller, SwapChain& swapChain)
 {
     D3D11Helper d3d11Helper;
 
@@ -87,7 +87,7 @@ RenderTargetView Setup::SetupRenderTargetView(D3D11Controller &controller, SwapC
 	return RenderTargetView(rtv);
 }
 
-RenderTargetView Setup::SetupGBuffer(D3D11Controller& controller)
+RenderTargetView Setup::SetupGBuffer(Controller& controller)
 {
 	D3D11Helper d3d11Helper;
 	Configuration config;
@@ -110,7 +110,7 @@ RenderTargetView Setup::SetupGBuffer(D3D11Controller& controller)
 }
 
 
-Scene Setup::SetupScene(D3D11Controller &controller)
+Scene Setup::SetupScene(Controller &controller)
 {
 	
 	std::vector<MeshData> meshDataList;
@@ -143,7 +143,7 @@ Scene Setup::SetupScene(D3D11Controller &controller)
 	return scene;
 }
 
-Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, std::wstring hlslFilename)
+Shader* Setup::SetupShader(Controller& controller, ShaderType shaderType, std::wstring hlslFilename)
 {
 	PipelineHelper pipelineHelper;
 	ID3DBlob* shaderBlob;
@@ -226,7 +226,7 @@ Shader* Setup::SetupShader(D3D11Controller& controller, ShaderType shaderType, s
 	}
 }
 
-InputLayout Setup::SetupInputLayout(D3D11Controller &controller, const Shader &vertexShader)
+InputLayout Setup::SetupInputLayout(Controller &controller, const Shader &vertexShader)
 {
 	PipelineHelper pipelineHelper;
 	ID3D11InputLayout* inputLayout;
@@ -241,7 +241,7 @@ InputLayout Setup::SetupInputLayout(D3D11Controller &controller, const Shader &v
 	return InputLayout(inputLayout);
 }
 
-Sampler Setup::SetupSampler(D3D11Controller &controller)
+Sampler Setup::SetupSampler(Controller &controller)
 {
 	PipelineHelper pipelineHelper;
 	ID3D11SamplerState* sampler;
@@ -284,7 +284,7 @@ Sampler Setup::SetupSampler(D3D11Controller &controller)
 }*/
 
 
-ConstantBuffer Setup::CreateWorldMatrixConstantBuffer(D3D11Controller &controller)
+ConstantBuffer Setup::CreateWorldMatrixConstantBuffer(Controller &controller)
 {
     HRESULT hr;
     
@@ -307,7 +307,7 @@ ConstantBuffer Setup::CreateWorldMatrixConstantBuffer(D3D11Controller &controlle
 	return cbWorldMatrix;
 }
 
-ConstantBuffer Setup::CreatePixelShaderConstantBuffer(D3D11Controller &controller, Scene& scene)
+ConstantBuffer Setup::CreatePixelShaderConstantBuffer(Controller &controller, Scene& scene)
 {
 	HRESULT hr;
 	

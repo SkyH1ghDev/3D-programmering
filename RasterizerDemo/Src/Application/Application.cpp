@@ -62,7 +62,7 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
 	// Initalize ConstantBuffers
 	_worldMatrixConstantBuffer(Setup::CreateWorldMatrixConstantBuffer(this->_controller)),
-	_pixelShaderConstantBuffer(Setup::CreatePixelShaderConstantBuffer(this->_controller, this->_scene))
+	_lightingConstants(Setup::CreatePixelShaderConstantBuffer(this->_controller, this->_scene))
 {
 	const size_t numGBuffers = 3;
 	for (size_t i = 0; i < numGBuffers; ++i )
@@ -115,7 +115,7 @@ void Application::RunAsserts()
 
 	// Constant Buffers
 	assert(this->_worldMatrixConstantBuffer.GetBuffer() != nullptr);
-	assert(this->_pixelShaderConstantBuffer.GetBuffer() != nullptr);
+	assert(this->_lightingConstants.GetBuffer() != nullptr);
 }
 
 
@@ -130,7 +130,7 @@ void Application::Setup()
 	this->_forwardVertexShader->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
 
 	// Pixel Shader
-	this->_forwardPixelShader->AddConstantBuffer(this->_pixelShaderConstantBuffer.GetBuffer());
+	this->_forwardPixelShader->AddConstantBuffer(this->_lightingConstants.GetBuffer());
 	
 	/*
 	 * Deferred Rendering
@@ -143,7 +143,7 @@ void Application::Setup()
 	this->_deferredVertexShaderGeometry->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
 
 	// Pixel Shader
-	this->_deferredPixelShaderGeometry->AddConstantBuffer(this->_pixelShaderConstantBuffer.GetBuffer());
+	this->_computeShader->AddConstantBuffer(this->_lightingConstants.GetBuffer());
 }
 
 void Application::Render()
@@ -173,7 +173,7 @@ void Application::Render()
 		}
 		if (renderMode == Deferred)
 		{
-			this->_renderer.PerformGeometryPass(this->_controller, this->_gBuffers, *this->_deferredVertexShaderGeometry, *this->_deferredPixelShaderGeometry, this->_inputLayout, this->_scene, this->_sampler);
+			this->_renderer.RenderDeferred(this->_controller, this->_swapChain,this->_windowRTV, this->_gBuffers, *this->_deferredVertexShaderGeometry, *this->_deferredPixelShaderGeometry, *this->_computeShader, this->_inputLayout, this->_scene, this->_sampler);
 		}
 		
 		this->_swapChain.GetSwapChain()->Present(0, 0);

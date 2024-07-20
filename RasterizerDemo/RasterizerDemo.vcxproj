@@ -531,7 +531,7 @@
       </AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="Src\D3D11\Controller\D3D11Controller.cpp">
+    <ClCompile Include="Src\D3D11\Controller\Controller.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -1329,7 +1329,7 @@
     <ClInclude Include="Src\D3D11\Buffer\VertexBuffer.hpp" />
     <ClInclude Include="Src\D3D11\Camera\Camera.hpp" />
     <ClInclude Include="Src\D3D11\Camera\ProjectionInfo.hpp" />
-    <ClInclude Include="Src\D3D11\Controller\D3D11Controller.hpp" />
+    <ClInclude Include="Src\D3D11\Controller\Controller.hpp" />
     <ClInclude Include="Src\D3D11\InputLayout\InputLayout.hpp" />
     <ClInclude Include="Src\D3D11\Light\SpotLightCollectionD3D11.h" />
     <ClInclude Include="Src\D3D11\Mesh\Mesh.hpp" />

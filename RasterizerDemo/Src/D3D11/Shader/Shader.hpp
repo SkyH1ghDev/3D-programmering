@@ -26,8 +26,6 @@ public:
 	virtual std::vector<ID3D11Buffer*> GetConstantBuffers() = 0;
 	
 	virtual void AddConstantBuffer(ID3D11Buffer* buffer) = 0;
-	// UNUSED
-	// virtual void BindShader(ID3D11DeviceContext* context) const = 0;
 	
 protected:
 	Shader() = default;
@@ -46,18 +44,7 @@ protected:
 	//void Initialize(ID3D11Device* device, ShaderType shaderType, const char* csoPath);
 
 protected:
-
+	
 	ID3DBlob* _shaderBlob = nullptr;
 	std::vector<ID3D11Buffer*> _constantBuffers;
-
-	/*union
-	{
-		ID3D11VertexShader* vertex = nullptr;
-		ID3D11HullShader* hull;
-		ID3D11DomainShader* domain;
-		ID3D11GeometryShader* geometry;
-		ID3D11PixelShader* pixel;
-		ID3D11ComputeShader* compute;
-	} _shader;*/
-
 };
