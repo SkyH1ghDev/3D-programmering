@@ -71,7 +71,7 @@ void Camera::RotateAroundAxis(const float &amount, const DX::XMFLOAT4 &axis)
 
 	// Orthogonalize up vector with forward vector
 	DX::XMVECTOR upProjectionVector = DX::XMVectorMultiply(DX::XMVector4Dot(upVector, forwardVector), forwardVector);
-	upVector = DX::XMVectorSubtract(upVector, upProjectionVector); // No need to noramlize until all calculations are finished
+	upVector = DX::XMVectorSubtract(upVector, upProjectionVector); // No need to normalize until all calculations are finished
 
 	// Orthogonalize up vector with right vector
 	upProjectionVector = DX::XMVectorMultiply(DX::XMVector4Dot(upVector, rightVector), rightVector);

@@ -4,10 +4,17 @@
 
 #include <iostream>
 
-void Input::ReadInput(Camera& camera, float deltaTime)
+Input::Input()
+{
+    GetCursorPos(&this->_prevPoint);
+    ShowCursor(FALSE);
+}
+
+
+void Input::ReadInput(Camera& camera, HWND& window, float deltaTime)
 {
     HandleMovement(camera, deltaTime);
-    HandleRotation(camera, deltaTime);
+    HandleRotation(camera, window, deltaTime);
 }
 
 int Input::Exit(const MSG &msg)
@@ -51,7 +58,33 @@ void Input::HandleMovement(Camera& camera, float deltaTime)
     }
 }
 
-void Input::HandleRotation(Camera &camera, float deltaTime)
+void Input::HandleRotation(Camera& camera, HWND& window, float deltaTime)
+{
+    WindowConfig windowConfig;
+    float angle = DX::XMConvertToRadians(120.0f);
+
+    POINT currPoint;
+    GetCursorPos(&currPoint);
+
+    int deltaX = currPoint.x - this->_prevPoint.x;
+    int deltaY = currPoint.y - this->_prevPoint.y;
+
+    if (deltaX != 0 || deltaY != 0)
+    {
+        camera.RotateDown(static_cast<float>(-deltaX) * angle, deltaTime);
+
+        camera.RotateLeft(static_cast<float>(-deltaY) * angle, deltaTime);
+    }
+    
+    POINT centerOfScreen = POINT(windowConfig.GetWidth() / 2, windowConfig.GetHeight() / 2);
+    ClientToScreen(window, &centerOfScreen);
+    SetCursorPos(centerOfScreen.x, centerOfScreen.y);
+
+    this->_prevPoint = centerOfScreen;
+}
+
+
+/*void Input::HandleRotation(Camera &camera, float deltaTime)
 {
     float angle = DX::XMConvertToRadians(30.0f);
     
@@ -74,4 +107,4 @@ void Input::HandleRotation(Camera &camera, float deltaTime)
     {
         camera.RotateUp(angle, deltaTime);
     }
-}
+}*/

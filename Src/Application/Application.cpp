@@ -186,7 +186,7 @@ void Application::Render()
 		this->_clock.End();
 		float deltaTime = this->_clock.GetDeltaTime();
  
-		this->_input.ReadInput(this->_scene.GetCurrentCamera(), deltaTime);
+		this->_input.ReadInput(this->_scene.GetCurrentCamera(), this->_window, deltaTime);
 		currentAngle -= rotationalSpeed * deltaTime;
 	}
 }
