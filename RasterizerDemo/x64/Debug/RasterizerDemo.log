@@ -1,4 +1,0 @@
-﻿  ['Src', 'Src/Application', 'Src/Clock', 'Src/Config', 'Src/D3D11', 'Src/FileReader', 'Src/Helpers', 'Src/Input', 'Src/Renderer', 'Src/Shaders', 'Src/Vertex', 'Src/D3D11/Buffer', 'Src/D3D11/Camera', 'Src/D3D11/Controller', 'Src/D3D11/InputLayout', 'Src/D3D11/Light', 'Src/D3D11/Mesh', 'Src/D3D11/RenderTargetView', 'Src/D3D11/Sampler', 'Src/D3D11/Scene', 'Src/D3D11/Shader', 'Src/D3D11/ShaderResourceTexture', 'Src/D3D11/SwapChain', 'Src/D3D11/Mesh/MeshData', 'Src/D3D11/Shader/ShaderData', 'Src/FileReader/Parsers', 'Src/Helpers/D3D11', 'Src/Helpers/MatrixCreator', 'Src/Helpers/Pipeline', 'Src/Helpers/Window']
-  Application.cpp
-  Main.cpp
-  RasterizerDemo.vcxproj -> D:\School\3D-programmering\Inlämning 2\RasterizerDemo\Build\RasterizerDemo.exe
