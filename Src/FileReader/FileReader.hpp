@@ -2,7 +2,7 @@
 
 #include "OBJParser.hpp"
 #include "MTLParser.hpp"
-#include "FileConfig.hpp"
+#include "MeshConfig.hpp"
 #include <memory>
 
 class FileReader

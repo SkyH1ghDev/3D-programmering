@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "FileConfig.hpp"
+#include "MeshConfig.hpp"
 #include "ProjectionMatrixConfig.hpp"
 #include "WorldMatrixConfig.hpp"
 #include "ViewMatrixConfig.hpp"
@@ -16,7 +16,7 @@ public:
     Configuration operator=(const Configuration& other) = delete;
     Configuration(const Configuration& other) = delete;
     
-    FileConfig GetFileConfig() const { return this->_fileConfig; }
+    MeshConfig GetFileConfig() const { return this->_fileConfig; }
     ProjectionMatrixConfig GetProjectionMatrixConfig() const { return this->_projectionMatrixConfig; }
     WorldMatrixConfig GetWorldMatrixConfig() const { return this->_worldMatrixConfig; }
     ViewMatrixConfig GetViewMatrixConfig() const { return this->_viewMatrixConfig; }
@@ -24,7 +24,7 @@ public:
     RenderConfig GetRenderConfig() const { return this->_renderConfig; }
     
 private:
-    FileConfig _fileConfig;
+    MeshConfig _fileConfig;
     ProjectionMatrixConfig _projectionMatrixConfig;
     WorldMatrixConfig _worldMatrixConfig;
     ViewMatrixConfig _viewMatrixConfig;

@@ -3,6 +3,9 @@ RWTexture2D<unorm float4> backBufferUAV : register(u0);
 Texture2D<float4> positionGBuffer : register(t0);
 Texture2D<float4> normalGBuffer : register(t1);
 Texture2D<float4> colourGBuffer : register(t2);
+Texture2D<float4> ambientGBuffer : register(t3);
+Texture2D<float4> diffuseGBuffer : register(t4);
+Texture2D<float4> specularGBuffer : register(t5);
 
 cbuffer ConstBuffer : register(b0)
 {
@@ -16,11 +19,12 @@ cbuffer ConstBuffer : register(b0)
 [numthreads(8,8,1)]
 void main(uint3 DTid : SV_DispatchThreadID)
 {
-
-	// Works in renderdoc but not here
     float4 position = float4(positionGBuffer[DTid.xy].xyz, 1.0f);
     float4 normal = float4(normalGBuffer[DTid.xy].xyz, 0.0f);
     float4 colour = float4(colourGBuffer[DTid.xy].xyz, 1.0f);
+	float4 ambientFactor = float4(ambientGBuffer[DTid.xy].xyz, 1.0f);
+	float4 diffuseFactor = float4(diffuseGBuffer[DTid.xy].xyz, 1.0f);
+	float4 specularFactor = float4(specularGBuffer[DTid.xy].xyz, 1.0f);
 
 	// Ambient
 	float4 ambientComponent = lightColour * ambientLightIntensity;
@@ -36,7 +40,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	float specularIntensity = pow(max(dot(normal, halfway), 0.0f), shininess);
 	float4 specularComponent = lightColour * specularIntensity;
 
-	float4 result = (ambientComponent + diffuseComponent + specularComponent) * colour;
+	float4 result = (ambientComponent * ambientFactor + diffuseComponent * diffuseFactor + specularComponent * specularFactor) * colour;
 
     backBufferUAV[DTid.xy] = result;
 }

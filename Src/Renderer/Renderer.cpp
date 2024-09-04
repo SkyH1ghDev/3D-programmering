@@ -27,12 +27,7 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 
 		SetupVertexShader(context, vShader, vertexShaderBuffers);
 
-		ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
-		ID3D11ShaderResourceView* tShaderResourceView = mesh.GetTextureSRV(0);
-		ID3D11SamplerState* sState = samplerState.GetSamplerState();
-		std::vector<ID3D11Buffer*> pixelShaderBuffers = pixelShader.GetConstantBuffers();
-	
-		SetupPixelShader(context, pShader, tShaderResourceView, sState, pixelShaderBuffers);
+
 
 		D3D11_VIEWPORT viewport = controller.GetViewPort();
 	
@@ -44,6 +39,13 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 
 		for (size_t j = 0; j < mesh.GetNrOfSubMeshes(); ++j)
 		{
+			ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
+			std::vector<ID3D11ShaderResourceView*> tShaderResourceViews = {mesh.GetTextureSRV(j)};
+			ID3D11SamplerState* sState = samplerState.GetSamplerState();
+			std::vector<ID3D11Buffer*> pixelShaderBuffers = pixelShader.GetConstantBuffers();
+		
+			SetupPixelShader(context, pShader, sState, tShaderResourceViews, pixelShaderBuffers);
+			
 			SubMesh& subMesh = mesh.GetSubMeshAt(j);
 
 			if (subMesh.GetNumIndices() == 0)
@@ -63,9 +65,9 @@ void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, Rend
 	DepthBuffer depthBuffer = currCamera.GetDepthBuffer();
 
 	std::vector<ID3D11RenderTargetView*> gBufferRTVVec;
-	for (RenderTargetView rtv : gBuffers)
+	for (RenderTargetView renderTargetView : gBuffers)
 	{
-		gBufferRTVVec.emplace_back(rtv.GetRTV());
+		gBufferRTVVec.emplace_back(renderTargetView.GetRTV());
 	}
 	
 	ClearScreen(context, rTargetView, depthBuffer.GetDSV(), gBufferRTVVec);
@@ -101,15 +103,6 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 		
 		SetupVertexShader(context, vShader, vertexShaderBuffers);
 
-		// Setup Pixel Shader
-		
-		ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
-		ID3D11ShaderResourceView* tShaderResourceView = mesh.GetTextureSRV(0);
-		ID3D11SamplerState* sState = samplerState.GetSamplerState();
-		std::vector<ID3D11Buffer*> pixelShaderBuffers = pixelShader.GetConstantBuffers();
-	
-		SetupPixelShader(context, pShader, tShaderResourceView, sState, pixelShaderBuffers);
-
 		// Setup Rasterizer
 		
 		D3D11_VIEWPORT viewport = controller.GetViewPort();
@@ -133,6 +126,13 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 		
 		for (size_t j = 0; j < mesh.GetNrOfSubMeshes(); ++j)
 		{
+			ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
+			std::vector<ID3D11ShaderResourceView*> tShaderResourceViews = {mesh.GetTextureSRV(j), mesh.GetAmbientSRV(j), mesh.GetDiffuseSRV(j), mesh.GetSpecularSRV(j)};
+			ID3D11SamplerState* sState = samplerState.GetSamplerState();
+			std::vector<ID3D11Buffer*> pixelShaderBuffers = pixelShader.GetConstantBuffers();
+         	
+			SetupPixelShader(context, pShader, sState, tShaderResourceViews, pixelShaderBuffers);
+			
 			SubMesh& subMesh = mesh.GetSubMeshAt(j);
 
 			if (subMesh.GetNumIndices() == 0)
@@ -209,12 +209,14 @@ void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShade
 	context->VSSetConstantBuffers(0, buffers.size(), buffersArr);
 }
 
-void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* samplerState, std::vector<ID3D11Buffer*> buffers)
+void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11SamplerState* samplerState, std::vector<ID3D11ShaderResourceView*> textureSRVs, std::vector<ID3D11Buffer*> buffers)
 {
 	context->PSSetShader(pixelShader, nullptr, 0);
-	context->PSSetShaderResources(0, 1, &textureSRV);
 	context->PSSetSamplers(0, 1, &samplerState);
 
+	ID3D11ShaderResourceView** textures = textureSRVs.data();
+	context->PSSetShaderResources(0, textureSRVs.size(), textures);
+	
 	ID3D11Buffer** buffersArr = buffers.data();
 	context->PSSetConstantBuffers(0, buffers.size(), buffersArr);
 }

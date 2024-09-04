@@ -23,6 +23,9 @@ public:
 
 private:
     void Setup();
+    void SetupForwardBuffers();
+    void SetupDeferredBuffers();
+    
     void Render();
     void RunAsserts();
 
@@ -43,16 +46,16 @@ private:
      * Forward Rendering
      */
 
-    std::unique_ptr<VertexShader> _forwardVertexShader;
-    std::unique_ptr<PixelShader> _forwardPixelShader;
+    std::unique_ptr<VertexShader> _vsForward;
+    std::unique_ptr<PixelShader> _psForward;
     
     /*
      * Deferred Rendering
      */
     
     // Geometry Pass
-    std::unique_ptr<VertexShader> _deferredVertexShaderGeometry;
-    std::unique_ptr<PixelShader> _deferredPixelShaderGeometry;
+    std::unique_ptr<VertexShader> _vsDeferredGeometry;
+    std::unique_ptr<PixelShader> _psDeferredGeometry;
     
     //std::unique_ptr<HullShader> _hullShader;
     //std::unique_ptr<DomainShader> _domainShader;
@@ -60,7 +63,7 @@ private:
 
     // Light Pass
     
-    std::unique_ptr<ComputeShader> _computeShader;
+    std::unique_ptr<ComputeShader> _csDeferredLight;
     
     //std::unique_ptr<HullShader> _hullShader;
     //std::unique_ptr<DomainShader> _domainShader;

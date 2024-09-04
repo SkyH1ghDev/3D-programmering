@@ -82,29 +82,3 @@ void Input::HandleRotation(Camera& camera, HWND& window, float deltaTime)
 
     this->_prevPoint = centerOfScreen;
 }
-
-
-/*void Input::HandleRotation(Camera &camera, float deltaTime)
-{
-    float angle = DX::XMConvertToRadians(30.0f);
-    
-    if (GetAsyncKeyState(VK_UP) & KEY_PRESSED)
-    {
-        camera.RotateLeft(angle, deltaTime);
-    }
-
-    if (GetAsyncKeyState(VK_DOWN) & KEY_PRESSED)
-    {
-        camera.RotateRight(angle, deltaTime);
-    }
-
-    if (GetAsyncKeyState(VK_LEFT) & KEY_PRESSED)
-    {
-        camera.RotateDown(angle, deltaTime);
-    }
-
-    if (GetAsyncKeyState(VK_RIGHT) & KEY_PRESSED)
-    {
-        camera.RotateUp(angle, deltaTime);
-    }
-}*/

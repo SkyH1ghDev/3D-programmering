@@ -9,11 +9,11 @@ FileReader::FileReader()
 
 int FileReader::ReadFilesFromConfig(std::vector<MeshData> &meshDataList)
 {
-    FileConfig fileConfig;
+    MeshConfig meshConfig;
 
     MeshData meshData;
     
-    for (const std::string& file : fileConfig.GetFilenameList())
+    for (const std::string& file : meshConfig.GetFilenameList())
     {
         if (ReadFile(file, meshData) == -1)
         {

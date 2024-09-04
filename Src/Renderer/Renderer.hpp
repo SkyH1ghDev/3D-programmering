@@ -38,7 +38,7 @@ private:
     void SetupDomainShader();
     void SetupGeometryShader();
     void SetupRasterizer(ID3D11DeviceContext* context, const D3D11_VIEWPORT& viewport);
-    void SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11ShaderResourceView* textureSRV, ID3D11SamplerState* samplerState, std::vector<ID3D11Buffer*> buffers);
+    void SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11SamplerState* samplerState, std::vector<ID3D11ShaderResourceView*> textureSRVs, std::vector<ID3D11Buffer*> buffers);
     void SetupGBuffers(ID3D11DeviceContext* context, ID3D11DepthStencilView* dsv, ID3D11RenderTargetView**& gBuffers, size_t numGBuffers);
     void SetupOutputMerger(ID3D11DeviceContext* context, ID3D11DepthStencilView* dsv, ID3D11RenderTargetView* rtv);
 

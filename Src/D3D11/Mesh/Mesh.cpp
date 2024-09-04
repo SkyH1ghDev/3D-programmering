@@ -5,14 +5,14 @@
 Mesh::Mesh(HRESULT &hr, ID3D11Device *device, const MeshData &meshData)
 {
     VertexInfo vertexInfo = meshData.VertexInfo;
-    
+	
     this->_vertexBuffer = VertexBuffer(hr, device, vertexInfo.SizeOfVertex, vertexInfo.NrOfVerticesInBuffer, vertexInfo.VertexVector);
-
+	
 	if (FAILED(hr))
 	{
 		std::cerr << "Creating Mesh VertexBuffer failed \n";
 	}
-
+	
     std::vector<SubMeshInfo> subMeshInfoVector = meshData.SubMeshInfoList;
 
     for (SubMeshInfo& subMeshInfo : subMeshInfoVector)
