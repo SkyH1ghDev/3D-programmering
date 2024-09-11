@@ -49,6 +49,10 @@ VertexBuffer Mesh::GetVertexBuffer()
 	return this->_vertexBuffer;
 }
 
+std::array<float, 4> Mesh::GetWorldPosition() const
+{
+	return this->_worldPosition;
+}
 
 ID3D11ShaderResourceView *Mesh::GetAmbientSRV(size_t subMeshIndex) const
 {

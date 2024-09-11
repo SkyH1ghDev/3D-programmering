@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 
 #include <d3d11_4.h>
 
@@ -27,6 +28,7 @@ public:
 	SubMesh& GetSubMeshAt(size_t index);
 	size_t GetNrOfSubMeshes() const;
 	VertexBuffer GetVertexBuffer();
+	std::array<float, 4> GetWorldPosition() const;
 	ID3D11ShaderResourceView* GetAmbientSRV(size_t subMeshIndex) const;
 	ID3D11ShaderResourceView* GetDiffuseSRV(size_t subMeshIndex) const;
 	ID3D11ShaderResourceView* GetSpecularSRV(size_t subMeshIndex) const;

@@ -146,11 +146,11 @@ void Application::Setup()
 void Application::SetupForwardBuffers()
 {
 	// Vertex Shader
-	this->_vsForward->AddConstantBuffer(this->_worldMatrixConstantBuffer.GetBuffer());
+	this->_vsForward->AddConstantBuffer(this->_worldMatrixConstantBuffer);
 	this->_vsForward->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
 
 	// Pixel Shader
-	this->_psForward->AddConstantBuffer(this->_lightingConstants.GetBuffer());
+	this->_psForward->AddConstantBuffer(this->_lightingConstants);
 }
 
 void Application::SetupDeferredBuffers()
@@ -158,11 +158,11 @@ void Application::SetupDeferredBuffers()
 	// Geometry Pass Shader Constant Buffers
 	
 	// Vertex Shader
-	this->_vsDeferredGeometry->AddConstantBuffer(this->_worldMatrixConstantBuffer.GetBuffer());
+	this->_vsDeferredGeometry->AddConstantBuffer(this->_worldMatrixConstantBuffer);
 	this->_vsDeferredGeometry->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
 
 	// Pixel Shader
-	this->_csDeferredLight->AddConstantBuffer(this->_lightingConstants.GetBuffer());
+	this->_csDeferredLight->AddConstantBuffer(this->_lightingConstants);
 }
 
 

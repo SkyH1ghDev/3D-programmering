@@ -12,7 +12,7 @@ VertexShader::~VertexShader()
     this->_vertexShader->Release();
 }
 
-void VertexShader::AddConstantBuffer(ID3D11Buffer* buffer)
+void VertexShader::AddConstantBuffer(ConstantBuffer buffer)
 {
     this->_constantBuffers.emplace_back(buffer);
 }
@@ -23,7 +23,7 @@ ID3DBlob *VertexShader::GetShaderBlob() const
     return this->_shaderBlob;
 }
 
-std::vector<ID3D11Buffer*> VertexShader::GetConstantBuffers()
+std::vector<ConstantBuffer> VertexShader::GetConstantBuffers()
 {
     return this->_constantBuffers;
 }

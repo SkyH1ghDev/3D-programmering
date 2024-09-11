@@ -3,6 +3,8 @@
 #include <d3d11_4.h>
 #include <vector>
 
+#include "ConstantBuffer.hpp"
+
 enum class ShaderType
 {
 	VERTEX_SHADER,
@@ -23,9 +25,9 @@ public:
 	Shader& operator=(Shader&& other) = delete;
 	
 	virtual ID3DBlob* GetShaderBlob() const = 0;
-	virtual std::vector<ID3D11Buffer*> GetConstantBuffers() = 0;
+	virtual std::vector<ConstantBuffer> GetConstantBuffers() = 0;
 	
-	virtual void AddConstantBuffer(ID3D11Buffer* buffer) = 0;
+	virtual void AddConstantBuffer(ConstantBuffer buffer) = 0;
 	
 protected:
 	Shader() = default;
@@ -46,5 +48,5 @@ protected:
 protected:
 	
 	ID3DBlob* _shaderBlob = nullptr;
-	std::vector<ID3D11Buffer*> _constantBuffers;
+	std::vector<ConstantBuffer> _constantBuffers;
 };

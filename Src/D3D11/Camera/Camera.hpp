@@ -47,7 +47,7 @@ public:
 	const DX::XMFLOAT4& GetUp() const;
 
 	void UpdateInternalConstantBuffer(ID3D11DeviceContext* context);
-	ID3D11Buffer* GetConstantBuffer() const; // TODO: Refactor this to return ConstantBuffer
+	ConstantBuffer GetConstantBuffer() const;
 	DepthBuffer GetDepthBuffer() const;
 	
 	

@@ -14,10 +14,10 @@ public:
     VertexShader(VertexShader&& other) = delete;
     VertexShader& operator=(VertexShader&& other) = delete;
 
-    void AddConstantBuffer(ID3D11Buffer* buffer) override;
+    void AddConstantBuffer(ConstantBuffer buffer) override;
     
     ID3DBlob* GetShaderBlob() const override;
-    std::vector<ID3D11Buffer*> GetConstantBuffers() override;
+    std::vector<ConstantBuffer> GetConstantBuffers() override;
     
     ID3D11VertexShader* GetVertexShader();
     

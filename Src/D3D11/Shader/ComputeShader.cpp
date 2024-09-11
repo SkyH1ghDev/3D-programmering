@@ -12,12 +12,12 @@ ComputeShader::~ComputeShader()
     this->_shaderBlob->Release();
 }
 
-void ComputeShader::AddConstantBuffer(ID3D11Buffer* buffer)
+void ComputeShader::AddConstantBuffer(ConstantBuffer buffer)
 {
     this->_constantBuffers.emplace_back(buffer);
 }
 
-std::vector<ID3D11Buffer*> ComputeShader::GetConstantBuffers()
+std::vector<ConstantBuffer> ComputeShader::GetConstantBuffers()
 {
     return this->_constantBuffers;
 }
