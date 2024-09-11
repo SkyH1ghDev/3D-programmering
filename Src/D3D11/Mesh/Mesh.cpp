@@ -14,7 +14,8 @@ Mesh::Mesh(HRESULT &hr, ID3D11Device *device, const MeshData &meshData)
 	}
 	
     std::vector<SubMeshInfo> subMeshInfoVector = meshData.SubMeshInfoList;
-
+	this->_worldPosition = meshData.meshPosition;
+	
     for (SubMeshInfo& subMeshInfo : subMeshInfoVector)
     {
 		SubMesh subMesh(hr, device, subMeshInfo);

@@ -112,9 +112,9 @@ RenderTargetView Setup::SetupGBuffer(Controller& controller)
 
 Scene Setup::SetupScene(Controller &controller)
 {
-	
 	std::vector<MeshData> meshDataList;
 	FileReader fileReader;
+	
 	if (fileReader.ReadFilesFromConfig(meshDataList) == -1)
 	{
 		throw std::runtime_error("Failed to Read OBJ-Files");

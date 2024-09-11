@@ -36,8 +36,8 @@ private:
 	std::vector<SubMesh> _subMeshes;
 	VertexBuffer _vertexBuffer;
 
-	bool _isStatic; // Defines whether the object should be updated (Translation, Rotation... etc)
-	std::array<float, 4> _worldPosition;
+	bool _isStatic = true; // Defines whether the object should be updated (Translation, Rotation... etc)
+	std::array<float, 4> _worldPosition = {0.0f, 0.0f, 0.0f, 1.0f};
 	
 	// IndexBuffer is unused as the current implementation uses the Triangle List topology rather than indexed
 	// IndexBuffer _indexBuffer;

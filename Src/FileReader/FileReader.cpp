@@ -12,15 +12,19 @@ int FileReader::ReadFilesFromConfig(std::vector<MeshData> &meshDataList)
     MeshConfig meshConfig;
 
     MeshData meshData;
-    
-    for (const std::string& file : meshConfig.GetFilenameList())
+
+    for (size_t i = 0; i < meshConfig.GetNumFiles(); ++i)
     {
-        if (ReadFile(file, meshData) == -1)
+        const std::string& filename = meshConfig.GetFilenameAt(i);
+        if (ReadFile(filename, meshData) == -1)
         {
-            std::cerr << "Could not read file: \"" << file << "\" \n";
-            
+            std::cerr << "Could not read file: \"" << filename << "\" \n";
+
             return -1;
         }
+
+        std::array<float, 4> position = meshConfig.GetPositionAt(i);
+        meshData.meshPosition = position;
 
         meshDataList.push_back(meshData);
     }
