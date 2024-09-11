@@ -166,9 +166,9 @@ void Camera::UpdateInternalConstantBuffer(ID3D11DeviceContext *context)
 	this->_cameraBuffer.UpdateBuffer(context, &this->_viewProjectionMatrix, sizeof(_viewProjectionMatrix));
 }
 
-ID3D11Buffer* Camera::GetConstantBuffer() const
+ConstantBuffer Camera::GetConstantBuffer() const
 {
-	return this->_cameraBuffer.GetBuffer();
+	return this->_cameraBuffer;
 }
 
 DepthBuffer Camera::GetDepthBuffer() const

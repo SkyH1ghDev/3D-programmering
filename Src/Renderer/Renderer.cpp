@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "MatrixCreator.hpp"
+
 void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
@@ -23,9 +25,9 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 		SetupInputAssembler(context, vBuffer, iLayout, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
-		std::vector<ID3D11Buffer*> vertexShaderBuffers = vertexShader.GetConstantBuffers();
+		std::vector<ConstantBuffer> vertexShaderBuffers = vertexShader.GetConstantBuffers();
 
-		SetupVertexShader(context, vShader, vertexShaderBuffers);
+		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetWorldPosition());
 
 
 
@@ -42,7 +44,7 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 			ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
 			std::vector<ID3D11ShaderResourceView*> tShaderResourceViews = {mesh.GetTextureSRV(j)};
 			ID3D11SamplerState* sState = samplerState.GetSamplerState();
-			std::vector<ID3D11Buffer*> pixelShaderBuffers = pixelShader.GetConstantBuffers();
+			std::vector<ConstantBuffer> pixelShaderBuffers = pixelShader.GetConstantBuffers();
 		
 			SetupPixelShader(context, pShader, sState, tShaderResourceViews, pixelShaderBuffers);
 			
@@ -99,9 +101,9 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 		// Setup Vertex Shader
 		
 		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
-		std::vector<ID3D11Buffer*> vertexShaderBuffers = vertexShader.GetConstantBuffers();
+		std::vector<ConstantBuffer> vertexShaderBuffers = vertexShader.GetConstantBuffers();
 		
-		SetupVertexShader(context, vShader, vertexShaderBuffers);
+		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetWorldPosition());
 
 		// Setup Rasterizer
 		
@@ -129,7 +131,7 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 			ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
 			std::vector<ID3D11ShaderResourceView*> tShaderResourceViews = {mesh.GetTextureSRV(j), mesh.GetAmbientSRV(j), mesh.GetDiffuseSRV(j), mesh.GetSpecularSRV(j)};
 			ID3D11SamplerState* sState = samplerState.GetSamplerState();
-			std::vector<ID3D11Buffer*> pixelShaderBuffers = pixelShader.GetConstantBuffers();
+			std::vector<ConstantBuffer> pixelShaderBuffers = pixelShader.GetConstantBuffers();
          	
 			SetupPixelShader(context, pShader, sState, tShaderResourceViews, pixelShaderBuffers);
 			
@@ -161,9 +163,9 @@ void Renderer::PerformLightPass(Controller& controller, SwapChain& swapChain, st
 	ID3D11ComputeShader* cShader = computeShader.GetComputeShader();
 	ID3D11ShaderResourceView** SRVarr = SRVs.data();
 	ID3D11UnorderedAccessView* uav = swapChain.GetUAV();
-	std::vector<ID3D11Buffer*> computeBuffers = computeShader.GetConstantBuffers();
+	std::vector<ConstantBuffer> computeConstantBuffers = computeShader.GetConstantBuffers();
 	
-	SetupComputeShader(context, cShader, SRVarr, numSRVs, uav, computeBuffers);
+	SetupComputeShader(context, cShader, SRVarr, numSRVs, uav, computeConstantBuffers);
 
 	context->Dispatch(160, 90, 1);
 
@@ -201,15 +203,27 @@ void Renderer::SetupInputAssembler(ID3D11DeviceContext *context, ID3D11Buffer *v
 	context->IASetPrimitiveTopology(topology);
 }
 
-void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShader* vertexShader, std::vector<ID3D11Buffer*> buffers)
+void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShader* vertexShader, std::vector<ConstantBuffer> buffers, std::array<float, 4> meshPosition)
 {
-	context->VSSetShader(vertexShader, nullptr, 0);
+	MatrixCreator matrixCreator;
 
-	ID3D11Buffer** buffersArr = buffers.data();
+	context->VSSetShader(vertexShader, nullptr, 0);
+	
+	DX::XMFLOAT4X4 worldPositionMatrix = matrixCreator.CreateTranslationMatrixXMFLOAT4X4(meshPosition[0], meshPosition[1], meshPosition[2]);
+
+	buffers.at(0).UpdateBuffer(context, &worldPositionMatrix, sizeof(worldPositionMatrix));
+	
+	std::vector<ID3D11Buffer*> ID3D11Buffers;
+	for (ConstantBuffer cb : buffers)
+	{
+		ID3D11Buffers.push_back(cb.GetBuffer());
+	}
+	
+	ID3D11Buffer** buffersArr = ID3D11Buffers.data();
 	context->VSSetConstantBuffers(0, buffers.size(), buffersArr);
 }
 
-void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11SamplerState* samplerState, std::vector<ID3D11ShaderResourceView*> textureSRVs, std::vector<ID3D11Buffer*> buffers)
+void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11SamplerState* samplerState, std::vector<ID3D11ShaderResourceView*> textureSRVs, std::vector<ConstantBuffer> buffers)
 {
 	context->PSSetShader(pixelShader, nullptr, 0);
 	context->PSSetSamplers(0, 1, &samplerState);
@@ -217,7 +231,13 @@ void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader*
 	ID3D11ShaderResourceView** textures = textureSRVs.data();
 	context->PSSetShaderResources(0, textureSRVs.size(), textures);
 	
-	ID3D11Buffer** buffersArr = buffers.data();
+	std::vector<ID3D11Buffer*> ID3D11Buffers;
+	for (ConstantBuffer cb : buffers)
+	{
+		ID3D11Buffers.push_back(cb.GetBuffer());
+	}
+	
+	ID3D11Buffer** buffersArr = ID3D11Buffers.data();
 	context->PSSetConstantBuffers(0, buffers.size(), buffersArr);
 }
 
@@ -261,12 +281,18 @@ void Renderer::UnbindGBuffersCS(ID3D11DeviceContext* context, size_t numGBuffers
 	context->CSSetShaderResources(0, numGBuffers, nulledArr);
 }
 
-void Renderer::SetupComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* computeShader, ID3D11ShaderResourceView** gBufferSRVs, size_t numGBuffers, ID3D11UnorderedAccessView* uav, std::vector<ID3D11Buffer*> buffers)
+void Renderer::SetupComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* computeShader, ID3D11ShaderResourceView** gBufferSRVs, size_t numGBuffers, ID3D11UnorderedAccessView* uav, std::vector<ConstantBuffer> buffers)
 {
 	context->CSSetShader(computeShader, nullptr, 0);
 	context->CSSetShaderResources(0, numGBuffers, gBufferSRVs);
 	context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
-
-	ID3D11Buffer** buffersArr = buffers.data();
+	
+	std::vector<ID3D11Buffer*> ID3D11Buffers;
+	for (ConstantBuffer cb : buffers)
+	{
+		ID3D11Buffers.push_back(cb.GetBuffer());
+	}
+	
+	ID3D11Buffer** buffersArr = ID3D11Buffers.data();
 	context->CSSetConstantBuffers(0, buffers.size(), buffersArr);
 }

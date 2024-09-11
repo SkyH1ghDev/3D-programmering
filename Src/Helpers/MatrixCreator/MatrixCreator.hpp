@@ -24,4 +24,6 @@ public:
     
     DX::XMMATRIX CreateProjectionXMMATRIX(const float &fovAngle, const float &aspectRatio, const float &nearZ, const float &farZ);
     DX::XMMATRIX CreateProjectionXMMATRIX(const ProjectionMatrixConfig& projectionMatrixConfig);
+
+    DX::XMFLOAT4X4 CreateTranslationMatrixXMFLOAT4X4(const float& x, const float& y, const float& z);
 };

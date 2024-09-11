@@ -171,9 +171,9 @@ void Application::Render()
 	RenderConfig renderConfig;
 	RenderMode renderMode = renderConfig.GetRenderMode();
 	
-    float rotationalSpeed = 1.0f;
-	WorldMatrixConfig worldMatrixConfig;
-	float currentAngle = worldMatrixConfig.GetInitialAngle();
+    //float rotationalSpeed = 1.0f;
+	//WorldMatrixConfig worldMatrixConfig;
+	//float currentAngle = worldMatrixConfig.GetInitialAngle();
 	
 	MatrixCreator matrixCreator;
 	
@@ -200,14 +200,14 @@ void Application::Render()
 		
 		this->_scene.GetCurrentCamera().UpdateInternalConstantBuffer(this->_controller.GetContext());
 			
-		DX::XMFLOAT4X4 worldMatrixFloat4x4 = matrixCreator.CreateWorldXMFLOAT4X4(currentAngle);
-		this->_worldMatrixConstantBuffer.UpdateBuffer(this->_controller.GetContext(), &worldMatrixFloat4x4, sizeof(worldMatrixFloat4x4));
+		//DX::XMFLOAT4X4 worldMatrixFloat4x4 = matrixCreator.CreateWorldXMFLOAT4X4(currentAngle);
+		//this->_worldMatrixConstantBuffer.UpdateBuffer(this->_controller.GetContext(), &worldMatrixFloat4x4, sizeof(worldMatrixFloat4x4));
 
 		this->_clock.End();
 		float deltaTime = this->_clock.GetDeltaTime();
  
 		this->_input.ReadInput(this->_scene.GetCurrentCamera(), this->_window, deltaTime);
-		currentAngle -= rotationalSpeed * deltaTime;
+		//currentAngle -= rotationalSpeed * deltaTime;
 	}
 }
 

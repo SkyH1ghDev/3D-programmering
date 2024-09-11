@@ -76,3 +76,15 @@ DX::XMMATRIX MatrixCreator::CreateProjectionXMMATRIX(const ProjectionMatrixConfi
 {
 	return DX::XMMatrixPerspectiveFovLH(DX::XMConvertToRadians(projectionMatrixConfig.GetFovAngle()), projectionMatrixConfig.GetAspectRatio(), projectionMatrixConfig.GetNearZ(), projectionMatrixConfig.GetFarZ());
 }
+
+
+DX::XMFLOAT4X4 MatrixCreator::CreateTranslationMatrixXMFLOAT4X4(const float& x, const float& y, const float& z)
+{
+	DX::XMMATRIX translationMatrix = DX::XMMatrixTranslation(x, y, z);
+	DX::XMMATRIX transposedTranslationMatrix = DX::XMMatrixTranspose(translationMatrix);
+
+	DX::XMFLOAT4X4 translationMatrixXMFLOAT4X4;
+
+	DX::XMStoreFloat4x4(&translationMatrixXMFLOAT4X4, transposedTranslationMatrix);
+	return translationMatrixXMFLOAT4X4;
+}
