@@ -30,4 +30,4 @@ workspace "3D Projekt - Christoffer Bohman"
 
 
         local projectPath = path.getabsolute(project().location or "./")
-        prebuildcommands {"python prebuild.py " .. projectPath .. "/"}
+        prebuildcommands {"python prebuild.py \"" .. projectPath .. "/\""}
