@@ -74,9 +74,6 @@ private:
     InputLayout _inputLayout;
     Sampler _sampler;
 
-    ConstantBuffer _worldMatrixConstantBuffer;
-    ConstantBuffer _lightingConstants;
-
     Input _input;
     Clock _clock;
     Renderer _renderer;

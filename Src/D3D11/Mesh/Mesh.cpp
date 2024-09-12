@@ -15,6 +15,10 @@ Mesh::Mesh(HRESULT &hr, ID3D11Device *device, const MeshData &meshData)
 	
     std::vector<SubMeshInfo> subMeshInfoVector = meshData.SubMeshInfoList;
 	this->_worldPosition = meshData.meshPosition;
+
+	this->_oscillationPosition = meshData.oscillationPosition;
+	this->_oscillationTime = meshData.oscillationTime;
+	this->_oscillationPeriod = meshData.oscillationPeriod;
 	
     for (SubMeshInfo& subMeshInfo : subMeshInfoVector)
     {

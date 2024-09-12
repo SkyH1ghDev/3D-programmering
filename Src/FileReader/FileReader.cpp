@@ -15,6 +15,7 @@ int FileReader::ReadFilesFromConfig(std::vector<MeshData> &meshDataList)
 
     for (size_t i = 0; i < meshConfig.GetNumFiles(); ++i)
     {
+        // Reads OBJ + MTL Data
         const std::string& filename = meshConfig.GetFilenameAt(i);
         if (ReadFile(filename, meshData) == -1)
         {
@@ -23,9 +24,18 @@ int FileReader::ReadFilesFromConfig(std::vector<MeshData> &meshDataList)
             return -1;
         }
 
-        std::array<float, 4> position = meshConfig.GetPositionAt(i);
-        meshData.meshPosition = position;
+        // World Position
+        meshData.meshPosition = meshConfig.GetPositionAt(i);
 
+        // Mesh Flags
+        
+        meshData.meshFlags = meshConfig.GetMeshFlagsAt(i);
+        
+        // Oscillation
+        
+        meshData.oscillationPosition = meshConfig.GetOscillationPositionAt(i);
+        meshData.oscillationTime = meshConfig.GetOscillationTimeAt(i);
+        meshData.oscillationPeriod = meshConfig.GetOscillationPeriodAt(i);
         meshDataList.push_back(meshData);
     }
     

@@ -1,5 +1,4 @@
 ﻿#include "MatrixCreator.hpp"
-#include "WorldMatrixConfig.hpp"
 #include "ViewMatrixConfig.hpp"
 
 namespace DX = DirectX;
@@ -13,11 +12,8 @@ DX::XMMATRIX MatrixCreator::CreateWorldXMMATRIX(const float& angle)
 
 DX::XMMATRIX MatrixCreator::CreateWorldXMMATRIX()
 {
-	WorldMatrixConfig worldMatrixConfig;
-	
 	DX::XMMATRIX translationMatrix = DX::XMMatrixTranslation(0, 0, 0);
-	DX::XMMATRIX rotationMatrix = DX::XMMatrixRotationY(worldMatrixConfig.GetInitialAngle());
-	return XMMatrixTranspose(XMMatrixMultiply(translationMatrix, rotationMatrix));
+	return XMMatrixTranspose(translationMatrix);
 }
 
 

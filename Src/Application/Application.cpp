@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "MatrixCreator.hpp"
+#include "Math.hpp"
 
 Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
@@ -58,11 +59,7 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
     // Initialize InputLayout and Sampler
     _inputLayout(Setup::SetupInputLayout(this->_controller, *this->_vsDeferredGeometry)),
-    _sampler(Setup::SetupSampler(this->_controller)),
-
-	// Initialize ConstantBuffers
-	_worldMatrixConstantBuffer(Setup::CreateWorldMatrixConstantBuffer(this->_controller)),
-	_lightingConstants(Setup::CreatePixelShaderConstantBuffer(this->_controller, this->_scene))
+    _sampler(Setup::SetupSampler(this->_controller))
 {
 	const size_t numGBuffers = 6;
 	for (size_t i = 0; i < numGBuffers; ++i )
@@ -112,10 +109,6 @@ void Application::RunAsserts()
     // Input layout + Sampler
     assert(this->_inputLayout.GetInputLayout() != nullptr);
     assert(this->_sampler.GetSamplerState() != nullptr);
-
-	// Constant Buffers
-	assert(this->_worldMatrixConstantBuffer.GetBuffer() != nullptr);
-	assert(this->_lightingConstants.GetBuffer() != nullptr);
 }
 
 
@@ -146,11 +139,11 @@ void Application::Setup()
 void Application::SetupForwardBuffers()
 {
 	// Vertex Shader
-	this->_vsForward->AddConstantBuffer(this->_worldMatrixConstantBuffer);
+	this->_vsForward->AddConstantBuffer(Setup::CreateWorldMatrixConstantBuffer(this->_controller));
 	this->_vsForward->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
 
 	// Pixel Shader
-	this->_psForward->AddConstantBuffer(this->_lightingConstants);
+	this->_psForward->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
 }
 
 void Application::SetupDeferredBuffers()
@@ -158,25 +151,20 @@ void Application::SetupDeferredBuffers()
 	// Geometry Pass Shader Constant Buffers
 	
 	// Vertex Shader
-	this->_vsDeferredGeometry->AddConstantBuffer(this->_worldMatrixConstantBuffer);
+	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateWorldMatrixConstantBuffer(this->_controller));
 	this->_vsDeferredGeometry->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
 
-	// Pixel Shader
-	this->_csDeferredLight->AddConstantBuffer(this->_lightingConstants);
+	// Compute Shader
+	this->_csDeferredLight->AddConstantBuffer(Setup::CreatePixelShaderConstantBuffer(this->_controller, this->_scene));
 }
-
 
 void Application::Render()
 {
 	RenderConfig renderConfig;
 	RenderMode renderMode = renderConfig.GetRenderMode();
 	
-    //float rotationalSpeed = 1.0f;
-	//WorldMatrixConfig worldMatrixConfig;
-	//float currentAngle = worldMatrixConfig.GetInitialAngle();
-	
 	MatrixCreator matrixCreator;
-	
+
 	while (this->_input.Exit(this->_msg))
 	{
 		this->_clock.Start();
@@ -186,7 +174,7 @@ void Application::Render()
 			TranslateMessage(&this->_msg);
 			DispatchMessage(&this->_msg);
 		}
-
+		
 		if (renderMode == Forward)
 		{
 			this->_renderer.RenderForward(this->_controller, this->_windowRTV, *this->_vsForward, *this->_psForward, this->_inputLayout, this->_scene, this->_sampler);
@@ -200,14 +188,10 @@ void Application::Render()
 		
 		this->_scene.GetCurrentCamera().UpdateInternalConstantBuffer(this->_controller.GetContext());
 			
-		//DX::XMFLOAT4X4 worldMatrixFloat4x4 = matrixCreator.CreateWorldXMFLOAT4X4(currentAngle);
-		//this->_worldMatrixConstantBuffer.UpdateBuffer(this->_controller.GetContext(), &worldMatrixFloat4x4, sizeof(worldMatrixFloat4x4));
-
 		this->_clock.End();
 		float deltaTime = this->_clock.GetDeltaTime();
- 
+
 		this->_input.ReadInput(this->_scene.GetCurrentCamera(), this->_window, deltaTime);
-		//currentAngle -= rotationalSpeed * deltaTime;
 	}
 }
 
