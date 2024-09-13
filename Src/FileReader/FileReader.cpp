@@ -25,17 +25,17 @@ int FileReader::ReadFilesFromConfig(std::vector<MeshData> &meshDataList)
         }
 
         // World Position
-        meshData.meshPosition = meshConfig.GetPositionAt(i);
+        meshData.MeshPosition = meshConfig.GetPositionAt(i);
 
         // Mesh Flags
         
-        meshData.meshFlags = meshConfig.GetMeshFlagsAt(i);
+        meshData.MeshFlags = meshConfig.GetMeshFlagsAt(i);
         
         // Oscillation
         
-        meshData.oscillationPosition = meshConfig.GetOscillationPositionAt(i);
-        meshData.oscillationTime = meshConfig.GetOscillationTimeAt(i);
-        meshData.oscillationPeriod = meshConfig.GetOscillationPeriodAt(i);
+        meshData.OscillationStartPosition = meshConfig.GetOscillationPositionAt(i);
+        meshData.OscillationTime = meshConfig.GetOscillationTimeAt(i);
+        meshData.OscillationPeriod = meshConfig.GetOscillationPeriodAt(i);
         meshDataList.push_back(meshData);
     }
     

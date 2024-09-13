@@ -61,7 +61,7 @@ void Input::HandleMovement(Camera& camera, float deltaTime)
 void Input::HandleRotation(Camera& camera, HWND& window, float deltaTime)
 {
     WindowConfig windowConfig;
-    float angle = DX::XMConvertToRadians(120.0f);
+    float sensitivity = DX::XMConvertToRadians(90.0f);
 
     POINT currPoint;
     GetCursorPos(&currPoint);
@@ -71,9 +71,9 @@ void Input::HandleRotation(Camera& camera, HWND& window, float deltaTime)
 
     if (deltaX != 0 || deltaY != 0)
     {
-        camera.RotateDown(static_cast<float>(-deltaX) * angle, deltaTime);
+        camera.RotateDown(static_cast<float>(-deltaX) * sensitivity, deltaTime);
 
-        camera.RotateLeft(static_cast<float>(-deltaY) * angle, deltaTime);
+        camera.RotateLeft(static_cast<float>(-deltaY) * sensitivity, deltaTime);
     }
     
     POINT centerOfScreen = POINT(windowConfig.GetWidth() / 2, windowConfig.GetHeight() / 2);

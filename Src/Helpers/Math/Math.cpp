@@ -1,9 +1,6 @@
 ﻿#include "Math.hpp"
 #include <cmath>
 
-// PI
-#define M_PI 3.14159265358979323846
-
 std::array<float, 4> Math::OscillateBetweenPoints(float time, std::array<float, 4> pos1, std::array<float, 4> pos2)
 {
 	std::array<float, 4> difference = {pos1[0] - pos2[0], pos1[1] - pos2[1], pos1[2] - pos2[2], 1.0f};

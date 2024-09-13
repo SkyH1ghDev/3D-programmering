@@ -16,7 +16,7 @@ class Setup
 public:
     
     static HWND SetupWindow(HINSTANCE hInstance, int nCmdShow);
-    static Controller SetupController(HWND window);
+    static Controller SetupController();
     static SwapChain SetupSwapChain(Controller& controller, HWND window);
     static RenderTargetView SetupRenderTargetView(Controller& controller, SwapChain& swapChain);
     static RenderTargetView SetupGBuffer(Controller& controller);

@@ -14,11 +14,11 @@ class MeshData
 public:
     VertexInfo VertexInfo;
     std::vector<SubMeshInfo> SubMeshInfoList;
-    std::array<float, 4> meshPosition;
+    std::array<float, 4> MeshPosition;
 
-    std::array<float, 4> oscillationPosition;
-    float oscillationPeriod;
-    float oscillationTime;
+    std::array<float, 4> OscillationStartPosition;
+    float OscillationPeriod;
+    float OscillationTime;
     
-    std::bitset<1> meshFlags;
+    std::bitset<1> MeshFlags;
 };

@@ -32,7 +32,7 @@ private:
     std::vector<std::array<float, 4>> _positionList = {{0.0f, 10.0f, 0.0f, 1.0f}, {0.0f, -10.0f, 0.0f, 1.0f}};
 
     // bit 1 : Oscillation
-    std::vector<std::bitset<1>> _meshFlagList = {{true}, {false}};
+    std::vector<std::bitset<1>> _meshFlagList = {{1}, {0}};
 
     std::vector<std::array<float, 4>> _oscillationPositionList = {{10.0f, 5.0f, 10.0f, 1.0f}, std::array<float, 4>()};
     std::vector<float> _periodList = {5.0f, 0.0f};

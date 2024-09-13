@@ -1,9 +1,8 @@
 ﻿#include "Application.hpp"
+#include "MatrixCreator.hpp"
 
 #include <iostream>
 
-#include "MatrixCreator.hpp"
-#include "Math.hpp"
 
 Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
@@ -11,7 +10,7 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
     _window(Setup::SetupWindow(hInstance, nCmdShow)),
 
     // Initialize D3D11
-    _controller(Setup::SetupController(this->_window)),
+    _controller(Setup::SetupController()),
 	_swapChain(Setup::SetupSwapChain(this->_controller, this->_window)),
     _windowRTV(Setup::SetupRenderTargetView(this->_controller, this->_swapChain)),
     _scene(Setup::SetupScene(this->_controller)),
@@ -165,15 +164,28 @@ void Application::Render()
 	
 	MatrixCreator matrixCreator;
 
+	float deltaTime = 0.0f;
+
 	while (this->_input.Exit(this->_msg))
 	{
 		this->_clock.Start();
-     		
+
+		// Input
+        this->_input.ReadInput(this->_scene.GetCurrentCamera(), this->_window, deltaTime);
+
+		// Oscillate first mesh
+		for (size_t i = 0; i < this->_scene.GetNumOscillatingMeshes(); ++i)
+		{
+			this->_scene.GetOscillatingMeshAt(i).PerformOscillation(deltaTime);
+		}
+		
 		if (PeekMessage(&this->_msg, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&this->_msg);
 			DispatchMessage(&this->_msg);
 		}
+
+		// Render
 		
 		if (renderMode == Forward)
 		{
@@ -189,9 +201,9 @@ void Application::Render()
 		this->_scene.GetCurrentCamera().UpdateInternalConstantBuffer(this->_controller.GetContext());
 			
 		this->_clock.End();
-		float deltaTime = this->_clock.GetDeltaTime();
+		deltaTime = this->_clock.GetDeltaTime();
 
-		this->_input.ReadInput(this->_scene.GetCurrentCamera(), this->_window, deltaTime);
+		
 	}
 }
 

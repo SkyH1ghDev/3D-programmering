@@ -27,7 +27,7 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
 		std::vector<ConstantBuffer> vertexShaderBuffers = vertexShader.GetConstantBuffers();
 
-		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetWorldPosition());
+		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetCurrentPosition());
 
 
 
@@ -103,7 +103,7 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
 		std::vector<ConstantBuffer> vertexShaderBuffers = vertexShader.GetConstantBuffers();
 		
-		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetWorldPosition());
+		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetCurrentPosition());
 
 		// Setup Rasterizer
 		

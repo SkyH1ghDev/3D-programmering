@@ -1,5 +1,7 @@
 ﻿#include "Camera.hpp"
 #include "MatrixCreator.hpp"
+#include "Math.hpp"
+#include <iostream>
 
 // Overloading float3 mult as vector mult
 DX::XMFLOAT4 operator*(const DX::XMFLOAT4& a, const float& b)

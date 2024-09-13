@@ -27,7 +27,7 @@ HWND Setup::SetupWindow(HINSTANCE hInstance, int nCmdShow)
 	return window;
 }
 
-Controller Setup::SetupController(HWND window)
+Controller Setup::SetupController()
 {
     D3D11Helper d3d11Helper;
     Configuration config;

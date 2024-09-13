@@ -66,7 +66,7 @@ private:
 	// Reminder: _position and _projInfo need to be declared before _viewProjectionMatrix due to how the initialization of Camera works
 	DX::XMFLOAT4 _position = { 0.0f, 0.0f, 0.0f, 1.0f };
 	ProjectionInfo _projInfo;
-	
+
 	DX::XMFLOAT4 _forward = { 0.0f, 0.0f, 1.0f, 0.0f };
 	DX::XMFLOAT4 _right = { 1.0f, 0.0f, 0.0f, 0.0f };
 	DX::XMFLOAT4 _up = { 0.0f, 1.0f, 0.0f, 0.0f };

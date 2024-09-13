@@ -17,14 +17,20 @@ Scene::Scene(std::vector<Camera> cameraList)
     this->_cameraList = cameraList;
 }
 
-void Scene::CreateMeshes(std::vector<Mesh> meshList)
+/*void Scene::CreateMeshes(std::vector<Mesh> meshList)
 {
     this->_meshList = meshList;
-}
+}*/
 
 void Scene::AddMesh(Mesh& mesh)
 {
-    this->_meshList.emplace_back(std::move(mesh));
+    
+    this->_meshList.push_back(mesh);
+
+    if (mesh.IsOscillating())
+    {
+        this->_oscillatingMeshList.push_back(mesh);
+    }
 }
 
 Camera& Scene::GetCurrentCamera()
@@ -41,4 +47,15 @@ size_t Scene::GetNumMeshes() const
 {
     return this->_meshList.size();
 }
+
+Mesh& Scene::GetOscillatingMeshAt(size_t idx)
+{
+    return this->_oscillatingMeshList.at(idx);
+}
+
+size_t Scene::GetNumOscillatingMeshes() const
+{
+    return this->_oscillatingMeshList.size();
+}
+
 

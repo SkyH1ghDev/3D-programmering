@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "Math.hpp"
+
 Mesh::Mesh(HRESULT &hr, ID3D11Device *device, const MeshData &meshData)
 {
     VertexInfo vertexInfo = meshData.VertexInfo;
@@ -14,11 +16,14 @@ Mesh::Mesh(HRESULT &hr, ID3D11Device *device, const MeshData &meshData)
 	}
 	
     std::vector<SubMeshInfo> subMeshInfoVector = meshData.SubMeshInfoList;
-	this->_worldPosition = meshData.meshPosition;
+	this->_currentPosition = meshData.MeshPosition;
 
-	this->_oscillationPosition = meshData.oscillationPosition;
-	this->_oscillationTime = meshData.oscillationTime;
-	this->_oscillationPeriod = meshData.oscillationPeriod;
+	this->_meshFlags = meshData.MeshFlags;
+
+	this->_oscillationEndPosition = meshData.OscillationStartPosition;
+	this->_oscillationStartPosition = this->_currentPosition;
+	this->_oscillationTime = meshData.OscillationTime;
+	this->_oscillationPeriod = meshData.OscillationPeriod;
 	
     for (SubMeshInfo& subMeshInfo : subMeshInfoVector)
     {
@@ -38,6 +43,22 @@ void Mesh::PerformSubMeshDrawCall(ID3D11DeviceContext *context, size_t subMeshIn
 	
 }
 
+void Mesh::PerformOscillation(float deltaTime)
+{
+	this->_currentPosition = Math::OscillateBetweenPoints(this->_oscillationTime, this->_oscillationStartPosition, this->_oscillationEndPosition);
+	if (this->_oscillationTime > this->_oscillationPeriod)
+	{
+		this->_oscillationTime -= this->_oscillationPeriod;
+	}
+	this->_oscillationTime += 0.1f * deltaTime;
+}
+
+bool Mesh::IsOscillating() const
+{
+	return this->_meshFlags[0];
+}
+
+
 SubMesh& Mesh::GetSubMeshAt(size_t index)
 {
 	return this->_subMeshes.at(index);
@@ -53,9 +74,9 @@ VertexBuffer Mesh::GetVertexBuffer()
 	return this->_vertexBuffer;
 }
 
-std::array<float, 4> Mesh::GetWorldPosition() const
+std::array<float, 4> Mesh::GetCurrentPosition() const
 {
-	return this->_worldPosition;
+	return this->_currentPosition;
 }
 
 ID3D11ShaderResourceView *Mesh::GetAmbientSRV(size_t subMeshIndex) const
