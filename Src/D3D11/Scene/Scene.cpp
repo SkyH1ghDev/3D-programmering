@@ -24,12 +24,14 @@ Scene::Scene(std::vector<Camera> cameraList)
 
 void Scene::AddMesh(Mesh& mesh)
 {
+
+    std::shared_ptr<Mesh> meshPtr = std::make_shared<Mesh>(mesh);
     
-    this->_meshList.push_back(mesh);
+    this->_meshList.push_back(meshPtr);
 
     if (mesh.IsOscillating())
     {
-        this->_oscillatingMeshList.push_back(mesh);
+        this->_oscillatingMeshList.push_back(meshPtr);
     }
 }
 
@@ -40,7 +42,7 @@ Camera& Scene::GetCurrentCamera()
 
 Mesh& Scene::GetMeshAt(size_t index)
 {
-    return this->_meshList.at(index);
+    return *this->_meshList.at(index);
 }
 
 size_t Scene::GetNumMeshes() const
@@ -50,7 +52,7 @@ size_t Scene::GetNumMeshes() const
 
 Mesh& Scene::GetOscillatingMeshAt(size_t idx)
 {
-    return this->_oscillatingMeshList.at(idx);
+    return *this->_oscillatingMeshList.at(idx);
 }
 
 size_t Scene::GetNumOscillatingMeshes() const

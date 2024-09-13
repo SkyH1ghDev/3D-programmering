@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <vector>
+#include <memory>
 #include "Camera.hpp"
 #include "Mesh.hpp"
 
@@ -27,6 +28,6 @@ private:
     
     uint16_t _currentCameraIndex = 0; // Max 65535 Cameras
     std::vector<Camera> _cameraList;
-    std::vector<Mesh> _meshList;
-    std::vector<Mesh> _oscillatingMeshList;
+    std::vector<std::shared_ptr<Mesh>> _meshList;
+    std::vector<std::shared_ptr<Mesh>> _oscillatingMeshList;
 };
