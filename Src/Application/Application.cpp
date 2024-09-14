@@ -138,7 +138,17 @@ void Application::Setup()
 void Application::SetupForwardBuffers()
 {
 	// Vertex Shader
-	this->_vsForward->AddConstantBuffer(Setup::CreateWorldMatrixConstantBuffer(this->_controller));
+
+	// World Matrix Buffer
+
+	BufferDescData worldMatrixBufferDescData;
+	worldMatrixBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
+	worldMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+
+	MatrixCreator matrixCreator;
+	DX::XMFLOAT4X4 worldMatrix = matrixCreator.CreateWorldXMFLOAT4X4(); 
+	
+	this->_vsForward->AddConstantBuffer(Setup::CreateConstantBuffer(this->_controller, worldMatrixBufferDescData, &worldMatrix));
 	this->_vsForward->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
 
 	// Pixel Shader
@@ -150,7 +160,16 @@ void Application::SetupDeferredBuffers()
 	// Geometry Pass Shader Constant Buffers
 	
 	// Vertex Shader
-	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateWorldMatrixConstantBuffer(this->_controller));
+	// World Matrix Buffer
+
+	BufferDescData worldMatrixBufferDescData;
+	worldMatrixBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
+	worldMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+
+	MatrixCreator matrixCreator;
+	DX::XMFLOAT4X4 worldMatrix = matrixCreator.CreateWorldXMFLOAT4X4(); 
+	
+	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<DX::XMFLOAT4X4>(this->_controller, worldMatrixBufferDescData, &worldMatrix));
 	this->_vsDeferredGeometry->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
 
 	// Compute Shader
@@ -162,8 +181,6 @@ void Application::Render()
 	RenderConfig renderConfig;
 	RenderMode renderMode = renderConfig.GetRenderMode();
 	
-	MatrixCreator matrixCreator;
-
 	float deltaTime = 0.0f;
 
 	while (this->_input.Exit(this->_msg))

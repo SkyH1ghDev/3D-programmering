@@ -58,7 +58,7 @@ private:
 	void MoveInDirection(const float& amount, const DX::XMFLOAT4& direction);
 	void RotateAroundAxis(const float& amount, const DX::XMFLOAT4& axis);
 
-	BufferFlagData GetBufferFlags();
+	BufferDescData GetBufferFlags();
 	DX::XMFLOAT4X4 CreateViewProjectionMatrix(const DX::XMFLOAT4 &position, const DX::XMFLOAT4 &directionVector, const ProjectionInfo& projInfo) const;
 	DX::XMFLOAT4X4 CreateViewProjectionMatrix() const;
 	

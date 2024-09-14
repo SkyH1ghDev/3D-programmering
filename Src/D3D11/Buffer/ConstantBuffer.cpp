@@ -7,7 +7,7 @@ ConstantBuffer::ConstantBuffer(HRESULT &hr, ID3D11Device *device, size_t byteSiz
                                unsigned int sysMemPitch,
                                unsigned int sysMemSlicePitch,
                                unsigned int structureByStride,
-                               BufferFlagData flags)
+                               BufferDescData flags)
 {
 	if (byteSize % 16 != 0)
 	{

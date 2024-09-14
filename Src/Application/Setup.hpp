@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <xstring>
+#include <iostream>
 
 #include "Controller.hpp"
 #include "InputLayout.hpp"
@@ -24,6 +25,27 @@ public:
     static Shader* SetupShader(Controller& controller, ShaderType shaderType, std::wstring hlslFilename);
     static InputLayout SetupInputLayout(Controller& controller, const Shader& vertexShader);
     static Sampler SetupSampler(Controller& controller);
-    static ConstantBuffer CreateWorldMatrixConstantBuffer(Controller& controller);
+    static ConstantBuffer CreateConstantBuffer(Controller& controller, BufferDescData& bufferFlags, void* data);
     static ConstantBuffer CreatePixelShaderConstantBuffer(Controller& controller, Scene& scene);
+
+	template <typename T>
+	static ConstantBuffer CreateConstantBuffer(Controller &controller, BufferDescData& bufferFlags, T* data)
+	{
+		HRESULT hr;
+		
+		BufferDescData worldMatrixBufferFlagData;
+		worldMatrixBufferFlagData.Usage = D3D11_USAGE_DYNAMIC;
+		worldMatrixBufferFlagData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+	   
+		ConstantBuffer constantBuffer = ConstantBuffer(hr, controller.GetDevice(), sizeof(*data),
+														data, 0, 0, 0,
+														bufferFlags);
+
+		if (FAILED(hr))
+		{
+			throw std::runtime_error("Failed to create Constant Buffer");
+		}
+
+		return constantBuffer;
+	}
 };

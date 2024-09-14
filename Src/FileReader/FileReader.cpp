@@ -11,10 +11,11 @@ int FileReader::ReadFilesFromConfig(std::vector<MeshData> &meshDataList)
 {
     MeshConfig meshConfig;
 
-    MeshData meshData;
-
     for (size_t i = 0; i < meshConfig.GetNumFiles(); ++i)
     {
+        
+        MeshData meshData;
+        
         // Reads OBJ + MTL Data
         const std::string& filename = meshConfig.GetFilenameAt(i);
         if (ReadFile(filename, meshData) == -1)

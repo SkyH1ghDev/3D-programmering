@@ -184,9 +184,9 @@ DX::XMFLOAT4X4 Camera::GetViewProjectionMatrix() const
 	return this->_viewProjectionMatrix;
 }
 
-BufferFlagData Camera::GetBufferFlags()
+BufferDescData Camera::GetBufferFlags()
 {
-	BufferFlagData camBufferFlags;
+	BufferDescData camBufferFlags;
 	camBufferFlags.Usage = D3D11_USAGE_DYNAMIC;
 	camBufferFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 

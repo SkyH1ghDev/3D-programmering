@@ -15,7 +15,7 @@ public:
     Scene(std::vector<Camera> cameraList);
     
     void Render();
-    void CreateMeshes(std::vector<Mesh> meshList);
+    //void CreateMeshes(std::vector<Mesh> meshList);
     void AddMesh(Mesh& mesh);
     
     Camera& GetCurrentCamera();

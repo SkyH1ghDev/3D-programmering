@@ -1,13 +1,13 @@
 #pragma once
 
 #include <d3d11_4.h>
-#include "BufferFlagData.hpp"
+#include "BufferDescData.hpp"
 
 class ConstantBuffer
 {
 public:
 	ConstantBuffer() = delete;
-	ConstantBuffer(HRESULT &hr, ID3D11Device *device, size_t byteSize, void *initialData, unsigned sysMemPitch, unsigned sysMemSlicePitch, unsigned structureByStride, BufferFlagData flags);
+	ConstantBuffer(HRESULT &hr, ID3D11Device *device, size_t byteSize, void *initialData, unsigned sysMemPitch, unsigned sysMemSlicePitch, unsigned structureByStride, BufferDescData flags);
 	~ConstantBuffer();
 	ConstantBuffer(const ConstantBuffer& other);
 	ConstantBuffer& operator=(const ConstantBuffer& other);
