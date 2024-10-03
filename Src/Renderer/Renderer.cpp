@@ -209,7 +209,7 @@ void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShade
 
 	context->VSSetShader(vertexShader, nullptr, 0);
 	
-	DX::XMFLOAT4X4 worldPositionMatrix = matrixCreator.CreateTranslationMatrixXMFLOAT4X4(meshPosition[0], meshPosition[1], meshPosition[2]);
+	DX::XMFLOAT4X4 worldPositionMatrix = matrixCreator.CreateTranslationMatrix(meshPosition[0], meshPosition[1], meshPosition[2]);
 
 	buffers.at(0).UpdateBuffer(context, &worldPositionMatrix, sizeof(worldPositionMatrix));
 	

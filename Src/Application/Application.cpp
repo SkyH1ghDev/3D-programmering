@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#include "LightData.hpp"
+
 
 Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
@@ -146,13 +148,28 @@ void Application::SetupForwardBuffers()
 	worldMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
 	MatrixCreator matrixCreator;
-	DX::XMFLOAT4X4 worldMatrix = matrixCreator.CreateWorldXMFLOAT4X4(); 
+	DX::XMMATRIX worldMatrix = matrixCreator.CreateInitialWorldMatrixTransposed(); 
+
+	DX::XMFLOAT4X4 worldMatrix4x4;
+	DX::XMStoreFloat4x4(&worldMatrix4x4, worldMatrix);
 	
-	this->_vsForward->AddConstantBuffer(Setup::CreateConstantBuffer(this->_controller, worldMatrixBufferDescData, &worldMatrix));
-	this->_vsForward->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
+	this->_vsForward->AddConstantBuffer(Setup::CreateConstantBuffer<DX::XMFLOAT4X4>(this->_controller, worldMatrixBufferDescData, &worldMatrix4x4));
+
+	BufferDescData viewProjectionMatrixBufferDescData;
+	viewProjectionMatrixBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
+	viewProjectionMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+    	
+	const DX::XMMATRIX viewProjectionMatrix = matrixCreator.CreateInitialViewProjectionMatrixTransposed();
+	DX::XMFLOAT4X4 viewProjMatrix4x4;
+	XMStoreFloat4x4(&viewProjMatrix4x4, viewProjectionMatrix);
+	
+	this->_vsForward->AddConstantBuffer(Setup::CreateConstantBuffer<DX::XMFLOAT4X4>(this->_controller, viewProjectionMatrixBufferDescData, &viewProjMatrix4x4));
 
 	// Pixel Shader
-	this->_psForward->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
+	
+	LightData lightData;
+	
+	this->_psForward->AddConstantBuffer(Setup::CreateConstantBuffer<LightData>());
 }
 
 void Application::SetupDeferredBuffers()
@@ -167,10 +184,22 @@ void Application::SetupDeferredBuffers()
 	worldMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
 	MatrixCreator matrixCreator;
-	DX::XMFLOAT4X4 worldMatrix = matrixCreator.CreateWorldXMFLOAT4X4(); 
+	DX::XMMATRIX worldMatrix = matrixCreator.CreateInitialWorldMatrixTransposed(); 
+
+	DX::XMFLOAT4X4 worldMatrix4x4;
+	DX::XMStoreFloat4x4(&worldMatrix4x4, worldMatrix);
 	
-	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<DX::XMFLOAT4X4>(this->_controller, worldMatrixBufferDescData, &worldMatrix));
-	this->_vsDeferredGeometry->AddConstantBuffer(this->_scene.GetCurrentCamera().GetConstantBuffer());
+	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<DX::XMFLOAT4X4>(this->_controller, worldMatrixBufferDescData, &worldMatrix4x4));
+
+	BufferDescData viewProjectionMatrixBufferDescData;
+	viewProjectionMatrixBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
+	viewProjectionMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+	
+    const DX::XMMATRIX viewProjectionMatrix = matrixCreator.CreateInitialViewProjectionMatrixTransposed();
+	DX::XMFLOAT4X4 viewProjMatrix4x4;
+	XMStoreFloat4x4(&viewProjMatrix4x4, viewProjectionMatrix);
+	
+	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<DX::XMFLOAT4X4>(this->_controller, viewProjectionMatrixBufferDescData, &viewProjMatrix4x4));
 
 	// Compute Shader
 	this->_csDeferredLight->AddConstantBuffer(Setup::CreatePixelShaderConstantBuffer(this->_controller, this->_scene));

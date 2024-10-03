@@ -7,6 +7,7 @@ cbuffer ConstBuffer: register(b0)
 	float4 lightPosition;
 	float4 eyePosition;
 	float ambientLightIntensity;
+	float generalLightIntensity;
 	float shininess;
 }
 

@@ -43,7 +43,7 @@ DX::XMFLOAT4X4 Camera::CreateViewProjectionMatrix() const
 	MatrixCreator matrixCreator;
 	ProjectionInfo projInfo = this->_projInfo;
 	
-	const DX::XMMATRIX viewXMMatrix = matrixCreator.CreateViewXMMATRIX();
+	const DX::XMMATRIX viewXMMatrix = matrixCreator.CreateInitialViewMatrixTransposed();
 	const DX::XMMATRIX projectionXMMatrix = matrixCreator.CreateProjectionXMMATRIX(projInfo.FovAngleY, projInfo.AspectRatio, projInfo.NearZ, projInfo.FarZ);
 
 	const DX::XMMATRIX viewProjXMMatrix = XMMatrixMultiply(viewXMMatrix, projectionXMMatrix);

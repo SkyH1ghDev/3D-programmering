@@ -46,8 +46,6 @@ public:
 	const DX::XMFLOAT4& GetRight() const;
 	const DX::XMFLOAT4& GetUp() const;
 
-	void UpdateInternalConstantBuffer(ID3D11DeviceContext* context);
-	ConstantBuffer GetConstantBuffer() const;
 	DepthBuffer GetDepthBuffer() const;
 	
 	
@@ -73,6 +71,5 @@ private:
 	
 	DX::XMFLOAT4X4 _viewProjectionMatrix;
 	
-	ConstantBuffer _cameraBuffer;
 	DepthBuffer _depthBuffer;
 };
