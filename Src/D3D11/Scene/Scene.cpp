@@ -2,7 +2,7 @@
 
 Scene::Scene(HRESULT& hr, ID3D11Device* device)
 {
-    Camera mainCam(hr, device);
+    Camera mainCam(hr, device, TODO, TODO);
     
     this->_cameraList.push_back(std::move(mainCam));
 }
@@ -40,7 +40,7 @@ Camera& Scene::GetCurrentCamera()
     return this->_cameraList.at(this->_currentCameraIndex);
 }
 
-Mesh& Scene::GetMeshAt(size_t index)
+Mesh& Scene::GetMeshAt(size_t index) const
 {
     return *this->_meshList.at(index);
 }
@@ -50,7 +50,7 @@ size_t Scene::GetNumMeshes() const
     return this->_meshList.size();
 }
 
-Mesh& Scene::GetOscillatingMeshAt(size_t idx)
+Mesh& Scene::GetOscillatingMeshAt(size_t idx) const
 {
     return *this->_oscillatingMeshList.at(idx);
 }

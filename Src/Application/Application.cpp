@@ -148,7 +148,7 @@ void Application::SetupForwardBuffers()
 	worldMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
 	MatrixCreator matrixCreator;
-	DX::XMMATRIX worldMatrix = matrixCreator.CreateInitialWorldMatrixTransposed(); 
+	DX::XMMATRIX worldMatrix = matrixCreator.CreateWorldMatrix({0.0f, 0.0f, 0.0f, 1.0f}); 
 
 	DX::XMFLOAT4X4 worldMatrix4x4;
 	DX::XMStoreFloat4x4(&worldMatrix4x4, worldMatrix);
@@ -159,7 +159,7 @@ void Application::SetupForwardBuffers()
 	viewProjectionMatrixBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
 	viewProjectionMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
     	
-	const DX::XMMATRIX viewProjectionMatrix = matrixCreator.CreateInitialViewProjectionMatrixTransposed();
+	const DX::XMMATRIX viewProjectionMatrix = matrixCreator.CreateViewProjectionMatrix(this->_scene.GetCurrentCamera());
 	DX::XMFLOAT4X4 viewProjMatrix4x4;
 	XMStoreFloat4x4(&viewProjMatrix4x4, viewProjectionMatrix);
 	
@@ -169,7 +169,7 @@ void Application::SetupForwardBuffers()
 	
 	LightData lightData;
 	
-	this->_psForward->AddConstantBuffer(Setup::CreateConstantBuffer<LightData>());
+	this->_psForward->AddConstantBuffer(Setup::CreateConstantBuffer<LightData>(this->_controller, ));
 }
 
 void Application::SetupDeferredBuffers()
@@ -184,7 +184,7 @@ void Application::SetupDeferredBuffers()
 	worldMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
 	MatrixCreator matrixCreator;
-	DX::XMMATRIX worldMatrix = matrixCreator.CreateInitialWorldMatrixTransposed(); 
+	DX::XMMATRIX worldMatrix = matrixCreator.CreateWorldMatrix({0.0f, 0.0f, 0.0f, 1.0f}); 
 
 	DX::XMFLOAT4X4 worldMatrix4x4;
 	DX::XMStoreFloat4x4(&worldMatrix4x4, worldMatrix);
@@ -195,14 +195,14 @@ void Application::SetupDeferredBuffers()
 	viewProjectionMatrixBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
 	viewProjectionMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 	
-    const DX::XMMATRIX viewProjectionMatrix = matrixCreator.CreateInitialViewProjectionMatrixTransposed();
+    const DX::XMMATRIX viewProjectionMatrix = matrixCreator.CreateViewProjectionMatrix(this->_scene.GetCurrentCamera());
 	DX::XMFLOAT4X4 viewProjMatrix4x4;
 	XMStoreFloat4x4(&viewProjMatrix4x4, viewProjectionMatrix);
 	
 	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<DX::XMFLOAT4X4>(this->_controller, viewProjectionMatrixBufferDescData, &viewProjMatrix4x4));
 
 	// Compute Shader
-	this->_csDeferredLight->AddConstantBuffer(Setup::CreatePixelShaderConstantBuffer(this->_controller, this->_scene));
+	this->_csDeferredLight->AddConstantBuffer(Setup::CreateLightingConstantBuffer(this->_controller, this->_scene.GetCurrentCamera()));
 }
 
 void Application::Render()
@@ -244,7 +244,7 @@ void Application::Render()
 		
 		this->_swapChain.GetSwapChain()->Present(0, 0);
 		
-		this->_scene.GetCurrentCamera().UpdateInternalConstantBuffer(this->_controller.GetContext());
+		//this->_scene.GetCurrentCamera().UpdateInternalConstantBuffer(this->_controller.GetContext());
 			
 		this->_clock.End();
 		deltaTime = this->_clock.GetDeltaTime();

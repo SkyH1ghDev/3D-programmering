@@ -11,7 +11,7 @@ public:
     
 	DX::XMFLOAT4 LightColour;
 	DX::XMFLOAT4 LightPosition; 
-	DX::XMFLOAT4 EyePosition;
+	DX::XMFLOAT4 CamPosition;
 	float AmbientLightIntensity;
 	float GeneralLightIntensity;
 	float Shininess;

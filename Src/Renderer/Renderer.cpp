@@ -27,7 +27,7 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
 		std::vector<ConstantBuffer> vertexShaderBuffers = vertexShader.GetConstantBuffers();
 
-		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetCurrentPosition());
+		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetCurrentPosition(), TODO);
 
 
 
@@ -103,7 +103,7 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
 		std::vector<ConstantBuffer> vertexShaderBuffers = vertexShader.GetConstantBuffers();
 		
-		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetCurrentPosition());
+		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetCurrentPosition(), currCamera);
 
 		// Setup Rasterizer
 		
@@ -203,15 +203,25 @@ void Renderer::SetupInputAssembler(ID3D11DeviceContext *context, ID3D11Buffer *v
 	context->IASetPrimitiveTopology(topology);
 }
 
-void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShader* vertexShader, std::vector<ConstantBuffer> buffers, std::array<float, 4> meshPosition)
+void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShader* vertexShader, std::vector<ConstantBuffer> buffers, std::array<float, 4> meshPosition, Camera& camera)
 {
 	MatrixCreator matrixCreator;
 
 	context->VSSetShader(vertexShader, nullptr, 0);
 	
-	DX::XMFLOAT4X4 worldPositionMatrix = matrixCreator.CreateTranslationMatrix(meshPosition[0], meshPosition[1], meshPosition[2]);
-
-	buffers.at(0).UpdateBuffer(context, &worldPositionMatrix, sizeof(worldPositionMatrix));
+	DX::XMMATRIX worldPositionMatrix = matrixCreator.CreateTranslationMatrix(meshPosition[0], meshPosition[1], meshPosition[2]);
+	
+	DX::XMFLOAT4X4 worldMatrix;
+	DX::XMStoreFloat4x4(&worldMatrix, worldPositionMatrix);
+	
+	buffers.at(0).UpdateBuffer(context, &worldMatrix, sizeof(worldMatrix));
+	
+	DX::XMMATRIX viewProjMatrix = matrixCreator.CreateViewProjectionMatrix(camera);
+    
+	DX::XMFLOAT4X4 viewProjectionMatrix;
+	DX::XMStoreFloat4x4(&viewProjectionMatrix, viewProjMatrix);
+        	
+	buffers.at(0).UpdateBuffer(context, &viewProjectionMatrix, sizeof(viewProjectionMatrix));
 	
 	std::vector<ID3D11Buffer*> ID3D11Buffers;
 	for (ConstantBuffer cb : buffers)
@@ -286,6 +296,8 @@ void Renderer::SetupComputeShader(ID3D11DeviceContext* context, ID3D11ComputeSha
 	context->CSSetShader(computeShader, nullptr, 0);
 	context->CSSetShaderResources(0, numGBuffers, gBufferSRVs);
 	context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+
+	// TODO: ADD UPDATING OF LIGHTDATA CONSTANT BUFFER
 	
 	std::vector<ID3D11Buffer*> ID3D11Buffers;
 	for (ConstantBuffer cb : buffers)

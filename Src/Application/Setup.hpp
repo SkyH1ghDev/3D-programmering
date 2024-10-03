@@ -26,7 +26,7 @@ public:
     static InputLayout SetupInputLayout(Controller& controller, const Shader& vertexShader);
     static Sampler SetupSampler(Controller& controller);
     static ConstantBuffer CreateConstantBuffer(Controller& controller, BufferDescData& bufferFlags, void* data);
-    static ConstantBuffer CreatePixelShaderConstantBuffer(Controller& controller, Scene& scene);
+    static ConstantBuffer CreateLightingConstantBuffer(const Controller& controller, const Camera& camera);
 
 	template <typename T>
 	static ConstantBuffer CreateConstantBuffer(Controller &controller, BufferDescData& bufferFlags, T* data)

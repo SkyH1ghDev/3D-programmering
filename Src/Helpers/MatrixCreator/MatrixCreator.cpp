@@ -4,45 +4,38 @@
 namespace DX = DirectX;
 
 
-DX::XMMATRIX MatrixCreator::CreateInitialWorldMatrixTransposed()
+DX::XMMATRIX MatrixCreator::CreateWorldMatrix(const DX::XMFLOAT4& position) 
 {
-	DX::XMMATRIX worldXMMatrix = DX::XMMatrixTranslation(0, 0, 0);
+	DX::XMMATRIX worldXMMatrix = DX::XMMatrixTranslation(position.x, position.y, position.z);
 	return DX::XMMatrixTranspose(worldXMMatrix);
 }
 
-DX::XMMATRIX MatrixCreator::CreateInitialViewMatrixTransposed()
+DX::XMMATRIX MatrixCreator::CreateViewMatrix(const DX::XMFLOAT4& cameraPosition, const DX::XMFLOAT4& viewDirection, const DX::XMFLOAT4& upDirection)
 {
-	ViewMatrixConfig viewMatrixConfig;
-
-	DX::XMFLOAT4 eyePositionXMFloat4 = viewMatrixConfig.GetCamPosition();
-	DX::XMFLOAT4 directionVectorXMFloat4 = viewMatrixConfig.GetDirectionVector();
+	DX::XMVECTOR camPosition = DX::XMLoadFloat4(&cameraPosition);
+	DX::XMVECTOR viewVector = DX::XMVectorAdd(camPosition, DX::XMLoadFloat4(&viewDirection));
+	DX::XMVECTOR upVector = DX::XMLoadFloat4(&upDirection);
 	
-	DX::XMVECTOR eyePosition = DX::XMLoadFloat4(&eyePositionXMFloat4);
-	DX::XMVECTOR focusPosition = DX::XMVectorAdd(eyePosition, DX::XMLoadFloat4(&directionVectorXMFloat4));
-	DX::XMVECTOR upDirection = DX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	
-	DX::XMMATRIX viewXMMatrix = DX::XMMatrixLookAtLH(eyePosition, focusPosition, upDirection);
-	return DX::XMMatrixTranspose(viewXMMatrix);
+	DX::XMMATRIX viewMatrix = DX::XMMatrixLookAtLH(camPosition, viewVector, upVector);
+	return DX::XMMatrixTranspose(viewMatrix);
 }
 
 
 
-DX::XMMATRIX MatrixCreator::CreateInitialProjectionMatrix()
+DX::XMMATRIX MatrixCreator::CreateProjectionMatrix(const ProjectionInfo& projInfo)
 {
-	ProjectionMatrixConfig projectionMatrixConfig;
-
-	float fovAngle = DX::XMConvertToRadians(DX::XMConvertToRadians(projectionMatrixConfig.GetFovAngle()));
-	float aspectRatio = projectionMatrixConfig.GetAspectRatio();
-	float nearZ = projectionMatrixConfig.GetNearZ();
-	float farZ = projectionMatrixConfig.GetFarZ();
+	float fovAngle = DX::XMConvertToRadians(projInfo.FovAngleY);
+	float aspectRatio = projInfo.AspectRatio;
+	float nearZ = projInfo.NearZ;
+	float farZ = projInfo.FarZ;
 	
 	return DX::XMMatrixPerspectiveFovLH(fovAngle, aspectRatio, nearZ , farZ);
 }
 
-DX::XMMATRIX MatrixCreator::CreateInitialViewProjectionMatrixTransposed()
+DX::XMMATRIX MatrixCreator::CreateViewProjectionMatrix(const Camera& camera)
 {
-	DX::XMMATRIX viewMatrix = CreateInitialViewMatrixTransposed();
-	DX::XMMATRIX projectionMatrix = CreateInitialProjectionMatrix();
+	DX::XMMATRIX viewMatrix = CreateViewMatrix(camera.GetPosition(), camera.GetForward(), camera.GetUp());
+	DX::XMMATRIX projectionMatrix = CreateProjectionMatrix(camera.GetProjectionInfo());
 
 	return DX::XMMatrixMultiplyTranspose(viewMatrix, projectionMatrix);
 }

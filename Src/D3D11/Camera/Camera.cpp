@@ -1,7 +1,5 @@
 ﻿#include "Camera.hpp"
 #include "MatrixCreator.hpp"
-#include "Math.hpp"
-#include <iostream>
 
 // Overloading float3 mult as vector mult
 DX::XMFLOAT4 operator*(const DX::XMFLOAT4& a, const float& b)
@@ -14,47 +12,14 @@ DX::XMFLOAT4 operator*(const float& a, const DX::XMFLOAT4& b)
 	return operator*(b, a);
 }
 
-Camera::Camera(HRESULT& hr, ID3D11Device* device, const DX::XMFLOAT4& initialPosition, const ProjectionInfo& projectionInfo):
-	_projInfo(projectionInfo),
-	_position(initialPosition),
-	_viewProjectionMatrix(CreateViewProjectionMatrix(this->_position, this->_forward, this->_projInfo)),
-	_cameraBuffer(ConstantBuffer(hr, device, sizeof(this->_viewProjectionMatrix), &this->_viewProjectionMatrix, 0, 0, 0, GetBufferFlags())),
+Camera::Camera(HRESULT& hr, ID3D11Device* device, const ProjectionInfo& projInfo, const DX::XMFLOAT4& initialPosition):
 	_depthBuffer(DepthBuffer(hr, device))
 {
+	this->_position = initialPosition;
+	this->_projInfo = projInfo;
 }
 
-DX::XMFLOAT4X4 Camera::CreateViewProjectionMatrix(const DX::XMFLOAT4 &position, const DX::XMFLOAT4 &directionVector, const ProjectionInfo& projInfo) const
-{
-   MatrixCreator matrixCreator;
-
-   const DX::XMMATRIX viewMatrix = matrixCreator.CreateViewXMMATRIX(position, directionVector);
-   const DX::XMMATRIX projectionMatrix = matrixCreator.CreateProjectionXMMATRIX(projInfo.FovAngleY, projInfo.AspectRatio, projInfo.NearZ, projInfo.FarZ);
-
-   const DX::XMMATRIX viewProjectionMatrix = XMMatrixMultiplyTranspose(viewMatrix, projectionMatrix);
-
-   DX::XMFLOAT4X4 viewProjMatrix4x4;
-   XMStoreFloat4x4(&viewProjMatrix4x4, viewProjectionMatrix);
-
-   return viewProjMatrix4x4;
-}
-
-DX::XMFLOAT4X4 Camera::CreateViewProjectionMatrix() const
-{
-	MatrixCreator matrixCreator;
-	ProjectionInfo projInfo = this->_projInfo;
-	
-	const DX::XMMATRIX viewXMMatrix = matrixCreator.CreateInitialViewMatrixTransposed();
-	const DX::XMMATRIX projectionXMMatrix = matrixCreator.CreateProjectionXMMATRIX(projInfo.FovAngleY, projInfo.AspectRatio, projInfo.NearZ, projInfo.FarZ);
-
-	const DX::XMMATRIX viewProjXMMatrix = XMMatrixMultiply(viewXMMatrix, projectionXMMatrix);
-
-	DX::XMFLOAT4X4 viewProjMatrix4x4;
-	XMStoreFloat4x4(&viewProjMatrix4x4, viewProjXMMatrix);
-
-	return viewProjMatrix4x4;
-}
-
-void Camera::RotateAroundAxis(const float &amount, const DX::XMFLOAT4 &axis)
+void Camera::RotateAroundAxis(const float& amount, const DX::XMFLOAT4& axis)
 {
 	DX::XMVECTOR axisVector = DX::XMLoadFloat4(&axis);
 	DX::XMMATRIX rotationMatrix = DX::XMMatrixRotationAxis(axisVector, amount);
@@ -82,8 +47,9 @@ void Camera::RotateAroundAxis(const float &amount, const DX::XMFLOAT4 &axis)
 	DX::XMStoreFloat4(&this->_forward, forwardVector);
 	DX::XMStoreFloat4(&this->_right, rightVector);
 	DX::XMStoreFloat4(&this->_up, upVector);
-	
-	this->_viewProjectionMatrix = CreateViewProjectionMatrix(this->_position, this->_forward, this->_projInfo);
+
+	//MatrixCreator matrixCreator;
+	//this->_viewProjectionMatrix = matrixCreator.CreateViewProjectionMatrix(*this);
 }
 
 void Camera::RotateForward(float amount, const float &deltaTime)
@@ -163,34 +129,14 @@ void Camera::MoveDown(const float &amount, const float& deltaTime)
 	MoveInDirection(amount * deltaTime, this->_up * -1);
 }
 
-void Camera::UpdateInternalConstantBuffer(ID3D11DeviceContext *context)
-{
-	this->_cameraBuffer.UpdateBuffer(context, &this->_viewProjectionMatrix, sizeof(_viewProjectionMatrix));
-}
-
-ConstantBuffer Camera::GetConstantBuffer() const
-{
-	return this->_cameraBuffer;
-}
-
 DepthBuffer Camera::GetDepthBuffer() const
 {
 	return this->_depthBuffer;
 }
 
-
-DX::XMFLOAT4X4 Camera::GetViewProjectionMatrix() const
+const ProjectionInfo& Camera::GetProjectionInfo() const
 {
-	return this->_viewProjectionMatrix;
-}
-
-BufferDescData Camera::GetBufferFlags()
-{
-	BufferDescData camBufferFlags;
-	camBufferFlags.Usage = D3D11_USAGE_DYNAMIC;
-	camBufferFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
-
-	return camBufferFlags;
+	return this->_projInfo;
 }
 
 const DX::XMFLOAT4 &Camera::GetPosition() const

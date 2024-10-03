@@ -17,11 +17,11 @@ public:
     void Render();
     //void CreateMeshes(std::vector<Mesh> meshList);
     void AddMesh(Mesh& mesh);
-    
+
     Camera& GetCurrentCamera();
-    Mesh& GetMeshAt(size_t index);
+    Mesh& GetMeshAt(size_t index) const;
     size_t GetNumMeshes() const;
-    Mesh& GetOscillatingMeshAt(size_t idx);
+    Mesh& GetOscillatingMeshAt(size_t idx) const;
     size_t GetNumOscillatingMeshes() const;
     
 private:

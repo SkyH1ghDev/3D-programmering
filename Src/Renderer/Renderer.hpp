@@ -33,7 +33,7 @@ private:
     void ClearScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv, std::vector<ID3D11RenderTargetView*> gBuffers);
     
     void SetupInputAssembler(ID3D11DeviceContext* context, ID3D11Buffer* vertexShader, ID3D11InputLayout* inputLayout, D3D_PRIMITIVE_TOPOLOGY topology);
-    void SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShader* vertexShader, std::vector<ConstantBuffer> buffers, std::array<float, 4> meshPosition);
+    void SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShader* vertexShader, std::vector<ConstantBuffer> buffers, std::array<float, 4> meshPosition, Camera& camera);
     void SetupHullShader();
     // SetupTesselator?
     void SetupDomainShader();

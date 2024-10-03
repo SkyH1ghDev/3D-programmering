@@ -286,7 +286,7 @@ Sampler Setup::SetupSampler(Controller &controller)
 
 
 
-ConstantBuffer Setup::CreatePixelShaderConstantBuffer(Controller &controller, Scene& scene)
+ConstantBuffer Setup::CreateLightingConstantBuffer(const Controller& controller, const Camera& camera)
 {
 	HRESULT hr;
 	
@@ -294,21 +294,21 @@ ConstantBuffer Setup::CreatePixelShaderConstantBuffer(Controller &controller, Sc
 	
 	lightData.LightColour = {1.0f, 1.0f, 1.0f, 1.0f};
 	lightData.LightPosition = {0.0f, -7.5f, -10.0f, 1.0f};
-	lightData.EyePosition = DX::XMFLOAT4(scene.GetCurrentCamera().GetPosition());
+	lightData.CamPosition = camera.GetPosition();
 	lightData.AmbientLightIntensity = 0.1f;
 	lightData.GeneralLightIntensity = 1.2f;
 	lightData.Shininess = 10000.0f;
 
-	BufferDescData psBufferFlags;
-	psBufferFlags.Usage = D3D11_USAGE_DYNAMIC;
-	psBufferFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+	BufferDescData lightingBufferFlags;
+	lightingBufferFlags.Usage = D3D11_USAGE_DYNAMIC;
+	lightingBufferFlags.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 	
-	ConstantBuffer psConstBuffer = ConstantBuffer(hr, controller.GetDevice(), sizeof(lightData), &lightData, 0, 0, 0, psBufferFlags);
+	ConstantBuffer lightingConstantBuffer = ConstantBuffer(hr, controller.GetDevice(), sizeof(lightData), &lightData, 0, 0, 0, lightingBufferFlags);
     
 	if (FAILED(hr))
 	{
-		throw std::runtime_error("Failed to create Pixel Shader Constant Buffer");
+		throw std::runtime_error("Failed to create Lighting Constant Buffer");
 	}
 
-	return psConstBuffer;
+	return lightingConstantBuffer;
 }

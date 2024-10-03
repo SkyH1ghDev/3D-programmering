@@ -36,7 +36,7 @@ ID3D11DeviceContext *Controller::GetContext()
     return this->_immediateContext;
 }
 
-ID3D11Device *Controller::GetDevice()
+ID3D11Device *Controller::GetDevice() const
 {
     return this->_device;
 }

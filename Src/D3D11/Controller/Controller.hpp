@@ -13,7 +13,7 @@ public:
     Controller(const Controller& other) = delete;
     Controller(const Controller&& other) = delete;
     
-    ID3D11Device* GetDevice();
+    ID3D11Device* GetDevice() const;
     ID3D11DeviceContext* GetContext();
     D3D11_VIEWPORT GetViewPort();
 

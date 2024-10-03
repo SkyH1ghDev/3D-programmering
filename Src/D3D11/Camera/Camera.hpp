@@ -2,9 +2,7 @@
 
 #include <d3d11_4.h>
 #include <DirectXMath.h>
-#include "ConstantBuffer.hpp"
 #include "ProjectionInfo.hpp"
-#include "ViewMatrixConfig.hpp"
 #include "DepthBuffer.hpp"
 
 namespace DX = DirectX;
@@ -13,9 +11,7 @@ class Camera
 {
 public:
 	Camera() = delete;
-	Camera(HRESULT& hr, ID3D11Device* device,
-		const DX::XMFLOAT4& initialPosition = ViewMatrixConfig().GetCamPosition(),
-		const ProjectionInfo& projectionInfo = ProjectionInfo(ProjectionMatrixConfig()));
+	Camera(HRESULT& hr, ID3D11Device* device, const ProjectionInfo& projectionInfo, const DX::XMFLOAT4& initialPosition);
 	
 	~Camera() = default;
 	Camera(const Camera& other) = default;
@@ -46,19 +42,20 @@ public:
 	const DX::XMFLOAT4& GetRight() const;
 	const DX::XMFLOAT4& GetUp() const;
 
+	const ProjectionInfo& GetProjectionInfo() const;
 	DepthBuffer GetDepthBuffer() const;
 	
 	
-	DX::XMFLOAT4X4 GetViewProjectionMatrix() const;
+	//DX::XMFLOAT4X4 GetViewProjectionMatrix() const;
 
 private:
 	
 	void MoveInDirection(const float& amount, const DX::XMFLOAT4& direction);
 	void RotateAroundAxis(const float& amount, const DX::XMFLOAT4& axis);
 
-	BufferDescData GetBufferFlags();
-	DX::XMFLOAT4X4 CreateViewProjectionMatrix(const DX::XMFLOAT4 &position, const DX::XMFLOAT4 &directionVector, const ProjectionInfo& projInfo) const;
-	DX::XMFLOAT4X4 CreateViewProjectionMatrix() const;
+	//BufferDescData GetBufferFlags();
+	//DX::XMFLOAT4X4 CreateViewProjectionMatrix(const DX::XMFLOAT4 &position, const DX::XMFLOAT4 &directionVector, const ProjectionInfo& projInfo) const;
+	//DX::XMFLOAT4X4 CreateViewProjectionMatrix() const;
 	
 private:
 	// Reminder: _position and _projInfo need to be declared before _viewProjectionMatrix due to how the initialization of Camera works
