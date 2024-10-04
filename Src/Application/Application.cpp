@@ -142,7 +142,7 @@ void Application::SetupForwardBuffers()
 	// Vertex Shader
 
 	// World Matrix Buffer
-
+	
 	BufferDescData worldMatrixBufferDescData;
 	worldMatrixBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
 	worldMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
@@ -167,9 +167,20 @@ void Application::SetupForwardBuffers()
 
 	// Pixel Shader
 	
+	BufferDescData lightingBufferDescData;
+	lightingBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
+	lightingBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+
 	LightData lightData;
+    	
+	lightData.LightColour = {1.0f, 1.0f, 1.0f, 1.0f};
+	lightData.LightPosition = {0.0f, -7.5f, -10.0f, 1.0f};
+	lightData.CamPosition = this->_scene.GetCurrentCamera().GetPosition();
+	lightData.AmbientLightIntensity = 0.1f;
+	lightData.GeneralLightIntensity = 1.2f;
+	lightData.Shininess = 10000.0f;
 	
-	this->_psForward->AddConstantBuffer(Setup::CreateConstantBuffer<LightData>(this->_controller, ));
+	this->_psForward->AddConstantBuffer(Setup::CreateConstantBuffer<LightData>(this->_controller, lightingBufferDescData, &lightData));
 }
 
 void Application::SetupDeferredBuffers()
@@ -202,7 +213,20 @@ void Application::SetupDeferredBuffers()
 	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<DX::XMFLOAT4X4>(this->_controller, viewProjectionMatrixBufferDescData, &viewProjMatrix4x4));
 
 	// Compute Shader
-	this->_csDeferredLight->AddConstantBuffer(Setup::CreateLightingConstantBuffer(this->_controller, this->_scene.GetCurrentCamera()));
+	BufferDescData lightingBufferDescData;
+	lightingBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
+	lightingBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+
+	LightData lightData;
+	
+	lightData.LightColour = {1.0f, 1.0f, 1.0f, 1.0f};
+	lightData.LightPosition = {0.0f, -7.5f, -10.0f, 1.0f};
+	lightData.CamPosition = this->_scene.GetCurrentCamera().GetPosition();
+	lightData.AmbientLightIntensity = 0.1f;
+	lightData.GeneralLightIntensity = 1.2f;
+	lightData.Shininess = 10000.0f;
+	
+	this->_csDeferredLight->AddConstantBuffer(Setup::CreateConstantBuffer<LightData>(this->_controller, lightingBufferDescData, &lightData));
 }
 
 void Application::Render()

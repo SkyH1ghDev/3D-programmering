@@ -30,9 +30,8 @@ HWND Setup::SetupWindow(HINSTANCE hInstance, int nCmdShow)
 Controller Setup::SetupController()
 {
     D3D11Helper d3d11Helper;
-    Configuration config;
 
-    WindowConfig windowConfig = config.GetWindowConfig();
+    WindowConfig windowConfig;
     UINT height = windowConfig.GetHeight();
     UINT width = windowConfig.GetWidth();
 
@@ -54,9 +53,7 @@ Controller Setup::SetupController()
 
 SwapChain Setup::SetupSwapChain(Controller& controller, HWND window)
 {
-	Configuration config;
-
-	WindowConfig windowConfig = config.GetWindowConfig();
+	WindowConfig windowConfig;
 	UINT width = windowConfig.GetWidth();
 	UINT height = windowConfig.GetHeight();
 	
@@ -90,9 +87,7 @@ RenderTargetView Setup::SetupRenderTargetView(Controller &controller, SwapChain&
 RenderTargetView Setup::SetupGBuffer(Controller& controller)
 {
 	D3D11Helper d3d11Helper;
-	Configuration config;
-
-	WindowConfig windowConfig = config.GetWindowConfig();
+	WindowConfig windowConfig;
 
 	
 	ID3D11RenderTargetView* rtv = nullptr;
@@ -120,9 +115,21 @@ Scene Setup::SetupScene(Controller &controller)
 		throw std::runtime_error("Failed to Read OBJ-Files");
 	}
 
-	HRESULT hr;
+	HRESULT hr = 0;
 
-	Scene scene(hr, controller.GetDevice());
+	ViewMatrixConfig viewMatrixConfig;
+	DX::XMFLOAT4 mainCamPosition = viewMatrixConfig.GetCamPosition();
+	
+	ProjectionMatrixConfig projectionMatrixConfig;
+	ProjectionInfo projectionInfo;
+
+	projectionInfo.AspectRatio = projectionMatrixConfig.GetAspectRatio();
+	projectionInfo.FarZ = projectionMatrixConfig.GetFarZ();
+	projectionInfo.NearZ = projectionMatrixConfig.GetNearZ();
+	projectionInfo.FovAngleY = projectionMatrixConfig.GetFovAngle();
+	
+	
+	Scene scene(hr, controller.GetDevice(), projectionInfo, mainCamPosition);
 	if (FAILED(hr))
 	{
 		throw std::runtime_error("Failed to Create Scene");

@@ -1,5 +1,6 @@
 ﻿#include "Camera.hpp"
 #include "MatrixCreator.hpp"
+#include <algorithm>
 
 // Overloading float3 mult as vector mult
 DX::XMFLOAT4 operator*(const DX::XMFLOAT4& a, const float& b)
@@ -19,9 +20,41 @@ Camera::Camera(HRESULT& hr, ID3D11Device* device, const ProjectionInfo& projInfo
 	this->_projInfo = projInfo;
 }
 
+void Camera::ApplyRotation(const float& deltaPitch, const float& deltaYaw)
+{
+	float cappedPitch = std::max<float>(-89.9f, std::min<float>(-89.9f, this->_pitch + deltaPitch));
+
+	// Calculate new forward vector
+	DX::XMVECTOR newForward = {static_cast<float>(cos(cappedPitch) * cos(deltaYaw)),
+							   static_cast<float>(sin(cappedPitch)),
+							   static_cast<float>(cos(cappedPitch) * sin(deltaYaw))};
+	newForward = DX::XMVector3Normalize(newForward);
+
+	// Calculate new up vector
+	DX::XMVECTOR newUp = DX::XMVector3Cross({0.0f, 1.0f, 0.0f}, newForward);
+	newUp = DX::XMVector3Normalize(newUp);
+
+	// Calculate new right vector
+	DX::XMVECTOR newRight = DX::XMVector3Cross(newForward, newUp);
+	newRight = DX::XMVector3Normalize(newRight);
+
+	DX::XMStoreFloat4(&this->_forward, newForward);
+	DX::XMStoreFloat4(&this->_up, newUp);
+	DX::XMStoreFloat4(&this->_right, newRight);
+
+	this->_forward.w = 1.0f;
+	this->_up.w = 1.0f;
+	this->_right.w = 1.0f;
+	
+	this->_pitch = cappedPitch;
+	this->_yaw += deltaYaw;
+}
+
+
 void Camera::RotateAroundAxis(const float& amount, const DX::XMFLOAT4& axis)
 {
-	DX::XMVECTOR axisVector = DX::XMLoadFloat4(&axis);
+	
+	/*DX::XMVECTOR axisVector = DX::XMLoadFloat4(&axis);
 	DX::XMMATRIX rotationMatrix = DX::XMMatrixRotationAxis(axisVector, amount);
 	
 	DX::XMVECTOR forwardVector = DX::XMLoadFloat4(&this->_forward); 
@@ -47,7 +80,7 @@ void Camera::RotateAroundAxis(const float& amount, const DX::XMFLOAT4& axis)
 	DX::XMStoreFloat4(&this->_forward, forwardVector);
 	DX::XMStoreFloat4(&this->_right, rightVector);
 	DX::XMStoreFloat4(&this->_up, upVector);
-
+    */
 	//MatrixCreator matrixCreator;
 	//this->_viewProjectionMatrix = matrixCreator.CreateViewProjectionMatrix(*this);
 }
@@ -95,8 +128,6 @@ void Camera::MoveInDirection(const float& amount, const DX::XMFLOAT4& direction)
 	this->_position.y += scaledDirectionXMFloat4.y;
 	this->_position.z += scaledDirectionXMFloat4.z;
 	this->_position.w = 1.0f;
-
-	this->_viewProjectionMatrix = CreateViewProjectionMatrix(this->_position, this->_forward, this->_projInfo);
 }
 
 void Camera::MoveForward(const float& amount, const float& deltaTime)
@@ -143,4 +174,15 @@ const DX::XMFLOAT4 &Camera::GetPosition() const
 {
 	return this->_position;
 }
+
+const DX::XMFLOAT4& Camera::GetForward() const
+{
+	return this->_forward;
+}
+
+const DX::XMFLOAT4& Camera::GetUp() const
+{
+	return this->_up;
+}
+
 

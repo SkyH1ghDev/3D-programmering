@@ -30,6 +30,8 @@ public:
 	void MoveUp(const float& amount, const float& deltaTime = 1);
 	void MoveDown(const float& amount, const float& deltaTime = 1);
 
+	void ApplyRotation(const float& deltaPitch, const float& deltaYaw);
+	
 	void RotateForward(float amount, const float& deltaTime = 1);
 	void RotateBackward(float amount, const float& deltaTime = 1);
 	void RotateRight(float amount, const float& deltaTime = 1);
@@ -65,6 +67,9 @@ private:
 	DX::XMFLOAT4 _forward = { 0.0f, 0.0f, 1.0f, 0.0f };
 	DX::XMFLOAT4 _right = { 1.0f, 0.0f, 0.0f, 0.0f };
 	DX::XMFLOAT4 _up = { 0.0f, 1.0f, 0.0f, 0.0f };
+
+	float _pitch = 0.0f;
+	float _yaw = 0.0f;
 	
 	DX::XMFLOAT4X4 _viewProjectionMatrix;
 	

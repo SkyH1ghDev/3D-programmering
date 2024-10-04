@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "MeshConfig.hpp"
 #include "ProjectionMatrixConfig.hpp"
 #include "ViewMatrixConfig.hpp"

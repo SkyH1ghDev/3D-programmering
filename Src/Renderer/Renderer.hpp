@@ -16,9 +16,7 @@
 class Renderer
 {
 public:
-
-    void Setup(const Configuration& configuration);
-
+    
     // Forward Rendering
     void RenderForward(Controller& controller, RenderTargetView& rtv, VertexShader& vertexShader, PixelShader& pixelShader, InputLayout& inputLayout, Scene& scene, Sampler& samplerState);
     

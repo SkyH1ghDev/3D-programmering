@@ -1,8 +1,8 @@
 ﻿#include "Scene.hpp"
 
-Scene::Scene(HRESULT& hr, ID3D11Device* device)
+Scene::Scene(HRESULT& hr, ID3D11Device* device, ProjectionInfo& mainCamProjInfo, DX::XMFLOAT4& mainCamPosition)
 {
-    Camera mainCam(hr, device, TODO, TODO);
+    Camera mainCam(hr, device, mainCamProjInfo, mainCamPosition);
     
     this->_cameraList.push_back(std::move(mainCam));
 }

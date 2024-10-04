@@ -27,7 +27,7 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
 		std::vector<ConstantBuffer> vertexShaderBuffers = vertexShader.GetConstantBuffers();
 
-		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetCurrentPosition(), TODO);
+		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetCurrentPosition(), currCamera);
 
 
 

@@ -8,8 +8,7 @@
 
 DepthBuffer::DepthBuffer(HRESULT& hr, ID3D11Device* device)
 {
-    Configuration configuration;
-	WindowConfig windowConfig = configuration.GetWindowConfig();
+	WindowConfig windowConfig; 
 	/*if (!d3d11Helper.CreateDepthStencil(device, windowConfig.GetWidth(), windowConfig.GetHeight(), this->_texture, this->_dsv, this->_srv))
 	{
 		throw std::runtime_error("Failed to Create DSV");

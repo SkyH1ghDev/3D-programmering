@@ -10,7 +10,7 @@ class Scene
 public:
     Scene() = delete;
     ~Scene() = default;
-    Scene(HRESULT& hr, ID3D11Device* device);
+    Scene(HRESULT& hr, ID3D11Device* device, ProjectionInfo& mainCamProjInfo, DX::XMFLOAT4& mainCamPosition);
     Scene(Camera& camera);
     Scene(std::vector<Camera> cameraList);
     
