@@ -67,8 +67,8 @@ void Input::HandleRotation(Camera& camera, HWND& window, float deltaTime)
     POINT currPoint;
     GetCursorPos(&currPoint);
 
-    int deltaPitch = (this->_prevPoint.x - currPoint.x) * sensitivity * degreesPerPixel;
-    int deltaYaw = (this->_prevPoint.y - currPoint.y) * sensitivity * degreesPerPixel;
+    float deltaYaw = static_cast<float>(this->_prevPoint.x - currPoint.x) * sensitivity * degreesPerPixel;
+    float deltaPitch = static_cast<float>(this->_prevPoint.y - currPoint.y) * sensitivity * degreesPerPixel;
 
     camera.ApplyRotation(deltaPitch, deltaYaw);
     

@@ -19,7 +19,7 @@ public:
 
     // Create Matrices
     DX::XMMATRIX CreateTranslationMatrix(const float& x, const float& y, const float& z);
-    DX::XMMATRIX CreateRotationMatrixX(const float& rotationX);
-    DX::XMMATRIX CreateRotationMatrixY(const float& rotationY);
-    DX::XMMATRIX CreateRotationMatrixZ(const float& rotationZ);
+    DX::XMMATRIX CreateRotationMatrixX(const float& yaw);
+    DX::XMMATRIX CreateRotationMatrixY(const float& pitch);
+    DX::XMMATRIX CreateRotationMatrixZ(const float& roll);
 };

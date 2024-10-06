@@ -16,8 +16,8 @@ DX::XMMATRIX MatrixCreator::CreateViewMatrix(const DX::XMFLOAT4& cameraPosition,
 	DX::XMVECTOR viewVector = DX::XMVectorAdd(camPosition, DX::XMLoadFloat4(&viewDirection));
 	DX::XMVECTOR upVector = DX::XMLoadFloat4(&upDirection);
 	
-	DX::XMMATRIX viewMatrix = DX::XMMatrixLookAtLH(camPosition, viewVector, upVector);
-	return DX::XMMatrixTranspose(viewMatrix);
+	return DX::XMMatrixLookAtLH(camPosition, viewVector, upVector);
+
 }
 
 
@@ -46,3 +46,21 @@ DX::XMMATRIX MatrixCreator::CreateTranslationMatrix(const float& x, const float&
 	DX::XMMATRIX translationMatrix = DX::XMMatrixTranslation(x, y, z);
 	return DX::XMMatrixTranspose(translationMatrix);
 }
+
+DX::XMMATRIX MatrixCreator::CreateRotationMatrixX(const float& yaw)
+{
+	return DX::XMMatrixTranspose(DX::XMMatrixRotationX(yaw));
+}
+
+DX::XMMATRIX MatrixCreator::CreateRotationMatrixY(const float& pitch)
+{
+	return DX::XMMatrixTranspose(DX::XMMatrixRotationY(pitch));
+}
+
+DX::XMMATRIX MatrixCreator::CreateRotationMatrixZ(const float& roll)
+{
+	return DX::XMMatrixTranspose(DX::XMMatrixRotationZ(roll));
+}
+
+
+

@@ -221,7 +221,7 @@ void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShade
 	DX::XMFLOAT4X4 viewProjectionMatrix;
 	DX::XMStoreFloat4x4(&viewProjectionMatrix, viewProjMatrix);
         	
-	buffers.at(0).UpdateBuffer(context, &viewProjectionMatrix, sizeof(viewProjectionMatrix));
+	buffers.at(1).UpdateBuffer(context, &viewProjectionMatrix, sizeof(viewProjectionMatrix));
 	
 	std::vector<ID3D11Buffer*> ID3D11Buffers;
 	for (ConstantBuffer cb : buffers)

@@ -1,6 +1,7 @@
 ﻿#include "Camera.hpp"
 #include "MatrixCreator.hpp"
 #include <algorithm>
+#include <iostream>
 
 // Overloading float3 mult as vector mult
 DX::XMFLOAT4 operator*(const DX::XMFLOAT4& a, const float& b)
@@ -22,32 +23,40 @@ Camera::Camera(HRESULT& hr, ID3D11Device* device, const ProjectionInfo& projInfo
 
 void Camera::ApplyRotation(const float& deltaPitch, const float& deltaYaw)
 {
-	float cappedPitch = std::max<float>(-89.9f, std::min<float>(-89.9f, this->_pitch + deltaPitch));
+	this->_pitch = std::max<float>(-89.9f, std::min<float>(89.9f, this->_pitch + deltaPitch));
+	this->_yaw = std::fmod(this->_yaw + deltaYaw, 360.0f);
+	
+	float pitchRad = DX::XMConvertToRadians(this->_pitch);
+	float yawRad = DX::XMConvertToRadians(this->_yaw);
+
+
+	MatrixCreator matrixCreator;
+
+	DX::XMMATRIX yawRotationMatrix = matrixCreator.CreateRotationMatrixY(yawRad);
+	DX::XMMATRIX pitchRotationMatrix = matrixCreator.CreateRotationMatrixX(pitchRad);
+
+	DX::XMMATRIX pitchYawRotationMatrix = DX::XMMatrixMultiply(yawRotationMatrix, pitchRotationMatrix);
 
 	// Calculate new forward vector
-	DX::XMVECTOR newForward = {static_cast<float>(cos(cappedPitch) * cos(deltaYaw)),
-							   static_cast<float>(sin(cappedPitch)),
-							   static_cast<float>(cos(cappedPitch) * sin(deltaYaw))};
+	DX::XMVECTOR newForward = DX::XMVector3Transform({0, 0, 1}, pitchYawRotationMatrix);
 	newForward = DX::XMVector3Normalize(newForward);
-
-	// Calculate new up vector
-	DX::XMVECTOR newUp = DX::XMVector3Cross({0.0f, 1.0f, 0.0f}, newForward);
-	newUp = DX::XMVector3Normalize(newUp);
-
-	// Calculate new right vector
-	DX::XMVECTOR newRight = DX::XMVector3Cross(newForward, newUp);
+	
+	DX::XMVECTOR newRight = DX::XMVector3Transform({1, 0, 0}, pitchYawRotationMatrix);
 	newRight = DX::XMVector3Normalize(newRight);
 
+	DX::XMVECTOR newUp = DX::XMVector3Cross(newForward, newRight);
+	newUp = DX::XMVector3Normalize(newUp);
+	
 	DX::XMStoreFloat4(&this->_forward, newForward);
 	DX::XMStoreFloat4(&this->_up, newUp);
 	DX::XMStoreFloat4(&this->_right, newRight);
 
-	this->_forward.w = 1.0f;
-	this->_up.w = 1.0f;
-	this->_right.w = 1.0f;
-	
-	this->_pitch = cappedPitch;
-	this->_yaw += deltaYaw;
+	std::cout << "Pitch: " << this->_pitch << std::endl;
+	std::cout << "Yaw: " << this->_yaw << std::endl;
+
+	std::cout << "Forward Vector: (" << this->_forward.x << ", " << this->_forward.y << ", " << this->_forward.z << ")" << std::endl;
+	std::cout << "Up Vector: (" << this->_up.x << ", " << this->_up.y << ", " << this->_up.z << ")" << std::endl;
+	std::cout << "Right Vector: (" << this->_right.x << ", " << this->_right.y << ", " << this->_right.z << ")" << std::endl;
 }
 
 
