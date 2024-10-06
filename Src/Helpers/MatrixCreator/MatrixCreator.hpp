@@ -22,4 +22,5 @@ public:
     DX::XMMATRIX CreateRotationMatrixX(const float& yaw);
     DX::XMMATRIX CreateRotationMatrixY(const float& pitch);
     DX::XMMATRIX CreateRotationMatrixZ(const float& roll);
+    DX::XMMATRIX CreateRotationMatrixAxis(const float& angle, const DX::XMVECTOR& axis);
 };

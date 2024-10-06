@@ -23,29 +23,40 @@ Camera::Camera(HRESULT& hr, ID3D11Device* device, const ProjectionInfo& projInfo
 
 void Camera::ApplyRotation(const float& deltaPitch, const float& deltaYaw)
 {
-	this->_pitch = std::max<float>(-89.9f, std::min<float>(89.9f, this->_pitch + deltaPitch));
-	this->_yaw = std::fmod(this->_yaw + deltaYaw, 360.0f);
-	
-	float pitchRad = DX::XMConvertToRadians(this->_pitch);
-	float yawRad = DX::XMConvertToRadians(this->_yaw);
-
-
 	MatrixCreator matrixCreator;
+	DX::XMMATRIX yawRotationMatrix = matrixCreator.CreateRotationMatrixAxis(this->_yaw, {0.0f, 1.0f, 0.0f, 0.0f});
+	DX::XMVECTOR leftAxis = DX::XMVectorScale(DX::XMLoadFloat4(&this->_right), -1);
+	DX::XMMATRIX pitchRotationMatrix = matrixCreator.CreateRotationMatrixAxis(this->_pitch, leftAxis);
 
-	DX::XMMATRIX yawRotationMatrix = matrixCreator.CreateRotationMatrixY(yawRad);
-	DX::XMMATRIX pitchRotationMatrix = matrixCreator.CreateRotationMatrixX(pitchRad);
-
+	this->_pitch = std::max<float>(-DX::XM_PI, std::min<float>(DX::XM_PI, this->_pitch + deltaPitch));
+	this->_yaw = std::fmod(this->_yaw + deltaYaw, 2 * DX::XM_PI);
+	
 	DX::XMMATRIX pitchYawRotationMatrix = DX::XMMatrixMultiply(yawRotationMatrix, pitchRotationMatrix);
 
+	DX::XMVECTOR quaternion = DX::XMQuaternionRotationMatrix(pitchYawRotationMatrix);
+	DX::XMVECTOR quaternionConjugate = DX::XMQuaternionConjugate(quaternion);
+	
+	DX::XMVECTOR newForward = DX::XMQuaternionMultiply(DX::XMQuaternionMultiply(quaternionConjugate, {0.0f, 0.0f, 1.0f, 0.0f}), quaternion);
+	newForward = DX::XMVectorSetW(newForward, 0.0f);
+	newForward = DX::XMVector4Normalize(newForward);
+	
+	DX::XMVECTOR newRight = DX::XMQuaternionMultiply(DX::XMQuaternionMultiply(quaternionConjugate, {1.0f, 0.0f, 0.0f, 0.0f}), quaternion);
+	newRight = DX::XMVectorSetW(newRight, 0.0f);
+	newRight = DX::XMVector4Normalize(newRight);
+	
+	DX::XMVECTOR newUp = DX::XMQuaternionMultiply(DX::XMQuaternionMultiply(quaternionConjugate, {0.0f, 1.0f, 0.0f, 0.0f}), quaternion);
+	newUp = DX::XMVectorSetW(newUp, 0.0f);
+	newUp = DX::XMVector4Normalize(newUp);
+	
 	// Calculate new forward vector
-	DX::XMVECTOR newForward = DX::XMVector3Transform({0, 0, 1}, pitchYawRotationMatrix);
+	/*DX::XMVECTOR newForward = DX::XMVector3Transform({0, 0, 1}, pitchYawRotationMatrix);
 	newForward = DX::XMVector3Normalize(newForward);
 	
 	DX::XMVECTOR newRight = DX::XMVector3Transform({1, 0, 0}, pitchYawRotationMatrix);
 	newRight = DX::XMVector3Normalize(newRight);
 
-	DX::XMVECTOR newUp = DX::XMVector3Cross(newForward, newRight);
-	newUp = DX::XMVector3Normalize(newUp);
+	DX::XMVECTOR newUp = DX::XMVector3Transform({0, 1, 0}, pitchYawRotationMatrix);
+	newUp = DX::XMVector3Normalize(newUp);*/
 	
 	DX::XMStoreFloat4(&this->_forward, newForward);
 	DX::XMStoreFloat4(&this->_up, newUp);

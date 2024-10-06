@@ -62,5 +62,10 @@ DX::XMMATRIX MatrixCreator::CreateRotationMatrixZ(const float& roll)
 	return DX::XMMatrixTranspose(DX::XMMatrixRotationZ(roll));
 }
 
+DX::XMMATRIX MatrixCreator::CreateRotationMatrixAxis(const float& angle, const DX::XMVECTOR& axis)
+{
+	return DX::XMMatrixRotationAxis(axis, angle);
+}
+
 
 

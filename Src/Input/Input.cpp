@@ -61,14 +61,14 @@ void Input::HandleMovement(Camera& camera, float deltaTime)
 void Input::HandleRotation(Camera& camera, HWND& window, float deltaTime)
 {
     WindowConfig windowConfig;
-    constexpr float degreesPerPixel = DX::XMConvertToRadians(1.0f);
-    constexpr float sensitivity = 1.0f;
+    constexpr float radiansPerPixel = DX::XMConvertToRadians(1.0f);
+    constexpr float sensitivity = 0.1f;
 
     POINT currPoint;
     GetCursorPos(&currPoint);
 
-    float deltaYaw = static_cast<float>(this->_prevPoint.x - currPoint.x) * sensitivity * degreesPerPixel;
-    float deltaPitch = static_cast<float>(this->_prevPoint.y - currPoint.y) * sensitivity * degreesPerPixel;
+    float deltaYaw = -static_cast<float>(this->_prevPoint.x - currPoint.x) * sensitivity * radiansPerPixel;
+    float deltaPitch = static_cast<float>(this->_prevPoint.y - currPoint.y) * sensitivity * radiansPerPixel;
 
     camera.ApplyRotation(deltaPitch, deltaYaw);
     
