@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "MatrixCreator.hpp"
+#include "SpecularExpData.hpp"
 
 void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
 {
@@ -46,10 +47,10 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 			ID3D11SamplerState* sState = samplerState.GetSamplerState();
 			std::vector<ConstantBuffer> pixelShaderBuffers = pixelShader.GetConstantBuffers();
 		
-			SetupPixelShader(context, pShader, sState, tShaderResourceViews, pixelShaderBuffers);
-			
 			SubMesh& subMesh = mesh.GetSubMeshAt(j);
 
+			SetupPixelShader(context, pShader, sState, tShaderResourceViews, pixelShaderBuffers, subMesh.GetSpecularExponent());
+			
 			if (subMesh.GetNumIndices() == 0)
 			{
 				continue;
@@ -133,10 +134,10 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 			ID3D11SamplerState* sState = samplerState.GetSamplerState();
 			std::vector<ConstantBuffer> pixelShaderBuffers = pixelShader.GetConstantBuffers();
          	
-			SetupPixelShader(context, pShader, sState, tShaderResourceViews, pixelShaderBuffers);
-			
 			SubMesh& subMesh = mesh.GetSubMeshAt(j);
 
+			SetupPixelShader(context, pShader, sState, tShaderResourceViews, pixelShaderBuffers, subMesh.GetSpecularExponent());
+			
 			if (subMesh.GetNumIndices() == 0)
 			{
 				continue;
@@ -233,13 +234,18 @@ void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShade
 	context->VSSetConstantBuffers(0, buffers.size(), buffersArr);
 }
 
-void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11SamplerState* samplerState, std::vector<ID3D11ShaderResourceView*> textureSRVs, std::vector<ConstantBuffer> buffers)
+void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11SamplerState* samplerState, std::vector<ID3D11ShaderResourceView*> textureSRVs, std::vector<ConstantBuffer> buffers, const float& specularExponent)
 {
 	context->PSSetShader(pixelShader, nullptr, 0);
 	context->PSSetSamplers(0, 1, &samplerState);
 
 	ID3D11ShaderResourceView** textures = textureSRVs.data();
 	context->PSSetShaderResources(0, textureSRVs.size(), textures);
+
+	SpecularExpData specularExpData;
+	specularExpData.SpecularExponent = specularExponent;
+	
+	buffers.at(0).UpdateBuffer(context, &specularExpData, sizeof(specularExpData));
 	
 	std::vector<ID3D11Buffer*> ID3D11Buffers;
 	for (ConstantBuffer cb : buffers)

@@ -4,6 +4,11 @@ Texture2D diffuseTexture : register(t2);
 Texture2D specularTexture : register(t3);
 SamplerState sState;
 
+cbuffer ShininessBuffer: register(b0)
+{
+    float specularExponent;
+}
+
 struct PSInput
 {
     float4 worldPosition : WORLD_POSITION;
@@ -31,6 +36,7 @@ PSOutput main(PSInput input)
     output.ambient = ambientTexture.Sample(sState, input.uv);
     output.diffuse = diffuseTexture.Sample(sState, input.uv);
     output.specular = specularTexture.Sample(sState, input.uv);
+    output.specular.w = specularExponent;
 
     return output;
 }

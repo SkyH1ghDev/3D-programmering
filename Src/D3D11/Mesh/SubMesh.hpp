@@ -25,6 +25,7 @@ public:
 	ID3D11ShaderResourceView* GetDiffuseSRV() const;
 	ID3D11ShaderResourceView* GetSpecularSRV() const;
 	ID3D11ShaderResourceView* GetColourTextureSRV() const;
+	float GetSpecularExponent() const;
 
 	size_t GetStartIndex();
 	size_t GetNumIndices();
@@ -32,7 +33,7 @@ public:
 private:
 	size_t _startIndex = 0;
 	size_t _nrOfIndices = 0;
-	float _specularExponent = 0.0f;
+	float _specularExponent = 10000.0f;
 
 	ID3D11ShaderResourceView* _ambientTextureSRV = nullptr;
 	ID3D11Texture2D* _ambientTexture2D = nullptr;

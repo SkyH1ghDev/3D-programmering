@@ -1,9 +1,7 @@
 ﻿#include "Application.hpp"
 #include "MatrixCreator.hpp"
-
-#include <iostream>
-
 #include "LightData.hpp"
+#include "SpecularExpData.hpp"
 
 
 Application::Application(HINSTANCE hInstance, int nCmdShow) :
@@ -178,7 +176,6 @@ void Application::SetupForwardBuffers()
 	lightData.CamPosition = this->_scene.GetCurrentCamera().GetPosition();
 	lightData.AmbientLightIntensity = 0.1f;
 	lightData.GeneralLightIntensity = 1.2f;
-	lightData.Shininess = 10000.0f;
 	
 	this->_psForward->AddConstantBuffer(Setup::CreateConstantBuffer<LightData>(this->_controller, lightingBufferDescData, &lightData));
 }
@@ -212,7 +209,18 @@ void Application::SetupDeferredBuffers()
 	
 	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<DX::XMFLOAT4X4>(this->_controller, viewProjectionMatrixBufferDescData, &viewProjMatrix4x4));
 
+	// Pixel Shader
+
+	BufferDescData shininessBufferDescData;
+	shininessBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
+	shininessBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+
+	SpecularExpData specularExpData;
+	 specularExpData.SpecularExponent = 10000.0f;
+
+	this->_psDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<SpecularExpData>(this->_controller, shininessBufferDescData, &specularExpData));
 	// Compute Shader
+	
 	BufferDescData lightingBufferDescData;
 	lightingBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
 	lightingBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
@@ -224,7 +232,6 @@ void Application::SetupDeferredBuffers()
 	lightData.CamPosition = this->_scene.GetCurrentCamera().GetPosition();
 	lightData.AmbientLightIntensity = 0.1f;
 	lightData.GeneralLightIntensity = 1.2f;
-	lightData.Shininess = 10000.0f;
 	
 	this->_csDeferredLight->AddConstantBuffer(Setup::CreateConstantBuffer<LightData>(this->_controller, lightingBufferDescData, &lightData));
 }

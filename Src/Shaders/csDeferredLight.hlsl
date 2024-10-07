@@ -14,7 +14,6 @@ cbuffer ConstBuffer : register(b0)
 	float4 camPosition;
 	float ambientLightIntensity;
 	float generalLightIntensity;
-	float shininess;
 }
 
 float4 GetAmbientComponent(float4 lightColour, float ambientLightIntensity)
@@ -39,12 +38,13 @@ float4 GetSpecularComponent(float4 lightColour, float4 lightDirection, float gen
 [numthreads(8,8,1)]
 void main(uint3 DTid : SV_DispatchThreadID)
 {
-    float4 fragmentPosition = float4(positionGBuffer[DTid.xy].xyz, 1.0f);
-    float4 fragmentNormal = float4(normalGBuffer[DTid.xy].xyz, 0.0f);
-    float4 colour = float4(colourGBuffer[DTid.xy].xyz, 1.0f);
+	float4 fragmentPosition = float4(positionGBuffer[DTid.xy].xyz, 1.0f);
+	float4 fragmentNormal = float4(normalGBuffer[DTid.xy].xyz, 0.0f);
+	float4 colour = float4(colourGBuffer[DTid.xy].xyz, 1.0f);
 	float4 ambientFactor = float4(ambientGBuffer[DTid.xy].xyz, 1.0f);
 	float4 diffuseFactor = float4(diffuseGBuffer[DTid.xy].xyz, 1.0f);
-	float4 specularFactor = float4(specularGBuffer[DTid.xy].xyz, 1.0f);
+	float4 specularFactor = specularGBuffer[DTid.xy].xyzw;
+	float specularExponent = specularFactor.w;
 
 	// Ambient
 	float4 ambientComponent = GetAmbientComponent(lightColour, ambientLightIntensity);
@@ -56,7 +56,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	float4 diffuseComponent = GetDiffuseComponent(lightColour, lightDirection, generalLightIntensity, fragmentNormal);
 
 	// Specular
-	float4 specularComponent = GetSpecularComponent(lightColour, lightDirection, generalLightIntensity, shininess, camPosition, fragmentPosition, fragmentNormal);
+	float4 specularComponent = GetSpecularComponent(lightColour, lightDirection, generalLightIntensity, specularExponent, camPosition, fragmentPosition, fragmentNormal);
 
 	float distanceScalingFactor = 1 / sqrt(dot(lightDistance, lightDistance));
 	float4 result = (ambientComponent * ambientFactor + distanceScalingFactor * (diffuseComponent * diffuseFactor + specularComponent * specularFactor)) * colour;

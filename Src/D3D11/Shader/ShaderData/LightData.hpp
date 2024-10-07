@@ -14,5 +14,4 @@ public:
 	DX::XMFLOAT4 CamPosition;
 	float AmbientLightIntensity;
 	float GeneralLightIntensity;
-	float Shininess;
 };

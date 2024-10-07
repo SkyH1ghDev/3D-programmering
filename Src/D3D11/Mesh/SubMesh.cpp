@@ -254,6 +254,11 @@ ID3D11ShaderResourceView *SubMesh::GetColourTextureSRV() const
 	return this->_colourTextureSRV;
 }
 
+float SubMesh::GetSpecularExponent() const
+{
+	return this->_specularExponent;
+}
+
 
 void SubMesh::PerformDrawCall(ID3D11DeviceContext *context) const
 {

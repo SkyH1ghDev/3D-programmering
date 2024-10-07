@@ -32,13 +32,6 @@ public:
 
 	void ApplyRotation(const float& deltaPitch, const float& deltaYaw);
 	
-	void RotateForward(float amount, const float& deltaTime = 1);
-	void RotateBackward(float amount, const float& deltaTime = 1);
-	void RotateRight(float amount, const float& deltaTime = 1);
-	void RotateLeft(float amount, const float& deltaTime = 1);
-	void RotateUp(float amount, const float& deltaTime = 1);
-	void RotateDown(float amount, const float& deltaTime = 1);
-
 	const DX::XMFLOAT4& GetPosition() const;
 	const DX::XMFLOAT4& GetForward() const;
 	const DX::XMFLOAT4& GetRight() const;
@@ -47,20 +40,10 @@ public:
 	const ProjectionInfo& GetProjectionInfo() const;
 	DepthBuffer GetDepthBuffer() const;
 	
-	
-	//DX::XMFLOAT4X4 GetViewProjectionMatrix() const;
-
 private:
-	
 	void MoveInDirection(const float& amount, const DX::XMFLOAT4& direction);
-	void RotateAroundAxis(const float& amount, const DX::XMFLOAT4& axis);
 
-	//BufferDescData GetBufferFlags();
-	//DX::XMFLOAT4X4 CreateViewProjectionMatrix(const DX::XMFLOAT4 &position, const DX::XMFLOAT4 &directionVector, const ProjectionInfo& projInfo) const;
-	//DX::XMFLOAT4X4 CreateViewProjectionMatrix() const;
-	
 private:
-	// Reminder: _position and _projInfo need to be declared before _viewProjectionMatrix due to how the initialization of Camera works
 	DX::XMFLOAT4 _position = { 0.0f, 0.0f, 0.0f, 1.0f };
 	ProjectionInfo _projInfo;
 
@@ -70,8 +53,6 @@ private:
 
 	float _pitch = 0.0f;
 	float _yaw = 0.0f;
-	
-	DX::XMFLOAT4X4 _viewProjectionMatrix;
 	
 	DepthBuffer _depthBuffer;
 };
