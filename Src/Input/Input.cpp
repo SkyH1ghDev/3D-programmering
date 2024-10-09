@@ -96,9 +96,14 @@ void Input::HandleRotation(Camera& camera, HWND& window)
 
 void Input::HandleMiscellaneous(int& outputMode)
 {
-    if (GetAsyncKeyState('M') & KEY_PRESSED)
+    if (int lockMouseKeyState = GetAsyncKeyState('M'); lockMouseKeyState & KEY_PRESSED && !this->_lockMouseKeyHeldDown)
     {
         this->_lockMouse = !this->_lockMouse;
+        this->_lockMouseKeyHeldDown = true;
+    }
+    else if (!(lockMouseKeyState & KEY_PRESSED))
+    {
+        this->_lockMouseKeyHeldDown = false;
     }
 
     if (int outputModeKeyState = GetAsyncKeyState('N'); outputModeKeyState & KEY_PRESSED && !this->_outputModeKeyHeldDown)

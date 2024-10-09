@@ -62,5 +62,5 @@ private:
     Renderer _renderer;
     MSG _msg = {};
 
-    int _outputMode = 1;
+    int _outputMode = 0;
 };

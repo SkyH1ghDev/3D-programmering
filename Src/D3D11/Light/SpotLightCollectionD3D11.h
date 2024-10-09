@@ -64,5 +64,4 @@ private:
 
 	DepthBuffer shadowMaps;
 	StructuredBufferD3D11 lightBuffer;
-	std::vector<Camera> shadowCameras;
 };

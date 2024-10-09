@@ -18,6 +18,9 @@ private:
 
 private:
     POINT _prevPoint = POINT();
+    
     bool _lockMouse = true;
-    bool _outputModeKeyHeldDown = true;
+    
+    bool _outputModeKeyHeldDown = false;
+    bool _lockMouseKeyHeldDown = false;
 };
