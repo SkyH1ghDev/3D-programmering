@@ -1,6 +1,7 @@
 ﻿#include "Application.hpp"
 #include "MatrixCreator.hpp"
 #include "LightData.hpp"
+#include "OutputModeData.hpp"
 #include "SpecularExpData.hpp"
 
 
@@ -192,7 +193,7 @@ void Application::SetupDeferredBuffers()
 	worldMatrixBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
 	MatrixCreator matrixCreator;
-	DX::XMMATRIX worldMatrix = matrixCreator.CreateWorldMatrix({0.0f, 0.0f, 0.0f, 1.0f}); 
+	const DX::XMMATRIX worldMatrix = matrixCreator.CreateWorldMatrix({0.0f, 0.0f, 0.0f, 1.0f}); 
 
 	DX::XMFLOAT4X4 worldMatrix4x4;
 	DX::XMStoreFloat4x4(&worldMatrix4x4, worldMatrix);
@@ -216,7 +217,7 @@ void Application::SetupDeferredBuffers()
 	shininessBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
 	SpecularExpData specularExpData;
-	 specularExpData.SpecularExponent = 10000.0f;
+	specularExpData.SpecularExponent = 10000.0f;
 
 	this->_psDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<SpecularExpData>(this->_controller, shininessBufferDescData, &specularExpData));
 	// Compute Shader
@@ -234,6 +235,15 @@ void Application::SetupDeferredBuffers()
 	lightData.GeneralLightIntensity = 1.2f;
 	
 	this->_csDeferredLight->AddConstantBuffer(Setup::CreateConstantBuffer<LightData>(this->_controller, lightingBufferDescData, &lightData));
+
+	BufferDescData outputModeBufferDescData;
+	outputModeBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
+	outputModeBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+
+	OutputModeData outputMode;
+	outputMode.OutputMode = this->_outputMode;
+	
+	this->_csDeferredLight->AddConstantBuffer(Setup::CreateConstantBuffer<OutputModeData>(this->_controller, outputModeBufferDescData, &outputMode));
 }
 
 void Application::Render()
@@ -248,7 +258,7 @@ void Application::Render()
 		this->_clock.Start();
 
 		// Input
-        this->_input.ReadInput(this->_scene.GetCurrentCamera(), this->_window, deltaTime);
+        this->_input.ReadInput(this->_scene.GetCurrentCamera(), this->_window, this->_outputMode, deltaTime);
 
 		// Oscillate first mesh
 		for (size_t i = 0; i < this->_scene.GetNumOscillatingMeshes(); ++i)
@@ -270,7 +280,7 @@ void Application::Render()
 		}
 		if (renderMode == Deferred)
 		{
-			this->_renderer.RenderDeferred(this->_controller, this->_swapChain,this->_windowRTV, this->_gBuffers, *this->_vsDeferredGeometry, *this->_psDeferredGeometry, *this->_csDeferredLight, this->_inputLayout, this->_scene, this->_sampler);
+			this->_renderer.RenderDeferred(this->_controller, this->_swapChain,this->_windowRTV, this->_gBuffers, *this->_vsDeferredGeometry, *this->_psDeferredGeometry, *this->_csDeferredLight, this->_inputLayout, this->_scene, this->_sampler, this->_outputMode);
 		}
 		
 		this->_swapChain.GetSwapChain()->Present(0, 0);

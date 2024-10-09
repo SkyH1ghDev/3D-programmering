@@ -2,7 +2,10 @@
 
 #include <iostream>
 
+#include "LightConfig.hpp"
+#include "LightData.hpp"
 #include "MatrixCreator.hpp"
+#include "OutputModeData.hpp"
 #include "SpecularExpData.hpp"
 
 void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
@@ -60,7 +63,7 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 	}
 }
 
-void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, RenderTargetView& rtv, std::vector<RenderTargetView>& gBuffers, VertexShader &vertexShader, PixelShader &pixelShader, ComputeShader& computeShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
+void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, RenderTargetView& rtv, std::vector<RenderTargetView>& gBuffers, VertexShader &vertexShader, PixelShader &pixelShader, ComputeShader& computeShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState, int& outputMode)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	ID3D11RenderTargetView* rTargetView = rtv.GetRTV();
@@ -76,7 +79,7 @@ void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, Rend
 	ClearScreen(context, rTargetView, depthBuffer.GetDSV(), gBufferRTVVec);
 	
 	PerformGeometryPass(controller, gBuffers, vertexShader, pixelShader, inputLayout, scene, samplerState);
-	PerformLightPass(controller, swapChain, gBuffers, computeShader);
+	PerformLightPass(controller, swapChain, gBuffers, computeShader, scene, outputMode);
 }
 
 
@@ -149,7 +152,7 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 	}
 }
 
-void Renderer::PerformLightPass(Controller& controller, SwapChain& swapChain, std::vector<RenderTargetView>& gBuffers, ComputeShader& computeShader)
+void Renderer::PerformLightPass(Controller& controller, SwapChain& swapChain, std::vector<RenderTargetView>& gBuffers, ComputeShader& computeShader, Scene& scene, int& outputMode)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	
@@ -166,7 +169,7 @@ void Renderer::PerformLightPass(Controller& controller, SwapChain& swapChain, st
 	ID3D11UnorderedAccessView* uav = swapChain.GetUAV();
 	std::vector<ConstantBuffer> computeConstantBuffers = computeShader.GetConstantBuffers();
 	
-	SetupComputeShader(context, cShader, SRVarr, numSRVs, uav, computeConstantBuffers);
+	SetupComputeShader(context, cShader, SRVarr, numSRVs, uav, computeConstantBuffers, scene.GetCurrentCamera(), outputMode);
 
 	context->Dispatch(160, 90, 1);
 
@@ -297,13 +300,28 @@ void Renderer::UnbindGBuffersCS(ID3D11DeviceContext* context, size_t numGBuffers
 	context->CSSetShaderResources(0, numGBuffers, nulledArr);
 }
 
-void Renderer::SetupComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* computeShader, ID3D11ShaderResourceView** gBufferSRVs, size_t numGBuffers, ID3D11UnorderedAccessView* uav, std::vector<ConstantBuffer> buffers)
+void Renderer::SetupComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* computeShader, ID3D11ShaderResourceView** gBufferSRVs, size_t numGBuffers, ID3D11UnorderedAccessView* uav, std::vector<ConstantBuffer> buffers, Camera& camera, int& outputMode)
 {
 	context->CSSetShader(computeShader, nullptr, 0);
 	context->CSSetShaderResources(0, numGBuffers, gBufferSRVs);
 	context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
 
-	// TODO: ADD UPDATING OF LIGHTDATA CONSTANT BUFFER
+	LightConfig lightConfig;
+	LightData lightData;
+
+	lightData.LightColour = lightConfig.LightColour;
+	lightData.LightPosition = lightConfig.LightPosition;
+	lightData.AmbientLightIntensity = lightConfig.AmbientLightIntensity;
+	lightData.GeneralLightIntensity = lightConfig.GeneralLightIntensity;
+	lightData.CamPosition = camera.GetPosition();
+	
+	buffers.at(0).UpdateBuffer(context, &lightData, sizeof(lightData));
+
+	OutputModeData outputModeData;
+
+	outputModeData.OutputMode = outputMode;
+
+	buffers.at(1).UpdateBuffer(context, &outputModeData, sizeof(outputModeData));
 	
 	std::vector<ID3D11Buffer*> ID3D11Buffers;
 	for (ConstantBuffer cb : buffers)

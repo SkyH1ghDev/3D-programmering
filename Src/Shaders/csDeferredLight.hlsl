@@ -16,6 +16,11 @@ cbuffer ConstBuffer : register(b0)
 	float generalLightIntensity;
 }
 
+cbuffer ConstBuffer : register(b1)
+{
+	int resultMode;
+}
+
 float4 GetAmbientComponent(float4 lightColour, float ambientLightIntensity)
 {
 	return lightColour * ambientLightIntensity;
@@ -30,8 +35,8 @@ float4 GetDiffuseComponent(float4 lightColour, float4 lightDirection, float gene
 float4 GetSpecularComponent(float4 lightColour, float4 lightDirection, float generalLightIntensity, float shininess, float4 camPosition, float4 fragmentPosition, float4 fragmentNormal)
 {
 	float4 camDirection = normalize(fragmentPosition + camPosition);
-	float4 halfway = lightDirection + camDirection / sqrt(dot(lightDirection + camDirection, lightDirection + camDirection));
-	float specularIntensity = pow(max(dot(fragmentNormal, halfway), 0.0f), shininess) * generalLightIntensity;
+	float4 halfway = normalize(lightDirection + camDirection);
+	float specularIntensity = pow(max(dot(normalize(fragmentNormal), halfway), 0.0f), shininess) * generalLightIntensity;
 	return lightColour * specularIntensity;
 }
 
@@ -59,7 +64,43 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	float4 specularComponent = GetSpecularComponent(lightColour, lightDirection, generalLightIntensity, specularExponent, camPosition, fragmentPosition, fragmentNormal);
 
 	float distanceScalingFactor = 1 / sqrt(dot(lightDistance, lightDistance));
-	float4 result = (ambientComponent * ambientFactor + distanceScalingFactor * (diffuseComponent * diffuseFactor + specularComponent * specularFactor)) * colour;
+
+	float4 result;
+	[call] switch(resultMode)
+	{
+		case 0:
+			result = (ambientComponent * ambientFactor + distanceScalingFactor * (diffuseComponent * diffuseFactor + specularComponent * specularFactor)) * colour;
+			break;
+		
+		case 1:
+			result = fragmentPosition;
+			break;
+
+		case 2:
+			result = fragmentNormal;
+			break;
+
+		case 3:
+			result = colour;
+			break;
+
+		case 4:
+			result = ambientFactor;
+			break;
+
+		case 5:
+			result = diffuseFactor;
+			break;
+
+		case 6:
+			result = specularFactor;
+			break;
+		
+		default:
+			result = (ambientComponent * ambientFactor + distanceScalingFactor * (diffuseComponent * diffuseFactor + specularComponent * specularFactor)) * colour;
+			break;
+	}
+	result.rgb = saturate(result.rgb);
 
     backBufferUAV[DTid.xy] = result;
 }

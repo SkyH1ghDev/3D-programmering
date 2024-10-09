@@ -83,12 +83,12 @@ void Camera::MoveRight(const float &amount, const float& deltaTime)
 
 void Camera::MoveUp(const float &amount, const float& deltaTime)
 {
-	MoveInDirection(amount * deltaTime, this->_up);
+	MoveInDirection(amount * deltaTime, {0.0f, 1.0f, 0.0f, 0.0f});
 }
 
 void Camera::MoveDown(const float &amount, const float& deltaTime)
 {
-	MoveInDirection(amount * deltaTime, this->_up * -1);
+	MoveInDirection(amount * deltaTime, {0.0f, -1.0f, 0.0f, 0.0f});
 }
 
 DepthBuffer Camera::GetDepthBuffer() const

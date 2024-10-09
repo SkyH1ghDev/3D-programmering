@@ -11,10 +11,11 @@ Input::Input()
 }
 
 
-void Input::ReadInput(Camera& camera, HWND& window, float deltaTime)
+void Input::ReadInput(Camera& camera, HWND& window, int& outputMode, const float& deltaTime)
 {
     HandleMovement(camera, deltaTime);
-    HandleRotation(camera, window, deltaTime);
+    HandleRotation(camera, window);
+    HandleMiscellaneous(outputMode);
 }
 
 int Input::Exit(const MSG &msg)
@@ -23,7 +24,7 @@ int Input::Exit(const MSG &msg)
 }
 
 
-void Input::HandleMovement(Camera& camera, float deltaTime)
+void Input::HandleMovement(Camera& camera, const float& deltaTime)
 {
     float movementAmount = 10.0f;
 
@@ -58,30 +59,56 @@ void Input::HandleMovement(Camera& camera, float deltaTime)
     }
 }
 
-void Input::HandleRotation(Camera& camera, HWND& window, float deltaTime)
+void Input::HandleRotation(Camera& camera, HWND& window)
 {
     WindowConfig windowConfig;
     constexpr float radiansPerPixel = DX::XMConvertToRadians(1.0f);
     constexpr float sensitivity = 0.1f;
 
+    
+    POINT centerOfScreen = POINT(windowConfig.GetWidth() / 2, windowConfig.GetHeight() / 2);
+    ClientToScreen(window, &centerOfScreen);
+
     POINT currPoint;
-    GetCursorPos(&currPoint);
+    if (this->_lockMouse)
+    {
+        GetCursorPos(&currPoint);
+    }
+    else
+    {
+        currPoint = centerOfScreen;
+    }
 
     float deltaYaw = static_cast<float>(currPoint.x - this->_prevPoint.x) * sensitivity * radiansPerPixel;
     float deltaPitch = static_cast<float>(currPoint.y - this->_prevPoint.y) * sensitivity * radiansPerPixel;
 
     camera.ApplyRotation(deltaPitch, deltaYaw);
     
-    /*if (deltaPitch != 0 || deltaYaw != 0)
-    {
-        camera.RotateDown(deltaPitch, deltaTime);
 
-        camera.RotateLeft(deltaYaw, deltaTime);
-    }*/
-    
-    POINT centerOfScreen = POINT(windowConfig.GetWidth() / 2, windowConfig.GetHeight() / 2);
-    ClientToScreen(window, &centerOfScreen);
-    SetCursorPos(centerOfScreen.x, centerOfScreen.y);
+
+    if (this->_lockMouse)
+    {
+        SetCursorPos(centerOfScreen.x, centerOfScreen.y);
+    }
 
     this->_prevPoint = centerOfScreen;
+}
+
+void Input::HandleMiscellaneous(int& outputMode)
+{
+    if (GetAsyncKeyState('M') & KEY_PRESSED)
+    {
+        this->_lockMouse = !this->_lockMouse;
+    }
+
+    if (int outputModeKeyState = GetAsyncKeyState('N'); outputModeKeyState & KEY_PRESSED && !this->_outputModeKeyHeldDown)
+    {
+        ++outputMode;
+        outputMode %= 7;
+        this->_outputModeKeyHeldDown = true;
+    }
+    else if (!(outputModeKeyState & KEY_PRESSED))
+    {
+        this->_outputModeKeyHeldDown = false;
+    }
 }

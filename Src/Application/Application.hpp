@@ -30,17 +30,12 @@ private:
     void RunAsserts();
 
 private:
-    // Window
     HWND _window;
-
-    // D3D11
     Controller _controller;
     SwapChain _swapChain;
     RenderTargetView _windowRTV;
     std::vector<RenderTargetView> _gBuffers;
-    Scene _scene; // Could be expanded to contain multiple scenes
-
-    // Shaders
+    Scene _scene;
 
     /*
      * Forward Rendering
@@ -53,29 +48,19 @@ private:
      * Deferred Rendering
      */
     
-    // Geometry Pass
     std::unique_ptr<VertexShader> _vsDeferredGeometry;
     std::unique_ptr<PixelShader> _psDeferredGeometry;
-    
     //std::unique_ptr<HullShader> _hullShader;
     //std::unique_ptr<DomainShader> _domainShader;
     //std::unique_ptr<GeometryShader> _geometryShader;
-
-    // Light Pass
-    
     std::unique_ptr<ComputeShader> _csDeferredLight;
     
-    //std::unique_ptr<HullShader> _hullShader;
-    //std::unique_ptr<DomainShader> _domainShader;
-    //std::unique_ptr<GeometryShader> _geometryShader;
-    //std::unique_ptr<ComputeShader> _computeShader;
-
-    // Input Layout and Sampler
     InputLayout _inputLayout;
     Sampler _sampler;
-
     Input _input;
     Clock _clock;
     Renderer _renderer;
     MSG _msg = {};
+
+    int _outputMode = 1;
 };
