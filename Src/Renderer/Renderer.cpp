@@ -309,10 +309,10 @@ void Renderer::SetupComputeShader(ID3D11DeviceContext* context, ID3D11ComputeSha
 	LightConfig lightConfig;
 	LightData lightData;
 
-	lightData.LightColour = lightConfig.LightColour;
-	lightData.LightPosition = lightConfig.LightPosition;
-	lightData.AmbientLightIntensity = lightConfig.AmbientLightIntensity;
-	lightData.GeneralLightIntensity = lightConfig.GeneralLightIntensity;
+	lightData.LightColour = lightConfig.GetLightColour();
+	lightData.LightPosition = lightConfig.GetLightPosition();
+	lightData.AmbientLightIntensity = lightConfig.GetAmbientLightIntensity();
+	lightData.GeneralLightIntensity = lightConfig.GetGeneralLightIntensity();
 	lightData.CamPosition = camera.GetPosition();
 	
 	buffers.at(0).UpdateBuffer(context, &lightData, sizeof(lightData));

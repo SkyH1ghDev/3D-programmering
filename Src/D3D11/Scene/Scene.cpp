@@ -17,11 +17,6 @@ Scene::Scene(std::vector<Camera> cameraList)
     this->_cameraList = cameraList;
 }
 
-/*void Scene::CreateMeshes(std::vector<Mesh> meshList)
-{
-    this->_meshList = meshList;
-}*/
-
 void Scene::AddMesh(Mesh& mesh)
 {
 

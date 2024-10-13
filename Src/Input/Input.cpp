@@ -4,10 +4,26 @@
 
 #include <iostream>
 
+#include "InputConfig.hpp"
+
 Input::Input()
 {
     GetCursorPos(&this->_prevPoint);
     ShowCursor(FALSE);
+
+    InputConfig inputConfig;
+
+    this->_quitKey = inputConfig.GetQuitKey();
+
+    this->_upKey = inputConfig.GetUpKey();
+    this->_downKey = inputConfig.GetDownKey();
+    this->_forwardKey = inputConfig.GetForwardKey();
+    this->_backKey = inputConfig.GetBackKey();
+    this->_leftKey = inputConfig.GetLeftKey();
+    this->_rightKey = inputConfig.GetRightKey();
+
+    this->_outputModeKey = inputConfig.GetOutputModeKey();
+    this->_lockMouseKey = inputConfig.GetLockMouseKey();
 }
 
 
@@ -28,32 +44,32 @@ void Input::HandleMovement(Camera& camera, const float& deltaTime)
 {
     float movementAmount = 10.0f;
 
-    if (GetAsyncKeyState(VK_SPACE) & KEY_PRESSED)
+    if (GetAsyncKeyState(this->_upKey) & KEY_PRESSED)
     {
         camera.MoveUp(movementAmount, deltaTime);
     }
 
-    if (GetAsyncKeyState(VK_LCONTROL) & KEY_PRESSED)
+    if (GetAsyncKeyState(this->_downKey) & KEY_PRESSED)
     {
         camera.MoveDown(movementAmount, deltaTime);
     }
     
-    if (GetAsyncKeyState('W') & KEY_PRESSED)
+    if (GetAsyncKeyState(this->_forwardKey) & KEY_PRESSED)
     {
         camera.MoveForward(movementAmount, deltaTime);
     }
 
-    if (GetAsyncKeyState('S') & KEY_PRESSED)
+    if (GetAsyncKeyState(this->_backKey) & KEY_PRESSED)
     {
         camera.MoveBackward(movementAmount, deltaTime);
     }
     
-    if (GetAsyncKeyState('A') & KEY_PRESSED)
+    if (GetAsyncKeyState(this->_leftKey) & KEY_PRESSED)
     {
         camera.MoveLeft(movementAmount, deltaTime);
     }
 
-    if (GetAsyncKeyState('D') & KEY_PRESSED)
+    if (GetAsyncKeyState(this->_rightKey) & KEY_PRESSED)
     {
         camera.MoveRight(movementAmount, deltaTime);
     }
@@ -73,10 +89,12 @@ void Input::HandleRotation(Camera& camera, HWND& window)
     if (this->_lockMouse)
     {
         GetCursorPos(&currPoint);
+        ShowCursor(FALSE);
     }
     else
     {
         currPoint = centerOfScreen;
+        ShowCursor(TRUE);
     }
 
     float deltaYaw = static_cast<float>(currPoint.x - this->_prevPoint.x) * sensitivity * radiansPerPixel;
@@ -96,7 +114,7 @@ void Input::HandleRotation(Camera& camera, HWND& window)
 
 void Input::HandleMiscellaneous(int& outputMode)
 {
-    if (int lockMouseKeyState = GetAsyncKeyState('M'); lockMouseKeyState & KEY_PRESSED && !this->_lockMouseKeyHeldDown)
+    if (int lockMouseKeyState = GetAsyncKeyState(this->_lockMouseKey); lockMouseKeyState & KEY_PRESSED && !this->_lockMouseKeyHeldDown)
     {
         this->_lockMouse = !this->_lockMouse;
         this->_lockMouseKeyHeldDown = true;
@@ -106,7 +124,7 @@ void Input::HandleMiscellaneous(int& outputMode)
         this->_lockMouseKeyHeldDown = false;
     }
 
-    if (int outputModeKeyState = GetAsyncKeyState('N'); outputModeKeyState & KEY_PRESSED && !this->_outputModeKeyHeldDown)
+    if (int outputModeKeyState = GetAsyncKeyState(this->_outputModeKey); outputModeKeyState & KEY_PRESSED && !this->_outputModeKeyHeldDown)
     {
         ++outputMode;
         outputMode %= 7;

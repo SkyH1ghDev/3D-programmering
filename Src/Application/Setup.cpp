@@ -118,8 +118,6 @@ Scene Setup::SetupScene(Controller &controller)
 	HRESULT hr = 0;
 
 	ViewMatrixConfig viewMatrixConfig;
-	DX::XMFLOAT4 mainCamPosition = viewMatrixConfig.GetCamPosition();
-	
 	ProjectionMatrixConfig projectionMatrixConfig;
 	ProjectionInfo projectionInfo;
 
@@ -127,9 +125,18 @@ Scene Setup::SetupScene(Controller &controller)
 	projectionInfo.FarZ = projectionMatrixConfig.GetFarZ();
 	projectionInfo.NearZ = projectionMatrixConfig.GetNearZ();
 	projectionInfo.FovAngleY = projectionMatrixConfig.GetFovAngle();
+
+	std::vector<Camera> cameraVector;
+
+	DX::XMFLOAT4 mainCamPosition = viewMatrixConfig.GetCamPositionAt(0);
 	
+	cameraVector.push_back(Camera(hr, controller.GetDevice(), projectionInfo, mainCamPosition));
+
+	DX::XMFLOAT4 secondaryCamPosition = viewMatrixConfig.GetCamPositionAt(1);
+	cameraVector.push_back(Camera(hr, controller.GetDevice(), projectionInfo, secondaryCamPosition));
 	
-	Scene scene(hr, controller.GetDevice(), projectionInfo, mainCamPosition);
+	Scene scene(cameraVector);
+	
 	if (FAILED(hr))
 	{
 		throw std::runtime_error("Failed to Create Scene");

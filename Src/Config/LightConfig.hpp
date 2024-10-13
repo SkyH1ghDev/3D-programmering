@@ -9,8 +9,16 @@ namespace DX = DirectX;
 class LightConfig : IConfigBase
 {
 public:
-    DX::XMFLOAT4 LightColour = {1.0f, 1.0f, 1.0f, 1.0f};
-    DX::XMFLOAT4 LightPosition = {0.0f, -7.0f, -10.0f, 1.0f};
-    float AmbientLightIntensity = 0.2f;
-    float GeneralLightIntensity = 1.0f;
+    const DX::XMFLOAT4& GetLightColour() const { return this->_lightColour; }
+    const DX::XMFLOAT4& GetLightPosition() const { return this->_lightPosition; }
+    const float& GetAmbientLightIntensity() const { return this->_ambientLightIntensity; }
+    const float& GetGeneralLightIntensity() const { return this->_generalLightIntensity; }
+
+    
+private:
+    
+    DX::XMFLOAT4 _lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
+    DX::XMFLOAT4 _lightPosition = {0.0f, -7.0f, -10.0f, 1.0f};
+    float _ambientLightIntensity = 0.2f;
+    float _generalLightIntensity = 1.0f;
 };

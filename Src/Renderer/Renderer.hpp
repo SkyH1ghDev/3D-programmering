@@ -2,7 +2,6 @@
 
 #include <d3d11.h>
 #include <array>
-#include "Configuration.hpp"
 #include "Controller.hpp"
 #include "InputLayout.hpp"
 #include "PixelShader.hpp"

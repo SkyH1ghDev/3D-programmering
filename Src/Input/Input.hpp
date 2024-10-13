@@ -20,7 +20,17 @@ private:
     POINT _prevPoint = POINT();
     
     bool _lockMouse = true;
-    
     bool _outputModeKeyHeldDown = false;
     bool _lockMouseKeyHeldDown = false;
+
+    int _upKey;
+    int _downKey;
+    int _forwardKey;
+    int _backKey;
+    int _leftKey;
+    int _rightKey;
+    
+    int _quitKey;
+    int _outputModeKey;
+    int _lockMouseKey;
 };

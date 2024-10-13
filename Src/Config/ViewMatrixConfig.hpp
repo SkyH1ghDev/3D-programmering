@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <vector>
 #include <DirectXMath.h>
 
 #include "IConfigBase.hpp"
@@ -8,10 +9,10 @@ namespace DX = DirectX;
 class ViewMatrixConfig : public IConfigBase
 {
 public:
-    DX::XMFLOAT4 GetCamPosition() const { return this->_camPosition; }
-    DX::XMFLOAT4 GetDirectionVector() const { return this->_directionVector; }
+    const DX::XMFLOAT4& GetCamPositionAt(const size_t& index) const { return this->_camPositions.at(index); }
+    
     
 private:
-    DX::XMFLOAT4 _camPosition = {0.0f, 0.0f, -7.0f, 1.0f};
-    DX::XMFLOAT4 _directionVector = {-1.0f, 0.0f, 0.0f, 1.0f};
+    std::vector<DX::XMFLOAT4> _camPositions = {{0.0f, 0.0f, -7.0f, 1.0f},
+                                               {0.0f, 0.0f, 7.0f, 1.0f}};
 };

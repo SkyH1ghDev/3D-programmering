@@ -1,5 +1,6 @@
 ﻿#include "Application.hpp"
 #include "MatrixCreator.hpp"
+#include "RenderConfig.hpp"
 #include "LightData.hpp"
 #include "OutputModeData.hpp"
 #include "SpecularExpData.hpp"
