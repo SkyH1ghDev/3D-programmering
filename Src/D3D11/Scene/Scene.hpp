@@ -19,6 +19,9 @@ public:
     void AddMesh(Mesh& mesh);
 
     Camera& GetCurrentCamera();
+    Camera& GetMainCamera();
+    void IncrementCameraIndex();
+    
     Mesh& GetMeshAt(size_t index) const;
     size_t GetNumMeshes() const;
     Mesh& GetOscillatingMeshAt(size_t idx) const;
@@ -26,7 +29,7 @@ public:
     
 private:
     
-    uint16_t _currentCameraIndex = 0; // Max 65535 Cameras
+    int _currentCameraIndex = 0;
     std::vector<Camera> _cameraList;
     std::vector<std::shared_ptr<Mesh>> _meshList;
     std::vector<std::shared_ptr<Mesh>> _oscillatingMeshList;

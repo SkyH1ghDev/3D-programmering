@@ -8,5 +8,5 @@ namespace DX = DirectX;
 class Math
 {
 public:
-	static std::array<float, 4> OscillateBetweenPoints(float time, std::array<float, 4> pos1, std::array<float, 4> pos2);
+	static DX::XMFLOAT4 OscillateBetweenPoints(float time, DX::XMFLOAT4 pos1, DX::XMFLOAT4 pos2);
 };

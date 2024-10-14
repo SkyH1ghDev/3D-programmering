@@ -3,10 +3,13 @@
 #include <cassert>
 #include <vector>
 #include <string>
-#include <array>
 #include <bitset>
 
+#include <DirectXMath.h>
+
 #include "IConfigBase.hpp"
+
+namespace DX = DirectX;
 
 class MeshConfig : public IConfigBase
 {
@@ -19,22 +22,22 @@ public:
     
     size_t GetNumFiles() const { return this->_filenameList.size(); }
     std::string GetFilenameAt(size_t idx) const { return this->_filenameList.at(idx); }
-    std::array<float, 4> GetPositionAt(size_t idx) const { return this->_positionList.at(idx); }
+    DX::XMFLOAT4 GetPositionAt(size_t idx) const { return this->_positionList.at(idx); }
     
     std::bitset<1> GetMeshFlagsAt(size_t idx) const { return this->_meshFlagList.at(idx); }
 
-    std::array<float, 4> GetOscillationPositionAt(size_t idx) const { return this->_oscillationPositionList.at(idx); }
+    DX::XMFLOAT4 GetOscillationPositionAt(size_t idx) const { return this->_oscillationPositionList.at(idx); }
     float GetOscillationPeriodAt(size_t idx) const { return this->_periodList.at(idx); }
     float GetOscillationTimeAt(size_t idx) const { return this->_timeList.at(idx); } 
     
 private:
     std::vector<std::string> _filenameList = {"cube.obj", "Floor.obj"};
-    std::vector<std::array<float, 4>> _positionList = {{-2.0f, -7.0f, -7.0f, 1.0f}, {0.0f, -10.0f, 0.0f, 1.0f}};
+    std::vector<DX::XMFLOAT4> _positionList = {{-2.0f, -7.0f, -7.0f, 1.0f}, {0.0f, -10.0f, 0.0f, 1.0f}};
 
     // bit 1 : Oscillation
     std::vector<std::bitset<1>> _meshFlagList = {{1}, {0}};
 
-    std::vector<std::array<float, 4>> _oscillationPositionList = {{2.0f, -7.0f, -7.0f, 1.0f}, std::array<float, 4>()};
+    std::vector<DX::XMFLOAT4> _oscillationPositionList = {{2.0f, -7.0f, -7.0f, 1.0f}, DX::XMFLOAT4()};
     std::vector<float> _periodList = {10.0f, 0.0f};
     std::vector<float> _timeList = {0.0f, 0.0f};
 };

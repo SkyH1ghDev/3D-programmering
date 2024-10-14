@@ -63,6 +63,40 @@ bool PipelineHelper::LoadVertexShader(ID3D11Device *device, ID3D11VertexShader*&
 	return true;
 }
 
+bool PipelineHelper::LoadHullShader(ID3D11Device* device, ID3D11HullShader*& hullShader, ID3DBlob* hullShaderBlob)
+{
+	if (FAILED(device->CreateHullShader(hullShaderBlob->GetBufferPointer(), hullShaderBlob->GetBufferSize(), nullptr, &hullShader)))
+	{
+		std::cerr << "Failed to create hull shader! \n";
+		return false;
+	}
+
+	return true;
+}
+
+bool PipelineHelper::LoadDomainShader(ID3D11Device* device, ID3D11DomainShader*& domainShader, ID3DBlob* domainShaderBlob)
+{
+	
+	if (FAILED(device->CreateDomainShader(domainShaderBlob->GetBufferPointer(), domainShaderBlob->GetBufferSize(), nullptr, &domainShader)))
+	{
+		std::cerr << "Failed to create hull shader! \n";
+		return false;
+	}
+
+	return true;
+}
+
+bool PipelineHelper::LoadGeometryShader(ID3D11Device* device, ID3D11GeometryShader*& geometryShader, ID3DBlob* geometryShaderBlob)
+{
+	if (FAILED(device->CreateGeometryShader(geometryShaderBlob->GetBufferPointer(), geometryShaderBlob->GetBufferSize(), nullptr, &geometryShader)))
+	{
+		std::cerr << "Failed to create hull shader! \n";
+		return false;
+	}
+
+	return true;
+}
+
 
 bool PipelineHelper::LoadPixelShader(ID3D11Device *device, ID3D11PixelShader*& pixelShader, ID3DBlob* pixelShaderBlob)
 {
@@ -84,6 +118,27 @@ bool PipelineHelper::LoadComputeShader(ID3D11Device* device, ID3D11ComputeShader
 	}
 
 	return true;
+}
+
+bool PipelineHelper::CreateRasterizer(ID3D11Device* device, ID3D11RasterizerState*& rasterizerState)
+{
+	D3D11_RASTERIZER_DESC rasterizerDesc;
+
+	ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
+	
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	rasterizerDesc.FrontCounterClockwise = FALSE;
+	rasterizerDesc.DepthBias = 0;
+	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+	rasterizerDesc.DepthBiasClamp = 0.0f;
+	rasterizerDesc.DepthClipEnable = TRUE;
+	rasterizerDesc.ScissorEnable = FALSE;
+	rasterizerDesc.MultisampleEnable = TRUE;
+	rasterizerDesc.AntialiasedLineEnable = FALSE;
+	
+	HRESULT hr = device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
+	return !FAILED(hr);
 }
 
 

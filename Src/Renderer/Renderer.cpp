@@ -2,13 +2,15 @@
 
 #include <iostream>
 
+#include "DomainShaderData.hpp"
+#include "HullShaderData.hpp"
 #include "LightConfig.hpp"
 #include "LightData.hpp"
 #include "MatrixCreator.hpp"
 #include "OutputModeData.hpp"
 #include "SpecularExpData.hpp"
 
-void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
+void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, VertexShader &vertexShader, Rasterizer& rasterizer, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	ID3D11RenderTargetView* rTargetView = rtv.GetRTV();
@@ -36,8 +38,8 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 
 
 		D3D11_VIEWPORT viewport = controller.GetViewPort();
-	
-		SetupRasterizer(context, viewport);
+		ID3D11RasterizerState* rasterizerState = rasterizer.GetRasterizerState();
+		SetupRasterizer(context, rasterizerState, viewport);
 
 		ID3D11DepthStencilView* dsv = depthBuffer.GetDSV();
 		
@@ -63,7 +65,7 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 	}
 }
 
-void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, RenderTargetView& rtv, std::vector<RenderTargetView>& gBuffers, VertexShader &vertexShader, PixelShader &pixelShader, ComputeShader& computeShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState, int& outputMode)
+void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, RenderTargetView& rtv, std::vector<RenderTargetView>& gBuffers, VertexShader &vertexShader, HullShader& hullShader, DomainShader& domainShader, Rasterizer& rasterizer, PixelShader &pixelShader, ComputeShader& computeShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState, int& outputMode)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	ID3D11RenderTargetView* rTargetView = rtv.GetRTV();
@@ -78,12 +80,12 @@ void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, Rend
 	
 	ClearScreen(context, rTargetView, depthBuffer.GetDSV(), gBufferRTVVec);
 	
-	PerformGeometryPass(controller, gBuffers, vertexShader, pixelShader, inputLayout, scene, samplerState);
+	PerformGeometryPass(controller, gBuffers, vertexShader, hullShader, domainShader, rasterizer, pixelShader, inputLayout, scene, samplerState);
 	PerformLightPass(controller, swapChain, gBuffers, computeShader, scene, outputMode);
 }
 
 
-void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTargetView>& gBuffers, VertexShader &vertexShader, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
+void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTargetView>& gBuffers, VertexShader &vertexShader, HullShader& hullShader, DomainShader& domainShader, Rasterizer& rasterizer, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	Camera& currCamera = scene.GetCurrentCamera();
@@ -100,7 +102,7 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 		ID3D11Buffer* vBuffer = vertexBuffer.GetBuffer();
 		ID3D11InputLayout* iLayout = inputLayout.GetInputLayout();
 	
-		SetupInputAssembler(context, vBuffer, iLayout, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		SetupInputAssembler(context, vBuffer, iLayout, D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
 		// Setup Vertex Shader
 		
@@ -109,11 +111,22 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 		
 		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetCurrentPosition(), currCamera);
 
+		ID3D11HullShader* hShader = hullShader.GetHullShader();
+		std::vector<ConstantBuffer> hullShaderBuffers = hullShader.GetConstantBuffers();
+		
+		SetupHullShader(context, hShader, hullShaderBuffers, mesh.GetCurrentPosition(), scene.GetMainCamera().GetPosition());
+
+		ID3D11DomainShader* dShader = domainShader.GetDomainShader();
+		std::vector<ConstantBuffer> domainShaderBuffers = domainShader.GetConstantBuffers();
+		
+		SetupDomainShader(context, dShader, domainShaderBuffers, scene.GetMainCamera());
+		
 		// Setup Rasterizer
 		
 		D3D11_VIEWPORT viewport = controller.GetViewPort();
-	
-		SetupRasterizer(context, viewport);
+		ID3D11RasterizerState* rasterizerState = rasterizer.GetRasterizerState();
+		
+		SetupRasterizer(context, rasterizerState, viewport);
 
 		// Setup G-Buffers
 		
@@ -207,13 +220,13 @@ void Renderer::SetupInputAssembler(ID3D11DeviceContext *context, ID3D11Buffer *v
 	context->IASetPrimitiveTopology(topology);
 }
 
-void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShader* vertexShader, std::vector<ConstantBuffer> buffers, std::array<float, 4> meshPosition, Camera& camera)
+void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShader* vertexShader, std::vector<ConstantBuffer> buffers, DX::XMFLOAT4 meshPosition, Camera& camera)
 {
 	MatrixCreator matrixCreator;
 
 	context->VSSetShader(vertexShader, nullptr, 0);
 	
-	DX::XMMATRIX worldPositionMatrix = matrixCreator.CreateTranslationMatrix(meshPosition[0], meshPosition[1], meshPosition[2]);
+	DX::XMMATRIX worldPositionMatrix = matrixCreator.CreateTranslationMatrix(meshPosition.x, meshPosition.y, meshPosition.z);
 	
 	DX::XMFLOAT4X4 worldMatrix;
 	DX::XMStoreFloat4x4(&worldMatrix, worldPositionMatrix);
@@ -236,6 +249,52 @@ void Renderer::SetupVertexShader(ID3D11DeviceContext* context, ID3D11VertexShade
 	ID3D11Buffer** buffersArr = ID3D11Buffers.data();
 	context->VSSetConstantBuffers(0, buffers.size(), buffersArr);
 }
+
+void Renderer::SetupHullShader(ID3D11DeviceContext* context, ID3D11HullShader* hullShader, std::vector<ConstantBuffer> buffers, const DX::XMFLOAT4& meshPosition, const DX::XMFLOAT4& cameraPosition)
+{
+	context->HSSetShader(hullShader, nullptr, 0);
+
+	HullShaderData hullShaderData;
+	hullShaderData.CameraPosition = cameraPosition;
+	hullShaderData.MeshPosition = meshPosition;
+
+	buffers.at(0).UpdateBuffer(context, &hullShaderData, sizeof(hullShaderData));
+	std::vector<ID3D11Buffer*> ID3D11Buffers;
+	for (ConstantBuffer cb : buffers)
+	{
+		ID3D11Buffers.push_back(cb.GetBuffer());
+	}
+	
+	ID3D11Buffer** buffersArr = ID3D11Buffers.data();
+	context->HSSetConstantBuffers(0, buffers.size(), buffersArr);
+}
+
+void Renderer::SetupDomainShader(ID3D11DeviceContext* context, ID3D11DomainShader* domainShader, std::vector<ConstantBuffer>& buffers, Camera& camera)
+{
+	context->DSSetShader(domainShader, nullptr, 0);
+
+	MatrixCreator matrixCreator;
+	
+	DomainShaderData domainShaderData;
+	DX::XMFLOAT4X4 viewProjectionMatrix;
+	DX::XMMATRIX vpMatrix = matrixCreator.CreateViewProjectionMatrix(camera);
+	DX::XMStoreFloat4x4(&viewProjectionMatrix, vpMatrix);
+
+	domainShaderData.ViewProjectionMatrix = viewProjectionMatrix;
+
+	buffers.at(0).UpdateBuffer(context, &domainShaderData, sizeof(domainShaderData));
+
+	std::vector<ID3D11Buffer*> ID3D11Buffers;
+	for (ConstantBuffer cb : buffers)
+	{
+		ID3D11Buffers.push_back(cb.GetBuffer());
+	}
+	
+	ID3D11Buffer** buffersArr = ID3D11Buffers.data();
+	context->DSSetConstantBuffers(0, buffers.size(), buffersArr);
+}
+
+
 
 void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11SamplerState* samplerState, std::vector<ID3D11ShaderResourceView*> textureSRVs, std::vector<ConstantBuffer> buffers, const float& specularExponent)
 {
@@ -260,8 +319,9 @@ void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader*
 	context->PSSetConstantBuffers(0, buffers.size(), buffersArr);
 }
 
-void Renderer::SetupRasterizer(ID3D11DeviceContext* context, const D3D11_VIEWPORT& viewport)
+void Renderer::SetupRasterizer(ID3D11DeviceContext* context, ID3D11RasterizerState* rasterizerState, const D3D11_VIEWPORT& viewport)
 {
+	context->RSSetState(rasterizerState);
 	context->RSSetViewports(1, &viewport);
 }
 

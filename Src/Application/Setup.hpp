@@ -11,6 +11,7 @@
 #include "Scene.hpp"
 #include "Shader.hpp"
 #include "SwapChain.hpp"
+#include "Rasterizer/Rasterizer.hpp"
 
 class Setup
 {
@@ -23,6 +24,7 @@ public:
     static RenderTargetView SetupGBuffer(Controller& controller);
     static Scene SetupScene(Controller& controller);
     static Shader* SetupShader(Controller& controller, ShaderType shaderType, std::wstring hlslFilename);
+	static Rasterizer SetupRasterizer(Controller& controller);
     static InputLayout SetupInputLayout(Controller& controller, const Shader& vertexShader);
     static Sampler SetupSampler(Controller& controller);
 	

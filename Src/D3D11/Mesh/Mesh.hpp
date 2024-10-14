@@ -5,10 +5,13 @@
 #include <bitset>
 
 #include <d3d11_4.h>
+#include <DirectXMath.h>
 
 #include "SubMesh.hpp"
 #include "VertexBuffer.hpp"
 #include "MeshData.hpp"
+
+namespace DX = DirectX;
 
 class Mesh
 {
@@ -32,7 +35,7 @@ public:
 	SubMesh& GetSubMeshAt(size_t index);
 	size_t GetNrOfSubMeshes() const;
 	VertexBuffer GetVertexBuffer();
-	std::array<float, 4> GetCurrentPosition() const;
+	DX::XMFLOAT4 GetCurrentPosition() const;
 	ID3D11ShaderResourceView* GetAmbientSRV(size_t subMeshIndex) const;
 	ID3D11ShaderResourceView* GetDiffuseSRV(size_t subMeshIndex) const;
 	ID3D11ShaderResourceView* GetSpecularSRV(size_t subMeshIndex) const;
@@ -42,10 +45,10 @@ private:
 	std::vector<SubMesh> _subMeshes;
 	VertexBuffer _vertexBuffer;
 
-	std::array<float, 4> _currentPosition = {0.0f, 0.0f, 0.0f, 1.0f};
+	DX::XMFLOAT4 _currentPosition = {0.0f, 0.0f, 0.0f, 1.0f};
 
-	std::array<float, 4> _oscillationEndPosition;
-	std::array<float, 4> _oscillationStartPosition;
+	DX::XMFLOAT4 _oscillationEndPosition;
+	DX::XMFLOAT4 _oscillationStartPosition;
 	float _oscillationPeriod;
 	float _oscillationTime;
 	

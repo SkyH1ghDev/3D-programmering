@@ -8,7 +8,10 @@
 #include "WindowHelper.hpp"
 #include "D3D11Helper.hpp"
 #include "Configuration.hpp"
+#include "DomainShader.hpp"
 #include "FileReader.hpp"
+#include "GeometryShader.hpp"
+#include "HullShader.hpp"
 #include "PipelineHelper.hpp"
 #include "PixelShader.hpp"
 #include "VertexShader.hpp"
@@ -195,29 +198,35 @@ Shader* Setup::SetupShader(Controller& controller, ShaderType shaderType, std::w
 			return new VertexShader(shader.vertexShader, shaderBlob);
 		
 		case ShaderType::HULL_SHADER:
-
-			// TODO: Fix loading of hull shader
-			
-			std::cerr << "Not implemented loading (HS) \n Exiting... \n";
-			exit(-1);
-			break;
+			if (!pipelineHelper.LoadHullShader(controller.GetDevice(), shader.hullShader, shaderBlob))
+			{
+				shader.domainShader->Release();
+				shaderBlob->Release();
+				throw std::runtime_error("Could not Compile Hull Shader");
+			}
+		
+			return new HullShader(shader.hullShader, shaderBlob);
 		
 		case ShaderType::DOMAIN_SHADER:
+			if (!pipelineHelper.LoadDomainShader(controller.GetDevice(), shader.domainShader, shaderBlob))
+			{
+				shader.domainShader->Release();
+				shaderBlob->Release();
+				throw std::runtime_error("Could not Compile Domain Shader");
+			}
+		
+			return new DomainShader(shader.domainShader, shaderBlob);
 			
-			// TODO: Fix loading of domain shader
-				
-			std::cerr << "Not implemented loading (DS) \n Exiting... \n";
-			exit(-1);
-			break;
-
 		case ShaderType::GEOMETRY_SHADER:
-			
-			// TODO: Fix loading of geometry shader
-				
-			std::cerr << "Not implemented loading (GS) \n Exiting... \n";
-			exit(-1);
-			break;
-
+			if (!pipelineHelper.LoadGeometryShader(controller.GetDevice(), shader.geometryShader, shaderBlob))
+			{
+				shader.geometryShader->Release();
+				shaderBlob->Release();
+				throw std::runtime_error("Could not Compile Geometry Shader");
+			}
+		
+			return new GeometryShader(shader.geometryShader, shaderBlob);
+		
 		case ShaderType::PIXEL_SHADER:
 			if (!pipelineHelper.LoadPixelShader(controller.GetDevice(), shader.pixelShader, shaderBlob))
 			{
@@ -236,9 +245,25 @@ Shader* Setup::SetupShader(Controller& controller, ShaderType shaderType, std::w
 				throw std::runtime_error("Could not Compile Compute Shader");
 			}
 			return new ComputeShader(shader.computeShader, shaderBlob);
-		
+
+		default:
+			throw std::runtime_error("How did you get here?");
 	}
 }
+
+Rasterizer Setup::SetupRasterizer(Controller& controller)
+{
+	PipelineHelper pipelineHelper;
+	ID3D11RasterizerState* rasterizerState;
+
+	if (FAILED(pipelineHelper.CreateRasterizer(controller.GetDevice(), rasterizerState)))
+	{
+		throw std::runtime_error("Failed to create Rasterizer");
+	}
+
+	return Rasterizer(rasterizerState);
+}
+
 
 InputLayout Setup::SetupInputLayout(Controller &controller, const Shader &vertexShader)
 {

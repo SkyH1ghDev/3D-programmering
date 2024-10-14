@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include "SubMeshInfo.hpp"
-#include "IndexInfo.hpp"
 #include "VertexInfo.hpp"
 
-#include <array>
 #include <vector>
+
+namespace DX = DirectX;
 
 // TODO: Refactor away this class. Unnecessary abstraction that makes implementation more bug prone.
 
@@ -14,9 +14,9 @@ class MeshData
 public:
     VertexInfo VertexInfo;
     std::vector<SubMeshInfo> SubMeshInfoList;
-    std::array<float, 4> MeshPosition;
+    DX::XMFLOAT4 MeshPosition;
 
-    std::array<float, 4> OscillationStartPosition;
+    DX::XMFLOAT4 OscillationStartPosition;
     float OscillationPeriod;
     float OscillationTime;
     

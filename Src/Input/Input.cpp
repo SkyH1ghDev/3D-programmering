@@ -1,37 +1,25 @@
 ﻿#define KEY_PRESSED 0x8000
 
 #include "Input.hpp"
+#include "KeyboardConfig.hpp"
 
 #include <iostream>
 
-#include "InputConfig.hpp"
 
 Input::Input()
 {
     GetCursorPos(&this->_prevPoint);
     ShowCursor(FALSE);
 
-    InputConfig inputConfig;
-
-    this->_quitKey = inputConfig.GetQuitKey();
-
-    this->_upKey = inputConfig.GetUpKey();
-    this->_downKey = inputConfig.GetDownKey();
-    this->_forwardKey = inputConfig.GetForwardKey();
-    this->_backKey = inputConfig.GetBackKey();
-    this->_leftKey = inputConfig.GetLeftKey();
-    this->_rightKey = inputConfig.GetRightKey();
-
-    this->_outputModeKey = inputConfig.GetOutputModeKey();
-    this->_lockMouseKey = inputConfig.GetLockMouseKey();
+    KeyboardConfig keyboardConfig;
+    this->_keyboard = keyboardConfig.GetDefaultKeyboard();
 }
 
 
-void Input::ReadInput(Camera& camera, HWND& window, int& outputMode, const float& deltaTime)
+void Input::ReadInput(Scene& scene, HWND& window, bool& running, MSG& msg, int& outputMode, const float& deltaTime)
 {
-    HandleMovement(camera, deltaTime);
-    HandleRotation(camera, window);
-    HandleMiscellaneous(outputMode);
+    HandleKeyboard(scene, running, msg, outputMode, deltaTime);
+    HandleRotation(scene.GetCurrentCamera(), window);
 }
 
 int Input::Exit(const MSG &msg)
@@ -39,39 +27,89 @@ int Input::Exit(const MSG &msg)
     return !(GetAsyncKeyState(VK_ESCAPE) & KEY_PRESSED) && msg.message != WM_QUIT;
 }
 
-
-void Input::HandleMovement(Camera& camera, const float& deltaTime)
+void Input::HandleKeyboard(Scene& scene, bool& running, MSG& msg, int& outputMode, const float& deltaTime)
 {
+    std::vector<std::shared_ptr<Key>> pressedKeys = this->_keyboard.GetPressedKeys();
+
+    Camera& camera = scene.GetCurrentCamera();
+    
     float movementAmount = 10.0f;
-
-    if (GetAsyncKeyState(this->_upKey) & KEY_PRESSED)
-    {
-        camera.MoveUp(movementAmount, deltaTime);
-    }
-
-    if (GetAsyncKeyState(this->_downKey) & KEY_PRESSED)
-    {
-        camera.MoveDown(movementAmount, deltaTime);
-    }
     
-    if (GetAsyncKeyState(this->_forwardKey) & KEY_PRESSED)
+    for(std::shared_ptr<Key>& key : pressedKeys)
     {
-        camera.MoveForward(movementAmount, deltaTime);
-    }
+        switch(key->GetAction())
+        {
+            case Unbound:
+                break;
+            
+            case Quit:
+                running = !key->IsPressed() && msg.message != WM_QUIT;
+                break;
+            
+            case MoveUp:
+                camera.MoveUp(movementAmount, deltaTime);
+                break;
 
-    if (GetAsyncKeyState(this->_backKey) & KEY_PRESSED)
-    {
-        camera.MoveBackward(movementAmount, deltaTime);
-    }
-    
-    if (GetAsyncKeyState(this->_leftKey) & KEY_PRESSED)
-    {
-        camera.MoveLeft(movementAmount, deltaTime);
-    }
+            case MoveDown:
+                camera.MoveDown(movementAmount, deltaTime);
+                break;
 
-    if (GetAsyncKeyState(this->_rightKey) & KEY_PRESSED)
-    {
-        camera.MoveRight(movementAmount, deltaTime);
+            case MoveForward:
+                camera.MoveForward(movementAmount, deltaTime);
+                break;
+
+            case MoveBackward:
+                camera.MoveBackward(movementAmount, deltaTime);
+                break;
+
+            case MoveLeft:
+                camera.MoveLeft(movementAmount, deltaTime);
+                break;
+
+            case MoveRight:
+                camera.MoveRight(movementAmount, deltaTime);
+                break;
+
+            case ToggleOutputMode:
+                if (key->IsPressed() && !key->IsHeldDown())
+                {
+                    ++outputMode;
+                    outputMode %= 7;
+                    key->SetHoldDownState(true);
+                }
+                else if (!key->IsPressed())
+                {
+                    key->SetHoldDownState(false);
+                }
+                break;
+
+            case ToggleMouseLock:
+                if (key->IsPressed() && !key->IsHeldDown())
+                {
+                    this->_lockMouse = !this->_lockMouse;
+                    key->SetHoldDownState(true);
+                }
+                else if (!key->IsPressed())
+                {
+                    key->SetHoldDownState(false);
+                }
+                break;
+
+            case ToggleCamera:
+                if (key->IsPressed() && !key->IsHeldDown())
+                {
+                    scene.IncrementCameraIndex();
+                    key->SetHoldDownState(true);
+                }
+                else if (!key->IsPressed())
+                {
+                    key->SetHoldDownState(false);
+                }
+                break;
+
+            default:
+                break;
+        }
     }
 }
 
@@ -102,36 +140,10 @@ void Input::HandleRotation(Camera& camera, HWND& window)
 
     camera.ApplyRotation(deltaPitch, deltaYaw);
     
-
-
     if (this->_lockMouse)
     {
         SetCursorPos(centerOfScreen.x, centerOfScreen.y);
     }
 
     this->_prevPoint = centerOfScreen;
-}
-
-void Input::HandleMiscellaneous(int& outputMode)
-{
-    if (int lockMouseKeyState = GetAsyncKeyState(this->_lockMouseKey); lockMouseKeyState & KEY_PRESSED && !this->_lockMouseKeyHeldDown)
-    {
-        this->_lockMouse = !this->_lockMouse;
-        this->_lockMouseKeyHeldDown = true;
-    }
-    else if (!(lockMouseKeyState & KEY_PRESSED))
-    {
-        this->_lockMouseKeyHeldDown = false;
-    }
-
-    if (int outputModeKeyState = GetAsyncKeyState(this->_outputModeKey); outputModeKeyState & KEY_PRESSED && !this->_outputModeKeyHeldDown)
-    {
-        ++outputMode;
-        outputMode %= 7;
-        this->_outputModeKeyHeldDown = true;
-    }
-    else if (!(outputModeKeyState & KEY_PRESSED))
-    {
-        this->_outputModeKeyHeldDown = false;
-    }
 }

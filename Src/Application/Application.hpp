@@ -4,8 +4,10 @@
 #include "HullShader.hpp"
 #include "DomainShader.hpp"
 #include "GeometryShader.hpp"
+#include "Rasterizer.hpp"
 #include "PixelShader.hpp"
 #include "ComputeShader.hpp"
+
 
 #include "Input.hpp"
 #include "Clock.hpp"
@@ -50,11 +52,12 @@ private:
     
     std::unique_ptr<VertexShader> _vsDeferredGeometry;
     std::unique_ptr<PixelShader> _psDeferredGeometry;
-    //std::unique_ptr<HullShader> _hullShader;
-    //std::unique_ptr<DomainShader> _domainShader;
-    //std::unique_ptr<GeometryShader> _geometryShader;
+    std::unique_ptr<HullShader> _hsDeferredGeometry;
+    std::unique_ptr<DomainShader> _dsDeferredGeometry;
+    //std::unique_ptr<GeometryShader> _gsDeferredGeometry;
     std::unique_ptr<ComputeShader> _csDeferredLight;
-    
+
+    Rasterizer _rasterizer;
     InputLayout _inputLayout;
     Sampler _sampler;
     Input _input;

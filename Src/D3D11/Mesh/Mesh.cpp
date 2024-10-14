@@ -74,7 +74,7 @@ VertexBuffer Mesh::GetVertexBuffer()
 	return this->_vertexBuffer;
 }
 
-std::array<float, 4> Mesh::GetCurrentPosition() const
+DX::XMFLOAT4 Mesh::GetCurrentPosition() const
 {
 	return this->_currentPosition;
 }

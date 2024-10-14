@@ -15,7 +15,8 @@ public:
 	bool LoadGeometryShader(ID3D11Device* device, ID3D11GeometryShader*& geometryShader, ID3DBlob* geometryShaderBlob);
 	bool LoadPixelShader(ID3D11Device* device, ID3D11PixelShader*& pixelShader, ID3DBlob* pixelShaderBlob);
 	bool LoadComputeShader(ID3D11Device* device, ID3D11ComputeShader*& computeShader, ID3DBlob* computeShaderBlob);
-	
+
+	bool CreateRasterizer(ID3D11Device* device, ID3D11RasterizerState*& rasterizerState);
 	bool CreateInputLayout(ID3D11Device* device, ID3D11InputLayout*& inputLayout, const void *vertexShaderByteCode, size_t vertexShaderByteCodeLength);
 	bool CreateSamplerState(ID3D11Device* device, ID3D11SamplerState*& samplerState);
 };

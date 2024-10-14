@@ -35,6 +35,18 @@ Camera& Scene::GetCurrentCamera()
     return this->_cameraList.at(this->_currentCameraIndex);
 }
 
+Camera& Scene::GetMainCamera()
+{
+    return this->_cameraList.at(0);
+}
+
+
+void Scene::IncrementCameraIndex()
+{
+    ++this->_currentCameraIndex;
+    this->_currentCameraIndex %= this->_cameraList.size();
+}
+
 Mesh& Scene::GetMeshAt(size_t index) const
 {
     return *this->_meshList.at(index);
