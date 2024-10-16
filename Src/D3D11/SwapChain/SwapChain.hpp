@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-#include <d3d11_4.h>
+#include "Texture2D.hpp"
+#include "UnorderedAccessView.hpp"
 
 class SwapChain
 {
@@ -19,6 +20,6 @@ public:
     
 private:
     IDXGISwapChain* _swapChain = nullptr;
-    ID3D11Texture2D* _backBuffer = nullptr;
-    ID3D11UnorderedAccessView* _uav = nullptr;
+    Texture2D _backBuffer;
+    UnorderedAccessView _uav;
 };

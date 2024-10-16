@@ -38,9 +38,6 @@ ConstantBuffer::ConstantBuffer(HRESULT &hr, ID3D11Device *device, size_t byteSiz
 	
 	this->_buffer = constBuffer;
 	this->_bufferSize = byteSize;
-
-
-	
 }
 
 ConstantBuffer::ConstantBuffer(ConstantBuffer &&other) noexcept

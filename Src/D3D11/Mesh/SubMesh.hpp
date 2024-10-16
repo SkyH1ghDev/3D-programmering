@@ -2,24 +2,15 @@
 
 #include <d3d11_4.h>
 
+#include "ShaderResourceView.hpp"
 #include "SubMeshInfo.hpp"
+#include "Texture2D.hpp"
 
 class SubMesh
 {
 public:
 	SubMesh() = delete;
 	SubMesh(HRESULT& hr, ID3D11Device* device, const SubMeshInfo& subMeshInfo);
-	~SubMesh();
-	SubMesh(const SubMesh& other);
-	SubMesh& operator=(const SubMesh& other);
-	SubMesh(SubMesh&& other) noexcept;
-	SubMesh& operator=(SubMesh&& other) = default;
-
-	void Initialize(size_t startIndexValue, size_t nrOfIndicesInSubMesh,
-		ID3D11ShaderResourceView* ambientTextureSRV, ID3D11ShaderResourceView* diffuseTextureSRV,
-		ID3D11ShaderResourceView* specularTextureSRV);
-
-	void PerformDrawCall(ID3D11DeviceContext* context) const;
 
 	ID3D11ShaderResourceView* GetAmbientSRV() const;
 	ID3D11ShaderResourceView* GetDiffuseSRV() const;
@@ -35,15 +26,15 @@ private:
 	size_t _nrOfIndices = 0;
 	float _specularExponent = 10000.0f;
 
-	ID3D11ShaderResourceView* _ambientTextureSRV = nullptr;
-	ID3D11Texture2D* _ambientTexture2D = nullptr;
+	ShaderResourceView _ambientTextureSRV;
+	Texture2D _ambientTexture2D;
 	
-	ID3D11ShaderResourceView* _diffuseTextureSRV = nullptr;
-	ID3D11Texture2D* _diffuseTexture2D = nullptr;
+	ShaderResourceView _diffuseTextureSRV;
+	Texture2D _diffuseTexture2D;
 	
-	ID3D11ShaderResourceView* _specularTextureSRV = nullptr;
-	ID3D11Texture2D* _specularTexture2D = nullptr;
+	ShaderResourceView _specularTextureSRV;
+	Texture2D _specularTexture2D;
 
-	ID3D11ShaderResourceView* _colourTextureSRV = nullptr;
-	ID3D11Texture2D* _colourTexture2D = nullptr;
+	ShaderResourceView _colourTextureSRV;
+	Texture2D _colourTexture2D;
 };

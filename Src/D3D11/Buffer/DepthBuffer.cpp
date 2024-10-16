@@ -40,40 +40,44 @@ DepthBuffer::DepthBuffer(HRESULT& hr, ID3D11Device* device)
 	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Texture2D.MipSlice = 0;
-	
-	if (FAILED(device->CreateDepthStencilView(this->_texture, &dsvDesc, &this->_dsv)))
+
+	ID3D11DepthStencilView* dsv;
+	if (FAILED(device->CreateDepthStencilView(this->_texture, &dsvDesc, &dsv)))
 	{
 		std::cerr << "Failed to create depth stencil view" << std::endl;
 		hr = false;
 		return;
 	}
 
+	this->_dsv = dsv;
+	
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	ZeroMemory(&srvDesc, sizeof(srvDesc));
 	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
-	
-	if (FAILED(device->CreateShaderResourceView(this->_texture, &srvDesc, &this->_srv)))
+
+	ID3D11ShaderResourceView* srv;
+	if (FAILED(device->CreateShaderResourceView(this->_texture, &srvDesc, &srv)))
 	{
 		std::cerr << "Failed to create shader resource view for depth stencil view" << std::endl;
 		hr = false;
 		return;
 	}
+
+	this->_srv = srv;
 }
 
 DepthBuffer::~DepthBuffer()
 {
-	this->_srv->Release();
 	this->_texture->Release();
-	this->_dsv->Release();
 }
 
 DepthBuffer::DepthBuffer(const DepthBuffer& other)
 {
-	this->_srv = other._srv; this->_srv->AddRef();
 	this->_texture = other._texture; this->_texture->AddRef();
-	this->_dsv = other._dsv; this->_dsv->AddRef();
+	this->_dsv = other._dsv;
+	this->_srv = other._srv;
 }
 
 DepthBuffer& DepthBuffer::operator=(const DepthBuffer& other)
@@ -83,19 +87,18 @@ DepthBuffer& DepthBuffer::operator=(const DepthBuffer& other)
 		return *this;
 	}
 	
-	this->_srv = other._srv; this->_srv->AddRef();
 	this->_texture = other._texture; this->_texture->AddRef();
-	this->_dsv = other._dsv; this->_dsv->AddRef();
+	this->_dsv = other._dsv;
+	this->_srv = other._srv;
 	
 	return *this;
 }
 
 DepthBuffer::DepthBuffer(DepthBuffer&& other) noexcept
 {
-	
-	this->_srv = other._srv; this->_srv->AddRef();
 	this->_texture = other._texture; this->_texture->AddRef();
-	this->_dsv = other._dsv; this->_dsv->AddRef();
+	this->_dsv = other._dsv;
+	this->_srv = other._srv;
 }
 
 
@@ -106,21 +109,22 @@ DepthBuffer& DepthBuffer::operator=(DepthBuffer&& other) noexcept
 		return *this;
 	}
 	
-	this->_srv = other._srv; this->_srv->AddRef();
+	
 	this->_texture = other._texture; this->_texture->AddRef();
-	this->_dsv = other._dsv; this->_dsv->AddRef();
+	this->_dsv = other._dsv;
+	this->_srv = other._srv;
 	
 	return *this;
 }
 
 ID3D11ShaderResourceView* DepthBuffer::GetSRV() const
 {
-	return this->_srv;
+	return this->_srv.GetSRV();
 }
 
 ID3D11DepthStencilView* DepthBuffer::GetDSV() const
 {
-	return this->_dsv;
+	return this->_dsv.GetDSV();
 }
 
 

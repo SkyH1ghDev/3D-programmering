@@ -50,7 +50,7 @@ StructuredBuffer::StructuredBuffer(HRESULT& hr, ID3D11Device* device,
 
 	ID3D11ShaderResourceView* srv;
 	hr = device->CreateShaderResourceView(this->_buffer, &srvDesc, &srv);
-
+	
 	if (FAILED(hr))
 	{
 		throw std::runtime_error("Failed to Create Structured Buffer SRV");
@@ -72,6 +72,8 @@ StructuredBuffer::StructuredBuffer(HRESULT& hr, ID3D11Device* device,
 	{
 		throw std::runtime_error("Failed to Create Structured Buffer UAV");
 	}
+
+	this->_uav = uav;
 }
 
 StructuredBuffer::StructuredBuffer(StructuredBuffer&& other) noexcept
@@ -85,6 +87,11 @@ StructuredBuffer::StructuredBuffer(StructuredBuffer&& other) noexcept
 
 StructuredBuffer& StructuredBuffer::operator=(StructuredBuffer&& other) noexcept
 {
+	if (this == &other)
+	{
+		return *this;
+	}
+	
 	std::swap(this->_buffer, other._buffer);
 	std::swap(this->_srv, other._srv);
 	std::swap(this->_uav, other._uav);
@@ -122,12 +129,12 @@ UINT StructuredBuffer::GetNrOfElements() const
 
 ID3D11ShaderResourceView* StructuredBuffer::GetSRV() const
 {
-	return this->_srv;
+	return this->_srv.GetSRV();
 }
 
 ID3D11UnorderedAccessView* StructuredBuffer::GetUAV() const
 {
-	return this->_uav;
+	return this->_uav.GetUAV();
 }
 
 StructuredBuffer::~StructuredBuffer()
@@ -136,25 +143,15 @@ StructuredBuffer::~StructuredBuffer()
 	{
 		this->_buffer->Release();
 	}
-
-	if (this->_srv != nullptr)
-	{
-		this->_srv->Release();
-	}
-
-	if (this->_uav != nullptr)
-	{
-		this->_uav->Release();
-	}
 }
 
 StructuredBuffer::StructuredBuffer(const StructuredBuffer& other)
 {
 	this->_buffer = other._buffer; this->_buffer->AddRef();
-	this->_srv = other._srv; this->_srv->AddRef();
-	this->_uav = other._uav; this->_uav->AddRef();
 	this->_elementSize = other._elementSize;
 	this->_nrOfElements = other._nrOfElements;
+	this->_srv = other._srv; 
+	this->_uav = other._uav;
 }
 
 StructuredBuffer& StructuredBuffer::operator=(const StructuredBuffer& other)
@@ -165,10 +162,10 @@ StructuredBuffer& StructuredBuffer::operator=(const StructuredBuffer& other)
 	}
 
 	this->_buffer = other._buffer; this->_buffer->AddRef();
-	this->_srv = other._srv; this->_srv->AddRef();
-	this->_uav = other._uav; this->_uav->AddRef();
 	this->_elementSize = other._elementSize;
 	this->_nrOfElements = other._nrOfElements;
+	this->_srv = other._srv;
+	this->_uav = other._uav;
 
 	return *this;
 }

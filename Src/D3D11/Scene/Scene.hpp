@@ -5,6 +5,7 @@
 #include "Camera.hpp"
 #include "Mesh.hpp"
 #include "QuadTree.hpp"
+#include "Particle/Particle.hpp"
 
 class Scene
 {
@@ -38,4 +39,6 @@ private:
     std::vector<std::shared_ptr<Mesh>> _meshList;
     std::vector<std::shared_ptr<Mesh>> _oscillatingMeshList;
     QuadTree<Mesh> _quadTree;
+
+    Particle _particle;
 };

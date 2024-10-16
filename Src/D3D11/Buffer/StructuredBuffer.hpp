@@ -3,10 +3,13 @@
 #include <d3d11_4.h>
 #include <BufferDescData.hpp>
 
+#include "ShaderResourceView.hpp"
+#include "UnorderedAccessView.hpp"
+
 class StructuredBuffer
 {
 public:
-	StructuredBuffer() = delete;
+	StructuredBuffer() = default;
 	StructuredBuffer(HRESULT &hr, ID3D11Device *device, UINT elementSize, UINT nrOfElements, void *initialData, unsigned sysMemPitch, unsigned sysMemSlicePitch, unsigned structureByStride, BufferDescData flags);
 	~StructuredBuffer();
 	StructuredBuffer(const StructuredBuffer& other);
@@ -24,8 +27,8 @@ public:
 	
 private:
 	ID3D11Buffer* _buffer = nullptr;
-	ID3D11ShaderResourceView* _srv = nullptr;
-	ID3D11UnorderedAccessView* _uav = nullptr;
+	ShaderResourceView _srv;
+	UnorderedAccessView _uav;
 	UINT _elementSize = 0;
 	UINT _nrOfElements = 0;
 };

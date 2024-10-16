@@ -2,6 +2,9 @@
 
 #include <d3d11_4.h>
 
+#include "DepthStencilView.hpp"
+#include "ShaderResources/ShaderResourceView.hpp"
+
 class DepthBuffer
 {
 public:
@@ -21,6 +24,6 @@ public:
 	
 private:
 	ID3D11Texture2D* _texture = nullptr;
-	ID3D11DepthStencilView* _dsv = nullptr;
-	ID3D11ShaderResourceView* _srv = nullptr;
+	DepthStencilView _dsv;
+	ShaderResourceView _srv;
 };
