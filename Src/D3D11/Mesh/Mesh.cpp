@@ -17,6 +17,8 @@ Mesh::Mesh(HRESULT &hr, ID3D11Device *device, const MeshData &meshData)
 	
     std::vector<SubMeshInfo> subMeshInfoVector = meshData.SubMeshInfoList;
 	this->_currentPosition = meshData.MeshPosition;
+	this->_boundingBox = DX::BoundingBox({this->_currentPosition.x, this->_currentPosition.y, this->_currentPosition.z}, {1.0f, 1.0f, 1.0f});
+	
 
 	this->_meshFlags = meshData.MeshFlags;
 
@@ -98,6 +100,12 @@ ID3D11ShaderResourceView *Mesh::GetTextureSRV(size_t subMeshIndex) const
 {
 	return this->_subMeshes.at(subMeshIndex).GetColourTextureSRV();
 }
+
+DX::BoundingBox& Mesh::GetBoundingBox()
+{
+	return this->_boundingBox;
+}
+
 
 
 

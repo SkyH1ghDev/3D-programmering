@@ -132,7 +132,6 @@ Scene Setup::SetupScene(Controller &controller)
 	std::vector<Camera> cameraVector;
 
 	DX::XMFLOAT4 mainCamPosition = viewMatrixConfig.GetCamPositionAt(0);
-	
 	cameraVector.push_back(Camera(hr, controller.GetDevice(), projectionInfo, mainCamPosition));
 
 	DX::XMFLOAT4 secondaryCamPosition = viewMatrixConfig.GetCamPositionAt(1);

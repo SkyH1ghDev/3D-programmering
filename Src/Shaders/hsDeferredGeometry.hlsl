@@ -35,7 +35,7 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(InputPatch<VertexShaderOutput, NUM_
     return output;
 }
 
-struct HullShaderOutput
+struct DomainShaderInput
 {
     float4 worldPosition : WORLD_POSITION;
     float4 normal : NORMAL;
@@ -48,9 +48,9 @@ struct HullShaderOutput
 [outputcontrolpoints(3)]
 [patchconstantfunc("CalcHSPatchConstants")]
 
-HullShaderOutput main(InputPatch<VertexShaderOutput, NUM_CONTROL_POINTS> ip, uint i : SV_OutputControlPointID)
+DomainShaderInput main(InputPatch<VertexShaderOutput, NUM_CONTROL_POINTS> ip, uint i : SV_OutputControlPointID)
 {
-    HullShaderOutput output;
+    DomainShaderInput output;
 
     output.worldPosition = ip[i].worldPosition;
     output.normal = ip[i].normal;

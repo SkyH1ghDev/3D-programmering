@@ -90,14 +90,20 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 	ID3D11DeviceContext* context = controller.GetContext();
 	Camera& currCamera = scene.GetCurrentCamera();
 	DepthBuffer depthBuffer = currCamera.GetDepthBuffer();
+	const QuadTree<Mesh>& quadTree = scene.GetQuadTree();
 
-	for (size_t i = 0; i < scene.GetNumMeshes(); ++i)
+	std::vector<std::shared_ptr<Mesh>> meshesToRender = quadTree.CheckTree(scene.GetMainCamera().GetBoundingFrustum());
+	
+	for (size_t i = 0; i < scene.GetNumOscillatingMeshes(); ++i)
 	{
-		Mesh& mesh = scene.GetMeshAt(i);
-		
+		meshesToRender.push_back(scene.GetOscillatingMeshPtrAt(i));
+	}
+	
+	for (std::shared_ptr<Mesh> meshPtr : meshesToRender)
+	{
 		// Setup InputAssembler
 		
-		VertexBuffer vertexBuffer = mesh.GetVertexBuffer();
+		VertexBuffer vertexBuffer = meshPtr->GetVertexBuffer();
 		
 		ID3D11Buffer* vBuffer = vertexBuffer.GetBuffer();
 		ID3D11InputLayout* iLayout = inputLayout.GetInputLayout();
@@ -109,17 +115,17 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
 		std::vector<ConstantBuffer> vertexShaderBuffers = vertexShader.GetConstantBuffers();
 		
-		SetupVertexShader(context, vShader, vertexShaderBuffers, mesh.GetCurrentPosition(), currCamera);
+		SetupVertexShader(context, vShader, vertexShaderBuffers, meshPtr->GetCurrentPosition(), currCamera);
 
 		ID3D11HullShader* hShader = hullShader.GetHullShader();
 		std::vector<ConstantBuffer> hullShaderBuffers = hullShader.GetConstantBuffers();
 		
-		SetupHullShader(context, hShader, hullShaderBuffers, mesh.GetCurrentPosition(), scene.GetMainCamera().GetPosition());
+		SetupHullShader(context, hShader, hullShaderBuffers, meshPtr->GetCurrentPosition(), scene.GetMainCamera().GetPosition());
 
 		ID3D11DomainShader* dShader = domainShader.GetDomainShader();
 		std::vector<ConstantBuffer> domainShaderBuffers = domainShader.GetConstantBuffers();
 		
-		SetupDomainShader(context, dShader, domainShaderBuffers, scene.GetMainCamera());
+		SetupDomainShader(context, dShader, domainShaderBuffers, scene.GetCurrentCamera());
 		
 		// Setup Rasterizer
 		
@@ -143,14 +149,14 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 
 		// Render to G-Buffers
 		
-		for (size_t j = 0; j < mesh.GetNrOfSubMeshes(); ++j)
+		for (size_t j = 0; j < meshPtr->GetNrOfSubMeshes(); ++j)
 		{
 			ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
-			std::vector<ID3D11ShaderResourceView*> tShaderResourceViews = {mesh.GetTextureSRV(j), mesh.GetAmbientSRV(j), mesh.GetDiffuseSRV(j), mesh.GetSpecularSRV(j)};
+			std::vector<ID3D11ShaderResourceView*> tShaderResourceViews = {meshPtr->GetTextureSRV(j), meshPtr->GetAmbientSRV(j), meshPtr->GetDiffuseSRV(j), meshPtr->GetSpecularSRV(j)};
 			ID3D11SamplerState* sState = samplerState.GetSamplerState();
 			std::vector<ConstantBuffer> pixelShaderBuffers = pixelShader.GetConstantBuffers();
          	
-			SubMesh& subMesh = mesh.GetSubMeshAt(j);
+			SubMesh& subMesh = meshPtr->GetSubMeshAt(j);
 
 			SetupPixelShader(context, pShader, sState, tShaderResourceViews, pixelShaderBuffers, subMesh.GetSpecularExponent());
 			

@@ -17,8 +17,11 @@ DX::XMFLOAT4 operator*(const float& a, const DX::XMFLOAT4& b)
 Camera::Camera(HRESULT& hr, ID3D11Device* device, const ProjectionInfo& projInfo, const DX::XMFLOAT4& initialPosition):
 	_depthBuffer(DepthBuffer(hr, device))
 {
+	MatrixCreator matrixCreator;
+	
 	this->_position = initialPosition;
 	this->_projInfo = projInfo;
+	this->_boundingFrustum = DX::BoundingFrustum(matrixCreator.CreateViewProjectionMatrix(*this));
 }
 
 void Camera::ApplyRotation(const float& deltaPitch, const float& deltaYaw)
@@ -44,6 +47,21 @@ void Camera::ApplyRotation(const float& deltaPitch, const float& deltaYaw)
 	DX::XMStoreFloat4(&this->_forward, newForward);
 	DX::XMStoreFloat4(&this->_up, newUp);
 	DX::XMStoreFloat4(&this->_right, newRight);
+}
+
+DX::BoundingFrustum Camera::GetBoundingFrustum() const
+{
+	return this->_boundingFrustum;
+}
+
+void Camera::SetBoundingFrustum(const DX::BoundingFrustum& boundingFrustum)
+{
+	this->_boundingFrustum = boundingFrustum;
+	this->_boundingFrustum.Origin = {this->_position.x, this->_position.y, this->_position.z};
+	DX::XMVECTOR quaternionXMVector = DX::XMQuaternionRotationRollPitchYaw(this->_pitch, this->_yaw, 0.0f);
+	DX::XMFLOAT4 quaternionFloat4;
+	DX::XMStoreFloat4(&quaternionFloat4, quaternionXMVector);
+	this->_boundingFrustum.Orientation = quaternionFloat4;
 }
 
 void Camera::MoveInDirection(const float& amount, const DX::XMFLOAT4& direction)

@@ -2,6 +2,7 @@
 
 #include <d3d11_4.h>
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
 #include "ProjectionInfo.hpp"
 #include "DepthBuffer.hpp"
 
@@ -32,6 +33,9 @@ public:
 
 	void ApplyRotation(const float& deltaPitch, const float& deltaYaw);
 	
+	DX::BoundingFrustum GetBoundingFrustum() const;
+	void SetBoundingFrustum(const DX::BoundingFrustum& boundingFrustum);
+	
 	const DX::XMFLOAT4& GetPosition() const;
 	const DX::XMFLOAT4& GetForward() const;
 	const DX::XMFLOAT4& GetRight() const;
@@ -46,6 +50,8 @@ private:
 private:
 	DX::XMFLOAT4 _position = { 0.0f, 0.0f, 0.0f, 1.0f };
 	ProjectionInfo _projInfo;
+
+	DX::BoundingFrustum _boundingFrustum;
 
 	DX::XMFLOAT4 _forward = { 0.0f, 0.0f, 1.0f, 0.0f };
 	DX::XMFLOAT4 _right = { 1.0f, 0.0f, 0.0f, 0.0f };

@@ -28,6 +28,11 @@ void Scene::AddMesh(Mesh& mesh)
     {
         this->_oscillatingMeshList.push_back(meshPtr);
     }
+
+    if (mesh.IsOscillating() == false)
+    {
+        this->_quadTree.AddElement(meshPtr, meshPtr->GetBoundingBox());
+    }
 }
 
 Camera& Scene::GetCurrentCamera()
@@ -52,6 +57,12 @@ Mesh& Scene::GetMeshAt(size_t index) const
     return *this->_meshList.at(index);
 }
 
+std::shared_ptr<Mesh> Scene::GetMeshPtrAt(size_t index) const
+{
+    return this->_meshList.at(index);
+}
+
+
 size_t Scene::GetNumMeshes() const
 {
     return this->_meshList.size();
@@ -62,9 +73,21 @@ Mesh& Scene::GetOscillatingMeshAt(size_t idx) const
     return *this->_oscillatingMeshList.at(idx);
 }
 
+std::shared_ptr<Mesh> Scene::GetOscillatingMeshPtrAt(size_t index) const
+{
+    return this->_oscillatingMeshList.at(index);
+}
+
+
 size_t Scene::GetNumOscillatingMeshes() const
 {
     return this->_oscillatingMeshList.size();
 }
+
+const QuadTree<Mesh>& Scene::GetQuadTree() const
+{
+    return this->_quadTree;
+}
+
 
 

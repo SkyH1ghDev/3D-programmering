@@ -6,6 +6,7 @@
 
 #include <d3d11_4.h>
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
 
 #include "SubMesh.hpp"
 #include "VertexBuffer.hpp"
@@ -40,13 +41,15 @@ public:
 	ID3D11ShaderResourceView* GetDiffuseSRV(size_t subMeshIndex) const;
 	ID3D11ShaderResourceView* GetSpecularSRV(size_t subMeshIndex) const;
 	ID3D11ShaderResourceView* GetTextureSRV(size_t subMeshIndex) const;
+	DX::BoundingBox& GetBoundingBox();
 	
 private:
 	std::vector<SubMesh> _subMeshes;
 	VertexBuffer _vertexBuffer;
 
 	DX::XMFLOAT4 _currentPosition = {0.0f, 0.0f, 0.0f, 1.0f};
-
+	DX::BoundingBox _boundingBox;
+	
 	DX::XMFLOAT4 _oscillationEndPosition;
 	DX::XMFLOAT4 _oscillationStartPosition;
 	float _oscillationPeriod;

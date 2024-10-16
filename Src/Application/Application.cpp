@@ -6,6 +6,7 @@
 #include "RenderConfig.hpp"
 #include "LightData.hpp"
 #include "OutputModeData.hpp"
+#include "QuadTree.hpp"
 #include "SpecularExpData.hpp"
 
 
@@ -291,13 +292,19 @@ void Application::Render()
 	float deltaTime = 0.0f;
 	bool running = true;
 
+	MatrixCreator matrixCreator;
+	
 	while (running)
 	{
 		this->_clock.Start();
 
 		// Input
         this->_input.ReadInput(this->_scene, this->_window, running, this->_msg, this->_outputMode, deltaTime);
-
+		
+		DX::BoundingFrustum boundingFrustum = DX::BoundingFrustum(matrixCreator.CreateProjectionMatrix(this->_scene.GetCurrentCamera().GetProjectionInfo()));
+		
+		this->_scene.GetCurrentCamera().SetBoundingFrustum(boundingFrustum);
+	
 		// Oscillate first mesh
 		for (size_t i = 0; i < this->_scene.GetNumOscillatingMeshes(); ++i)
 		{
