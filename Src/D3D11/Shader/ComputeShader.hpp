@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Shader.hpp"
+#include "UnorderedAccessView.hpp"
 
 class ComputeShader : public Shader
 {
@@ -16,6 +17,7 @@ public:
     ComputeShader& operator=(ComputeShader&& other) = delete;
 
     void AddConstantBuffer(ConstantBuffer buffer) override;
+    void AddUnorderedAccessView(UnorderedAccessView uav);
     
     ID3DBlob* GetShaderBlob() const override;
     std::vector<ConstantBuffer> GetConstantBuffers() override;

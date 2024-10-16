@@ -5,7 +5,7 @@
 #include <d3d11_4.h>
 #include <DirectXMath.h>
 
-#include "StructuredBufferD3D11.h"
+#include "StructuredBuffer.hpp"
 #include "DepthBuffer.hpp"
 #include "Camera.hpp"
 
@@ -63,5 +63,5 @@ private:
 	std::vector<LightBuffer> bufferData;
 
 	DepthBuffer shadowMaps;
-	StructuredBufferD3D11 lightBuffer;
+	StructuredBuffer lightBuffer;
 };

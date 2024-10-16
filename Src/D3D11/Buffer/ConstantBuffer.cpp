@@ -12,7 +12,7 @@ ConstantBuffer::ConstantBuffer(HRESULT &hr, ID3D11Device *device, size_t byteSiz
 	if (byteSize % 16 != 0)
 	{
 		std::cerr << "Size of constant buffer is not divisible by 16" << "\n";
-		hr = -1;
+		throw std::runtime_error("");
 	}
 	
 	D3D11_BUFFER_DESC constBufferDesc;
@@ -31,12 +31,16 @@ ConstantBuffer::ConstantBuffer(HRESULT &hr, ID3D11Device *device, size_t byteSiz
 	ID3D11Buffer* constBuffer;
 	hr = device->CreateBuffer(&constBufferDesc, &constBufferSubResource, &constBuffer);
 
-	if(!FAILED(hr))
+	if(FAILED(hr))
 	{
-		this->_buffer = constBuffer;
-		this->_bufferSize = byteSize;
+		throw std::runtime_error("Failed to create Constant Buffer");	
 	}
+	
+	this->_buffer = constBuffer;
+	this->_bufferSize = byteSize;
 
+
+	
 }
 
 ConstantBuffer::ConstantBuffer(ConstantBuffer &&other) noexcept
