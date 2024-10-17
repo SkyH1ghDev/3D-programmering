@@ -326,15 +326,15 @@ void Application::Render()
 
 	ProjectionInfo projectionInfo;
 	
-	SpotLight spotLight1(hr, this->_controller.GetDevice(), projectionInfo, {5.0f, -7.0, 5.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, 20.0f);
-	SpotLight spotLight2(hr, this->_controller.GetDevice(), projectionInfo, {-5.0f, -7.0, 5.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, 20.0f);
-	SpotLight spotLight3(hr, this->_controller.GetDevice(), projectionInfo, {-5.0f, -7.0, -5.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}, 20.0f);
-	SpotLight spotLight4(hr, this->_controller.GetDevice(), projectionInfo, {5.0f, -7.0, -5.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 20.0f);
+	SpotLight spotLight1(hr, this->_controller.GetDevice(), projectionInfo, {-4.0f, -5.0f, -7.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, 20.0f);
+	SpotLight spotLight2(hr, this->_controller.GetDevice(), projectionInfo, {5.0f, -7.0f, -5.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, 20.0f);
+	SpotLight spotLight3(hr, this->_controller.GetDevice(), projectionInfo, {-5.0f, -7.0f, -5.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}, 30.0f);
+	SpotLight spotLight4(hr, this->_controller.GetDevice(), projectionInfo, {-5.0f, 15.0f, 5.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 180.0f);
 
-	spotLight1.GetCamera().ApplyRotation(90, 0);
-	spotLight2.GetCamera().ApplyRotation(90, 0);
-	spotLight3.GetCamera().ApplyRotation(90, 0);
-	spotLight4.GetCamera().ApplyRotation(90, 0);
+	spotLight1.GetCamera().ApplyRotation(0, DX::XMConvertToRadians(90));
+	spotLight2.GetCamera().ApplyRotation(DX::XMConvertToRadians(45), 0);
+	spotLight3.GetCamera().ApplyRotation(DX::XMConvertToRadians(30), DX::XMConvertToRadians(240));
+	spotLight4.GetCamera().ApplyRotation(DX::XMConvertToDegrees(90), 0);
 	
 	std::vector<SpotLight> spotLights = { spotLight1, spotLight2, spotLight3, spotLight4 };
 

@@ -231,8 +231,10 @@ void Renderer::PerformLightPass(Controller& controller, SwapChain& swapChain, st
 		SRVs.emplace_back(gBuffers.at(i).GetSRV());
 	}
 
-	ID3D11ShaderResourceView* srv = spotlights.GetSRV();
-	context->CSSetShaderResources(6, 1, &srv);
+	ID3D11ShaderResourceView* spotlightSrv = spotlights.GetSRV();
+	context->CSSetShaderResources(6, 1, &spotlightSrv);
+	ID3D11ShaderResourceView* shadowMapSrv = shadowMaps.GetShaderResourceView().GetSRV();
+	context->CSSetShaderResources(7, 1, &shadowMapSrv);
 	
 	ID3D11ComputeShader* cShader = computeShader.GetComputeShader();
 	ID3D11ShaderResourceView** SRVarr = SRVs.data();

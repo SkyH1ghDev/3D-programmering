@@ -29,12 +29,21 @@ CSLightData2 SpotLight::GetSpotlightData()
     MatrixCreator matrixCreator;
     
     CSLightData2 spotlightData;
-    spotlightData.angle = this->_angle;
+    spotlightData.angle = fabs(this->_angle);
     spotlightData.colour = this->_lightColour;
     spotlightData.direction = this->_camera.GetForward();
     spotlightData.position = this->_camera.GetPosition();
+
+    DX::XMMATRIX viewProjMatrix;
+    if (fmod(this->_angle, DX::XM_2PI) >= DX::XM_PI)
+    {
+        viewProjMatrix = matrixCreator.CreateOrthographicViewProjectionMatrix(this->_camera);    
+    }
+    else
+    {
+        viewProjMatrix = matrixCreator.CreateViewProjectionMatrix(this->_camera);
+    }
     
-    DX::XMMATRIX viewProjMatrix = matrixCreator.CreateViewProjectionMatrix(this->_camera);
     DX::XMFLOAT4X4 viewProjectionMatrix;
     DX::XMStoreFloat4x4(&viewProjectionMatrix, viewProjMatrix);
 

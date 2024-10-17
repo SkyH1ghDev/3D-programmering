@@ -60,25 +60,67 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	float4 specularFactor = specularGBuffer[DTid.xy].xyzw;
 	float specularExponent = specularFactor.w;
 
-	// Ambient
-	float4 ambientComponent = GetAmbientComponent(pointLightColour, ambientLightIntensity);
+	float4 totalAmbientComponent = float4(0.1f, 0.1f, 0.1f, 0.1f);
+	float4 totalDiffuseComponent = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 totalSpecularComponent = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	float4 lightDistance = pointLightPosition - fragmentPosition;
-	float4 lightDirection = normalize(lightDistance);
+	const int numLights = 4;
+	
+	for (int lightIndex = 0; lightIndex < numLights; ++lightIndex)
+	{
+		SpotLight spotLight = SpotLights[lightIndex];
+        
+		float4 clipSpacePosition = mul(fragmentPosition, spotLight.viewProjectionMatrix);
+		float4 ndcSpacePosition = clipSpacePosition / clipSpacePosition.w;
+		float depthValueBetweenLightAndFragment = ndcSpacePosition.z - 0.00001f;
+        
+		float3 shadowMapUV = float3(ndcSpacePosition.x * 0.5f + 0.5f, ndcSpacePosition.y * -0.5f + 0.5f, lightIndex);
+
+		// Ambient
+		float4 spotLightAmbient = GetAmbientComponent(spotLight.colour, ambientLightIntensity);
+        
+		float4 lightVector = spotLight.position - fragmentPosition;
+		float4 lightDirection = normalize(lightVector);
+		
+		// Diffuse
+		float4 spotLightDiffuse = GetDiffuseComponent(spotLight.colour, lightDirection, generalLightIntensity, fragmentNormal);
+	
+		// Specular
+		float4 spotLightSpecular = GetSpecularComponent(spotLight.colour, lightDirection, generalLightIntensity, specularExponent, camPosition, fragmentPosition, fragmentNormal);
+        	
+		float actualDepthValue = shadowMaps.SampleLevel(shadowMapSampler, shadowMapUV, 0);
+
+		float4 lightDistance = spotLight.position - fragmentPosition;
+
+		float distanceScalingFactor = 1 / sqrt(dot(lightDistance, lightDistance));
+		
+		if (depthValueBetweenLightAndFragment < actualDepthValue && abs(dot(normalize(lightDirection), normalize(spotLight.direction))) > cos(radians(spotLight.angle)))
+		{
+			totalAmbientComponent += spotLightAmbient;
+			totalDiffuseComponent += spotLightDiffuse * distanceScalingFactor;
+			totalSpecularComponent += spotLightSpecular * distanceScalingFactor;
+		}
+	}
+	
+	// Ambient
+	//totalAmbientComponent += GetAmbientComponent(pointLightColour, ambientLightIntensity);
+
+	//float4 lightDistance = spotlight - fragmentPosition;
+	//float4 lightDirection = normalize(lightDistance);
 	
 	// Diffuse
-	float4 diffuseComponent = GetDiffuseComponent(pointLightColour, lightDirection, generalLightIntensity, fragmentNormal);
+	//totalDiffuseComponent += GetDiffuseComponent(pointLightColour, lightDirection, generalLightIntensity, fragmentNormal);
 
 	// Specular
-	float4 specularComponent = GetSpecularComponent(pointLightColour, lightDirection, generalLightIntensity, specularExponent, camPosition, fragmentPosition, fragmentNormal);
+	//totalSpecularComponent += GetSpecularComponent(pointLightColour, lightDirection, generalLightIntensity, specularExponent, camPosition, fragmentPosition, fragmentNormal);
 
-	float distanceScalingFactor = 1 / sqrt(dot(lightDistance, lightDistance));
+	//float distanceScalingFactor = 1 / sqrt(dot(lightDistance, lightDistance));
 
 	float4 result;
 	[call] switch(resultMode)
 	{
 		case 0:
-			result = (ambientComponent * ambientFactor + distanceScalingFactor * (diffuseComponent * diffuseFactor + specularComponent * specularFactor)) * colour;
+			result = (totalAmbientComponent * ambientFactor + totalDiffuseComponent * diffuseFactor + totalSpecularComponent * specularFactor) * colour;
 			break;
 		
 		case 1:
@@ -106,7 +148,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
 			break;
 		
 		default:
-			result = (ambientComponent * ambientFactor + distanceScalingFactor * (diffuseComponent * diffuseFactor + specularComponent * specularFactor)) * colour;
+			result = (totalAmbientComponent * ambientFactor + totalDiffuseComponent * diffuseFactor + totalSpecularComponent * specularFactor) * colour;
 			break;
 	}
 	result.rgb = saturate(result.rgb);

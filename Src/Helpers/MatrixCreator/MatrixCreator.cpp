@@ -20,7 +20,10 @@ DX::XMMATRIX MatrixCreator::CreateViewMatrix(const DX::XMFLOAT4& cameraPosition,
 
 }
 
-
+DX::XMMATRIX MatrixCreator::CreateOrthographicProjectionMatrix()
+{
+	return DX::XMMatrixOrthographicLH(400, 400.0f, 0.1, 100.0f);
+}
 
 DX::XMMATRIX MatrixCreator::CreateProjectionMatrix(const ProjectionInfo& projInfo)
 {
@@ -39,6 +42,15 @@ DX::XMMATRIX MatrixCreator::CreateViewProjectionMatrix(const Camera& camera)
 
 	return DX::XMMatrixMultiplyTranspose(viewMatrix, projectionMatrix);
 }
+
+DX::XMMATRIX MatrixCreator::CreateOrthographicViewProjectionMatrix(const Camera& camera)
+{
+	DX::XMMATRIX viewMatrix = CreateViewMatrix(camera.GetPosition(), camera.GetForward(), camera.GetUp());
+	DX::XMMATRIX projectionMatrix = CreateOrthographicProjectionMatrix();
+
+	return DX::XMMatrixMultiplyTranspose(viewMatrix, projectionMatrix);
+}
+
 
 
 DX::XMMATRIX MatrixCreator::CreateTranslationMatrix(const float& x, const float& y, const float& z)

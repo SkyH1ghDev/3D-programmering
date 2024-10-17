@@ -9,11 +9,11 @@ StructuredBuffer::StructuredBuffer(HRESULT& hr, ID3D11Device* device,
                                    unsigned sysMemPitch,
                                    unsigned sysMemSlicePitch)
 {
-	if (elementSize * nrOfElements % 16 != 0)
+	/*if (elementSize % 16 != 0)
 	{
 		std::cerr << "Size of structured buffer is not divisible by 16";
 		throw std::runtime_error("");
-	}
+	}*/
     
 	D3D11_BUFFER_DESC structuredBufferDesc;
 	structuredBufferDesc.ByteWidth = elementSize * nrOfElements;

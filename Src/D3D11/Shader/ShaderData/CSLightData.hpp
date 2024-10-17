@@ -17,7 +17,6 @@ public:
 	
 };
 
-_declspec(align(16))
 class CSLightData2
 {
 public:
