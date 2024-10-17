@@ -16,3 +16,15 @@ public:
 	int outputMode;
 	
 };
+
+_declspec(align(16))
+class CSLightData2
+{
+public:
+	DX::XMFLOAT4X4 vpMatrix;
+	DX::XMFLOAT4 colour;
+	DX::XMFLOAT4 direction;
+	DX::XMFLOAT4 position;
+	float angle = 0.0f;
+	
+};

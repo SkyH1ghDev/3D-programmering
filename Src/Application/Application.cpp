@@ -5,10 +5,12 @@
 #include "MatrixCreator.hpp"
 #include "RenderConfig.hpp"
 #include "CSLightData.hpp"
+#include "ShadowMapCollection.hpp"
 #include "GSParticleData.hpp"
 #include "LightConfig.hpp"
 #include "Particle.hpp"
 #include "PSGeometryData.hpp"
+#include "SpotLight.hpp"
 #include "VSGeometryData.hpp"
 
 
@@ -272,7 +274,7 @@ void Application::SetupDeferredBuffers()
 	geometryShaderBufferDesc.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
 	GSParticleData gsParticleData;
-	gsParticleData.CameraPosition = this->_scene.GetMainCamera().GetPosition();
+	gsParticleData.CameraPosition = this->_scene.GetCurrentCamera().GetPosition();
 	gsParticleData.ViewProjectionMatrix = viewProjMatrix4x4;
 
 	this->_gsDeferredParticle->AddConstantBuffer(Setup::CreateConstantBuffer<GSParticleData>(this->_controller, geometryShaderBufferDesc, &gsParticleData));
@@ -320,13 +322,81 @@ void Application::Render()
 
 	HRESULT hr;
 
-	Particle particle;
-	particle.Colour = {0.0f, 1.0f, 0.0f, 0.0f};
-	particle.Position = lightConfig.GetLightPosition();
-	std::vector<Particle> particles = { particle };
+	// SHADOW MAP STUFFS
 
-	StructuredBuffer structuredBuffer = StructuredBuffer(hr, this->_controller.GetDevice(), sizeof(particle), particles.size(), particles.data(), 0, 0);
+	ProjectionInfo projectionInfo;
 	
+	SpotLight spotLight1(hr, this->_controller.GetDevice(), projectionInfo, {5.0f, -7.0, 5.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, 20.0f);
+	SpotLight spotLight2(hr, this->_controller.GetDevice(), projectionInfo, {-5.0f, -7.0, 5.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, 20.0f);
+	SpotLight spotLight3(hr, this->_controller.GetDevice(), projectionInfo, {-5.0f, -7.0, -5.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}, 20.0f);
+	SpotLight spotLight4(hr, this->_controller.GetDevice(), projectionInfo, {5.0f, -7.0, -5.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 20.0f);
+
+	spotLight1.GetCamera().ApplyRotation(90, 0);
+	spotLight2.GetCamera().ApplyRotation(90, 0);
+	spotLight3.GetCamera().ApplyRotation(90, 0);
+	spotLight4.GetCamera().ApplyRotation(90, 0);
+	
+	std::vector<SpotLight> spotLights = { spotLight1, spotLight2, spotLight3, spotLight4 };
+
+	ShadowMapCollection shadowMaps(hr, this->_controller.GetDevice(), spotLights.size());
+
+	std::vector<CSLightData2> spotlightData =
+	{
+		spotLight1.GetSpotlightData(),
+		spotLight2.GetSpotlightData(),
+		spotLight3.GetSpotlightData(),
+		spotLight4.GetSpotlightData()
+	};
+	
+	StructuredBuffer spotLightStructuredBuffer(hr, this->_controller.GetDevice(), sizeof(CSLightData2), spotlightData.size(), spotlightData.data(), 0, 0);
+
+	D3D11_SAMPLER_DESC samplerDesc;
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.MipLODBias = 0;
+	samplerDesc.MaxAnisotropy = 16;
+	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	ID3D11SamplerState* samplerState;
+	hr = this->_controller.GetDevice()->CreateSamplerState(&samplerDesc, &samplerState);
+
+	if (FAILED(hr))
+	{
+		throw std::runtime_error("Failed to create sampler state");
+	}
+
+	Sampler depthSampler(samplerState);
+	
+	// PARTICLE STUFFS
+	
+	Particle particle;
+		particle.Colour = {0.0f, 1.0f, 0.0f, 0.0f};
+		particle.Position = lightConfig.GetLightPosition();
+
+	Particle spotLight1Particle;
+		spotLight1Particle.Colour = {1.0f, 1.0f, 1.0f, 1.0f};
+		spotLight1Particle.Position = spotLight1.GetCamera().GetPosition();
+
+	Particle spotLight2Particle;
+    	spotLight2Particle.Colour = {1.0f, 1.0f, 1.0f, 1.0f};
+    	spotLight2Particle.Position = spotLight2.GetCamera().GetPosition();
+	
+	Particle spotLight3Particle;
+    	spotLight3Particle.Colour = {1.0f, 1.0f, 1.0f, 1.0f};
+    	spotLight3Particle.Position = spotLight3.GetCamera().GetPosition();
+	
+	Particle spotLight4Particle;
+		spotLight4Particle.Colour = {1.0f, 1.0f, 1.0f, 1.0f};
+		spotLight4Particle.Position = spotLight4.GetCamera().GetPosition();
+	
+	std::vector<Particle> particles = { particle, spotLight1Particle, spotLight2Particle, spotLight3Particle, spotLight4Particle };
+
+	StructuredBuffer particleStructuredBuffer = StructuredBuffer(hr, this->_controller.GetDevice(), sizeof(particle), particles.size(), particles.data(), 0, 0);
+
 	while (running)
 	{
 		this->_clock.Start();
@@ -358,9 +428,10 @@ void Application::Render()
 		if (renderMode == Deferred)
 		{
 			this->_renderer.RenderDeferred(this->_controller, this->_swapChain,this->_windowRTV, this->_gBuffers, *this->_vsDeferredGeometry,
-				*this->_hsDeferredGeometry, *this->_dsDeferredGeometry, this->_rasterizer, *this->_psDeferredGeometry,
-				*this->_csDeferredLight, this->_inputLayout, this->_scene, this->_sampler, this->_outputMode, *this->_csDeferredParticle,
-				*this->_vsDeferredParticle, *this->_gsDeferredParticle, *this->_psDeferredParticle, structuredBuffer);
+			                               *this->_hsDeferredGeometry, *this->_dsDeferredGeometry, this->_rasterizer, *this->_psDeferredGeometry,
+			                               *this->_csDeferredLight, this->_inputLayout, this->_scene, this->_sampler, this->_outputMode, *this->_csDeferredParticle,
+			                               *this->_vsDeferredParticle, *this->_gsDeferredParticle, *this->_psDeferredParticle, particleStructuredBuffer,
+			                               spotLights, shadowMaps, spotLightStructuredBuffer, depthSampler);
 		}
 		
 		this->_swapChain.GetSwapChain()->Present(0, 0);

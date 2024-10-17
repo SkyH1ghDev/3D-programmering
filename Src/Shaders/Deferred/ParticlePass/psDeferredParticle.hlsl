@@ -1,6 +1,6 @@
 struct PixelShaderInput
 {
-	float4 Position : POSITION;
+	float4 Position : SV_POSITION;
 	float4 Colour : COLOUR;
 };
 

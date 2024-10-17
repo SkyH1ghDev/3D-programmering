@@ -7,10 +7,23 @@ Texture2D<float4> ambientGBuffer : register(t3);
 Texture2D<float4> diffuseGBuffer : register(t4);
 Texture2D<float4> specularGBuffer : register(t5);
 
+struct SpotLight
+{
+	float4x4 viewProjectionMatrix;
+	float4 colour;
+	float4 direction;
+	float4 position;
+	float angle;
+};
+
+StructuredBuffer<SpotLight> SpotLights : register(t6);
+Texture2DArray<float> shadowMaps : register(t7);
+sampler shadowMapSampler : register(s0);
+
 cbuffer CSBuffer : register(b0)
 {
-	float4 lightColour;
-	float4 lightPosition;
+	float4 pointLightColour;
+	float4 pointLightPosition;
 	float4 camPosition;
 	float ambientLightIntensity;
 	float generalLightIntensity;
@@ -48,16 +61,16 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	float specularExponent = specularFactor.w;
 
 	// Ambient
-	float4 ambientComponent = GetAmbientComponent(lightColour, ambientLightIntensity);
+	float4 ambientComponent = GetAmbientComponent(pointLightColour, ambientLightIntensity);
 
-	float4 lightDistance = lightPosition - fragmentPosition;
+	float4 lightDistance = pointLightPosition - fragmentPosition;
 	float4 lightDirection = normalize(lightDistance);
 	
 	// Diffuse
-	float4 diffuseComponent = GetDiffuseComponent(lightColour, lightDirection, generalLightIntensity, fragmentNormal);
+	float4 diffuseComponent = GetDiffuseComponent(pointLightColour, lightDirection, generalLightIntensity, fragmentNormal);
 
 	// Specular
-	float4 specularComponent = GetSpecularComponent(lightColour, lightDirection, generalLightIntensity, specularExponent, camPosition, fragmentPosition, fragmentNormal);
+	float4 specularComponent = GetSpecularComponent(pointLightColour, lightDirection, generalLightIntensity, specularExponent, camPosition, fragmentPosition, fragmentNormal);
 
 	float distanceScalingFactor = 1 / sqrt(dot(lightDistance, lightDistance));
 

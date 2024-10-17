@@ -20,5 +20,5 @@ private:
 	float _aspectRatio;
 	float _fovAngle = 59.0f; // Degrees
 	float _nearZ = 0.1f;
-	float _farZ = 1000.0f;
+	float _farZ = 100.0f;
 };

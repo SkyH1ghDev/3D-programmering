@@ -8,6 +8,7 @@
 #include "StructuredBuffer.hpp"
 #include "DepthBuffer.hpp"
 #include "Camera.hpp"
+#include "SpotLight.hpp"
 
 struct SpotLightData
 {
@@ -51,16 +52,9 @@ public:
 	ID3D11Buffer* GetLightCameraConstantBuffer(UINT lightIndex) const;
 	
 private:
-	struct LightBuffer
-	{
-		DirectX::XMFLOAT4X4 vpMatrix;
-		DirectX::XMFLOAT3 colour;
-		DirectX::XMFLOAT3 direction;
-		float angle = 0.0f;
-		DirectX::XMFLOAT3 position;
-	};
-
 	std::vector<LightBuffer> bufferData;
+
+	std::vector<SpotLight> _lights; 
 
 	DepthBuffer shadowMaps;
 	StructuredBuffer lightBuffer;
