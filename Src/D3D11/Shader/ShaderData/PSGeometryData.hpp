@@ -1,8 +1,9 @@
 ﻿#pragma once
 
 __declspec(align(16))
-class OutputModeData
+class PSGeometryData
 {
 public:
-    int OutputMode;
+	float SpecularExponent;
+	
 };

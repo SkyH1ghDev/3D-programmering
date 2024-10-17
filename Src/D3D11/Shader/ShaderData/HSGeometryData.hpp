@@ -4,7 +4,7 @@
 namespace DX = DirectX;
 
 _declspec(align(16))
-class HullShaderData
+class HSGeometryData
 {
 public:
     DX::XMFLOAT4 MeshPosition;

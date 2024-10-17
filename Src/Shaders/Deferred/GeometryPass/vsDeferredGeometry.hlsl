@@ -1,12 +1,9 @@
-cbuffer WorldMatrixBuffer : register(b0)
+cbuffer VSBuffer : register(b0)
 {
-	matrix worldMatrix;
+	matrix WorldMatrix;
+	matrix ViewProjectionMatrix;
 };
 
-cbuffer ViewProjectionMatrixBuffer : register(b1)
-{
-	matrix viewProjectionMatrix;
-};
 
 struct VertexShaderInput
 {
@@ -29,9 +26,9 @@ struct VertexShaderOutput
 VertexShaderOutput main(VertexShaderInput input)
 {
 	VertexShaderOutput output;
-	output.worldPosition = mul(input.position, worldMatrix);
-	output.position = mul(output.worldPosition, viewProjectionMatrix);
-	output.normal = normalize(mul(input.normal, worldMatrix));
+	output.worldPosition = mul(input.position, WorldMatrix);
+	output.position = mul(output.worldPosition, ViewProjectionMatrix);
+	output.normal = normalize(mul(input.normal, WorldMatrix));
 	output.uv = input.uv;
 	return output;
 }

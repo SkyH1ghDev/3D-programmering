@@ -1,4 +1,4 @@
-cbuffer PositionBuffer : register(b0)
+cbuffer HSBuffer : register(b0)
 {
     float4 meshPosition;
     float4 cameraPosition;

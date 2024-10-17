@@ -7,28 +7,26 @@ StructuredBuffer::StructuredBuffer(HRESULT& hr, ID3D11Device* device,
 								   UINT nrOfElements,
                                    void* initialData,
                                    unsigned sysMemPitch,
-                                   unsigned sysMemSlicePitch,
-                                   unsigned structureByStride,
-                                   BufferDescData flags)
+                                   unsigned sysMemSlicePitch)
 {
-    if (elementSize * nrOfElements % 16 != 0)
-    {
-        std::cerr << "Size of structured buffer is not divisible by 16";
-        throw std::runtime_error("");
-    }
+	if (elementSize * nrOfElements % 16 != 0)
+	{
+		std::cerr << "Size of structured buffer is not divisible by 16";
+		throw std::runtime_error("");
+	}
     
-    D3D11_BUFFER_DESC structuredBufferDesc;
-    structuredBufferDesc.ByteWidth = elementSize * nrOfElements;
- 	structuredBufferDesc.Usage = flags.Usage;
- 	structuredBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
- 	structuredBufferDesc.CPUAccessFlags = flags.CpuAccess;
- 	structuredBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
- 	structuredBufferDesc.StructureByteStride = elementSize;
+	D3D11_BUFFER_DESC structuredBufferDesc;
+	structuredBufferDesc.ByteWidth = elementSize * nrOfElements;
+	structuredBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	structuredBufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+	structuredBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	structuredBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	structuredBufferDesc.StructureByteStride = elementSize;
  
- 	D3D11_SUBRESOURCE_DATA structuredBufferSubResource;
- 	structuredBufferSubResource.pSysMem = initialData;
- 	structuredBufferSubResource.SysMemPitch = sysMemPitch;
- 	structuredBufferSubResource.SysMemSlicePitch = sysMemSlicePitch;
+	D3D11_SUBRESOURCE_DATA structuredBufferSubResource;
+	structuredBufferSubResource.pSysMem = initialData;
+	structuredBufferSubResource.SysMemPitch = sysMemPitch;
+	structuredBufferSubResource.SysMemSlicePitch = sysMemSlicePitch;
 
 	ID3D11Buffer* structuredBuffer;
 	hr = device->CreateBuffer(&structuredBufferDesc, &structuredBufferSubResource, &structuredBuffer);
@@ -124,7 +122,7 @@ UINT StructuredBuffer::GetElementSize() const
 
 UINT StructuredBuffer::GetNrOfElements() const
 {
-	return this->GetNrOfElements();
+	return this->_nrOfElements;
 }
 
 ID3D11ShaderResourceView* StructuredBuffer::GetSRV() const

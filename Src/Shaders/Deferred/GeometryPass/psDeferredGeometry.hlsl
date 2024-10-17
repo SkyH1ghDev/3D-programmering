@@ -4,7 +4,7 @@ Texture2D diffuseTexture : register(t2);
 Texture2D specularTexture : register(t3);
 SamplerState sState;
 
-cbuffer ShininessBuffer: register(b0)
+cbuffer PSBuffer : register(b0)
 {
     float specularExponent;
 }

@@ -1,4 +1,4 @@
-cbuffer cameraBuffer : register(b0)
+cbuffer DSBuffer : register(b0)
 {
     float4x4 viewProjectionMatrix;
 };

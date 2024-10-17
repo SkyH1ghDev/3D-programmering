@@ -16,7 +16,7 @@
 #include "PixelShader.hpp"
 #include "VertexShader.hpp"
 #include "MatrixCreator.hpp"
-#include "LightData.hpp"
+#include "CSLightData.hpp"
 
 HWND Setup::SetupWindow(HINSTANCE hInstance, int nCmdShow) 
 {

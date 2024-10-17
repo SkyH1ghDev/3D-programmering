@@ -7,17 +7,13 @@ Texture2D<float4> ambientGBuffer : register(t3);
 Texture2D<float4> diffuseGBuffer : register(t4);
 Texture2D<float4> specularGBuffer : register(t5);
 
-cbuffer ConstBuffer : register(b0)
+cbuffer CSBuffer : register(b0)
 {
 	float4 lightColour;
 	float4 lightPosition;
 	float4 camPosition;
 	float ambientLightIntensity;
 	float generalLightIntensity;
-}
-
-cbuffer ConstBuffer : register(b1)
-{
 	int resultMode;
 }
 

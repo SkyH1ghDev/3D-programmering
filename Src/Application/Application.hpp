@@ -49,13 +49,21 @@ private:
     /*
      * Deferred Rendering
      */
-    
+
+    // Geometry
     std::unique_ptr<VertexShader> _vsDeferredGeometry;
     std::unique_ptr<PixelShader> _psDeferredGeometry;
     std::unique_ptr<HullShader> _hsDeferredGeometry;
     std::unique_ptr<DomainShader> _dsDeferredGeometry;
-    //std::unique_ptr<GeometryShader> _gsDeferredGeometry;
+
+    // Light
     std::unique_ptr<ComputeShader> _csDeferredLight;
+
+    // Particle
+    std::unique_ptr<VertexShader> _vsDeferredParticle;
+    std::unique_ptr<GeometryShader> _gsDeferredParticle;
+    std::unique_ptr<PixelShader> _psDeferredParticle;
+    std::unique_ptr<ComputeShader> _csDeferredParticle;
 
     Rasterizer _rasterizer;
     InputLayout _inputLayout;

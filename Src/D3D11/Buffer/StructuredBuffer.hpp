@@ -10,7 +10,7 @@ class StructuredBuffer
 {
 public:
 	StructuredBuffer() = default;
-	StructuredBuffer(HRESULT &hr, ID3D11Device *device, UINT elementSize, UINT nrOfElements, void *initialData, unsigned sysMemPitch, unsigned sysMemSlicePitch, unsigned structureByStride, BufferDescData flags);
+	StructuredBuffer(HRESULT &hr, ID3D11Device *device, UINT elementSize, UINT nrOfElements, void *initialData, unsigned sysMemPitch, unsigned sysMemSlicePitch);
 	~StructuredBuffer();
 	StructuredBuffer(const StructuredBuffer& other);
 	StructuredBuffer& operator=(const StructuredBuffer& other);

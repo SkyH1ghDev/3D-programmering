@@ -1,13 +1,15 @@
 ﻿#include "Application.hpp"
 
-#include "DomainShaderData.hpp"
-#include "HullShaderData.hpp"
+#include "DSGeometryData.hpp"
+#include "HSGeometryData.hpp"
 #include "MatrixCreator.hpp"
 #include "RenderConfig.hpp"
-#include "LightData.hpp"
-#include "OutputModeData.hpp"
-#include "QuadTree.hpp"
-#include "SpecularExpData.hpp"
+#include "CSLightData.hpp"
+#include "GSParticleData.hpp"
+#include "LightConfig.hpp"
+#include "Particle.hpp"
+#include "PSGeometryData.hpp"
+#include "VSGeometryData.hpp"
 
 
 Application::Application(HINSTANCE hInstance, int nCmdShow) :
@@ -29,11 +31,11 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
 	_vsForward(std::unique_ptr<VertexShader>
 		(dynamic_cast<VertexShader*>
-		(Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"vsForward.hlsl")))),
+		(Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"Forward/vsForward.hlsl")))),
 		
 	_psForward(std::unique_ptr<PixelShader>
 		(dynamic_cast<PixelShader*>
-		(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"psForward.hlsl")))),
+		(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"Forward/psForward.hlsl")))),
 
 	/*
 	 * Deferred Rendering
@@ -45,23 +47,21 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
     _vsDeferredGeometry(std::unique_ptr<VertexShader>
 		(static_cast<VertexShader*>
-		(Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"vsDeferredGeometry.hlsl")))),
+		(Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"Deferred/GeometryPass/vsDeferredGeometry.hlsl")))),
 
     _hsDeferredGeometry(std::unique_ptr<HullShader>
 		(static_cast<HullShader*>
-		(Setup::SetupShader(this->_controller, ShaderType::HULL_SHADER, L"hsDeferredGeometry.hlsl")))),
+		(Setup::SetupShader(this->_controller, ShaderType::HULL_SHADER, L"Deferred/GeometryPass/hsDeferredGeometry.hlsl")))),
 
     _dsDeferredGeometry(std::unique_ptr<DomainShader>
 		(static_cast<DomainShader*>
-		(Setup::SetupShader(this->_controller, ShaderType::DOMAIN_SHADER, L"dsDeferredGeometry.hlsl")))),
+		(Setup::SetupShader(this->_controller, ShaderType::DOMAIN_SHADER, L"Deferred/GeometryPass/dsDeferredGeometry.hlsl")))),
 
-    //_gsDeferredGeometry(std::unique_ptr<GeometryShader>
-	//	(static_cast<GeometryShader*>
-	//	(Setup::SetupShader(this->_controller, ShaderType::GEOMETRY_SHADER, L"gsDeferredGeometry.hlsl")))),
+    
 
     _psDeferredGeometry(std::unique_ptr<PixelShader>
 		(static_cast<PixelShader*>
-		(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"psDeferredGeometry.hlsl")))),
+		(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"Deferred/GeometryPass/psDeferredGeometry.hlsl")))),
 
 	/*
 	 * Light Pass
@@ -69,7 +69,27 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
 
     _csDeferredLight(std::unique_ptr<ComputeShader>
     	(static_cast<ComputeShader*>
-    	(Setup::SetupShader(this->_controller, ShaderType::COMPUTE_SHADER, L"csDeferredLight.hlsl")))),
+    	(Setup::SetupShader(this->_controller, ShaderType::COMPUTE_SHADER, L"Deferred/LightPass/csDeferredLight.hlsl")))),
+
+	/*
+	 * Particle Pass
+	 */
+
+	_csDeferredParticle(std::unique_ptr<ComputeShader>
+		(static_cast<ComputeShader*>
+		(Setup::SetupShader(this->_controller, ShaderType::COMPUTE_SHADER, L"Deferred/ParticlePass/csDeferredParticle.hlsl")))),
+
+	_vsDeferredParticle(std::unique_ptr<VertexShader>
+		(static_cast<VertexShader*>
+		(Setup::SetupShader(this->_controller, ShaderType::VERTEX_SHADER, L"Deferred/ParticlePass/vsDeferredParticle.hlsl")))),
+
+	_gsDeferredParticle(std::unique_ptr<GeometryShader>
+		(static_cast<GeometryShader*>
+		(Setup::SetupShader(this->_controller, ShaderType::GEOMETRY_SHADER, L"Deferred/ParticlePass/gsDeferredParticle.hlsl")))),
+
+	_psDeferredParticle(std::unique_ptr<PixelShader>
+		(static_cast<PixelShader*>
+		(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"Deferred/ParticlePass/psDeferredParticle.hlsl")))),
 
     // Initialize Rasterizer, InputLayout and Sampler
 	_rasterizer(Setup::SetupRasterizer(this->_controller)),
@@ -184,15 +204,15 @@ void Application::SetupForwardBuffers()
 	lightingBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
 	lightingBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
-	LightData lightData;
+	CSLightData csLightData;
     	
-	lightData.LightColour = {1.0f, 1.0f, 1.0f, 1.0f};
-	lightData.LightPosition = {0.0f, -7.5f, -10.0f, 1.0f};
-	lightData.CamPosition = this->_scene.GetCurrentCamera().GetPosition();
-	lightData.AmbientLightIntensity = 0.1f;
-	lightData.GeneralLightIntensity = 1.2f;
+	csLightData.LightColour = {1.0f, 1.0f, 1.0f, 1.0f};
+	csLightData.LightPosition = {0.0f, -7.5f, -10.0f, 1.0f};
+	csLightData.CamPosition = this->_scene.GetCurrentCamera().GetPosition();
+	csLightData.AmbientLightIntensity = 0.1f;
+	csLightData.GeneralLightIntensity = 1.2f;
 	
-	this->_psForward->AddConstantBuffer(Setup::CreateConstantBuffer<LightData>(this->_controller, lightingBufferDescData, &lightData));
+	this->_psForward->AddConstantBuffer(Setup::CreateConstantBuffer<CSLightData>(this->_controller, lightingBufferDescData, &csLightData));
 }
 
 void Application::SetupDeferredBuffers()
@@ -202,27 +222,25 @@ void Application::SetupDeferredBuffers()
 	// Vertex Shader
 	// World Matrix Buffer
 
-	BufferDescData vertexShaderBufferDesc;
-	vertexShaderBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	vertexShaderBufferDesc.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+	BufferDescData vsBufferDescData;
+	vsBufferDescData.Usage = D3D11_USAGE_DYNAMIC;
+	vsBufferDescData.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
 	MatrixCreator matrixCreator;
+	
 	const DX::XMMATRIX worldMatrix = matrixCreator.CreateWorldMatrix({0.0f, 0.0f, 0.0f, 1.0f}); 
-
 	DX::XMFLOAT4X4 worldMatrix4x4;
 	DX::XMStoreFloat4x4(&worldMatrix4x4, worldMatrix);
-	
-	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<DX::XMFLOAT4X4>(this->_controller, vertexShaderBufferDesc, &worldMatrix4x4));
 
-	BufferDescData vertexShaderBufferDesc2;
-	vertexShaderBufferDesc2.Usage = D3D11_USAGE_DYNAMIC;
-	vertexShaderBufferDesc2.CpuAccess = D3D11_CPU_ACCESS_WRITE;
-	
     const DX::XMMATRIX viewProjectionMatrix = matrixCreator.CreateViewProjectionMatrix(this->_scene.GetCurrentCamera());
 	DX::XMFLOAT4X4 viewProjMatrix4x4;
 	XMStoreFloat4x4(&viewProjMatrix4x4, viewProjectionMatrix);
+
+	VSGeometryData vsGeometryData;
+	vsGeometryData.WorldMatrix = worldMatrix4x4;
+	vsGeometryData.ViewProjectionMatrix = viewProjMatrix4x4;
 	
-	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<DX::XMFLOAT4X4>(this->_controller, vertexShaderBufferDesc2, &viewProjMatrix4x4));
+	this->_vsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<VSGeometryData>(this->_controller, vsBufferDescData, &vsGeometryData));
 
 	// Hull Shader
 
@@ -230,11 +248,11 @@ void Application::SetupDeferredBuffers()
 	hullShaderBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	hullShaderBufferDesc.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
-	HullShaderData hullShaderData;
+	HSGeometryData hullShaderData;
 	hullShaderData.CameraPosition = this->_scene.GetMainCamera().GetPosition();
 	hullShaderData.MeshPosition = this->_scene.GetMeshAt(0).GetCurrentPosition();
 
-	this->_hsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<HullShaderData>(this->_controller, hullShaderBufferDesc, &hullShaderData));
+	this->_hsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<HSGeometryData>(this->_controller, hullShaderBufferDesc, &hullShaderData));
 
 	// Domain Shader
 
@@ -242,10 +260,22 @@ void Application::SetupDeferredBuffers()
 	domainShaderBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	domainShaderBufferDesc.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
-	DomainShaderData domainShaderData;
+	DSGeometryData domainShaderData;
 	domainShaderData.ViewProjectionMatrix = viewProjMatrix4x4;
 
-	this->_dsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<DomainShaderData>(this->_controller, domainShaderBufferDesc, &domainShaderData));
+	this->_dsDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<DSGeometryData>(this->_controller, domainShaderBufferDesc, &domainShaderData));
+
+	// Geometry Shader
+
+	BufferDescData geometryShaderBufferDesc;
+	geometryShaderBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	geometryShaderBufferDesc.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+
+	GSParticleData gsParticleData;
+	gsParticleData.CameraPosition = this->_scene.GetMainCamera().GetPosition();
+	gsParticleData.ViewProjectionMatrix = viewProjMatrix4x4;
+
+	this->_gsDeferredParticle->AddConstantBuffer(Setup::CreateConstantBuffer<GSParticleData>(this->_controller, geometryShaderBufferDesc, &gsParticleData));
 	
 	// Pixel Shader
 
@@ -253,10 +283,10 @@ void Application::SetupDeferredBuffers()
 	pixelShaderBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	pixelShaderBufferDesc.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
-	SpecularExpData specularExpData;
+	PSGeometryData specularExpData;
 	specularExpData.SpecularExponent = 10000.0f;
 
-	this->_psDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<SpecularExpData>(this->_controller, pixelShaderBufferDesc, &specularExpData));
+	this->_psDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<PSGeometryData>(this->_controller, pixelShaderBufferDesc, &specularExpData));
 
 	// Compute Shader
 	
@@ -264,24 +294,16 @@ void Application::SetupDeferredBuffers()
 	computeShaderBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	computeShaderBufferDesc.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
-	LightData lightData;
+	CSLightData csLightData;
 	
-	lightData.LightColour = {1.0f, 1.0f, 1.0f, 1.0f};
-	lightData.LightPosition = {0.0f, -7.5f, -10.0f, 1.0f};
-	lightData.CamPosition = this->_scene.GetCurrentCamera().GetPosition();
-	lightData.AmbientLightIntensity = 0.1f;
-	lightData.GeneralLightIntensity = 1.2f;
+	csLightData.LightColour = {1.0f, 1.0f, 1.0f, 1.0f};
+	csLightData.LightPosition = {0.0f, -7.5f, -10.0f, 1.0f};
+	csLightData.CamPosition = this->_scene.GetCurrentCamera().GetPosition();
+	csLightData.AmbientLightIntensity = 0.1f;
+	csLightData.GeneralLightIntensity = 1.2f;
+	csLightData.outputMode = _outputMode;
 	
-	this->_csDeferredLight->AddConstantBuffer(Setup::CreateConstantBuffer<LightData>(this->_controller, computeShaderBufferDesc, &lightData));
-
-	BufferDescData computeBufferDesc2;
-	computeBufferDesc2.Usage = D3D11_USAGE_DYNAMIC;
-	computeBufferDesc2.CpuAccess = D3D11_CPU_ACCESS_WRITE;
-
-	OutputModeData outputMode;
-	outputMode.OutputMode = this->_outputMode;
-	
-	this->_csDeferredLight->AddConstantBuffer(Setup::CreateConstantBuffer<OutputModeData>(this->_controller, computeBufferDesc2, &outputMode));
+	this->_csDeferredLight->AddConstantBuffer(Setup::CreateConstantBuffer<CSLightData>(this->_controller, computeShaderBufferDesc, &csLightData));
 }
 
 void Application::Render()
@@ -293,6 +315,17 @@ void Application::Render()
 	bool running = true;
 
 	MatrixCreator matrixCreator;
+	LightConfig lightConfig;
+	
+
+	HRESULT hr;
+
+	Particle particle;
+	particle.Colour = {0.0f, 1.0f, 0.0f, 0.0f};
+	particle.Position = lightConfig.GetLightPosition();
+	std::vector<Particle> particles = { particle };
+
+	StructuredBuffer structuredBuffer = StructuredBuffer(hr, this->_controller.GetDevice(), sizeof(particle), particles.size(), particles.data(), 0, 0);
 	
 	while (running)
 	{
@@ -324,7 +357,10 @@ void Application::Render()
 		}
 		if (renderMode == Deferred)
 		{
-			this->_renderer.RenderDeferred(this->_controller, this->_swapChain,this->_windowRTV, this->_gBuffers, *this->_vsDeferredGeometry, *this->_hsDeferredGeometry, *this->_dsDeferredGeometry, this->_rasterizer, *this->_psDeferredGeometry, *this->_csDeferredLight, this->_inputLayout, this->_scene, this->_sampler, this->_outputMode);
+			this->_renderer.RenderDeferred(this->_controller, this->_swapChain,this->_windowRTV, this->_gBuffers, *this->_vsDeferredGeometry,
+				*this->_hsDeferredGeometry, *this->_dsDeferredGeometry, this->_rasterizer, *this->_psDeferredGeometry,
+				*this->_csDeferredLight, this->_inputLayout, this->_scene, this->_sampler, this->_outputMode, *this->_csDeferredParticle,
+				*this->_vsDeferredParticle, *this->_gsDeferredParticle, *this->_psDeferredParticle, structuredBuffer);
 		}
 		
 		this->_swapChain.GetSwapChain()->Present(0, 0);
