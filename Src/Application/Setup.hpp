@@ -6,7 +6,7 @@
 
 #include "Controller.hpp"
 #include "InputLayout.hpp"
-#include "RenderTargetView.hpp"
+#include "RenderBuffer.hpp"
 #include "Sampler.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
@@ -20,8 +20,8 @@ public:
     static HWND SetupWindow(HINSTANCE hInstance, int nCmdShow);
     static Controller SetupController();
     static SwapChain SetupSwapChain(Controller& controller, HWND window);
-    static RenderTargetView SetupRenderTargetView(Controller& controller, SwapChain& swapChain);
-    static RenderTargetView SetupGBuffer(Controller& controller);
+    static RenderBuffer SetupRenderTargetView(Controller& controller, SwapChain& swapChain);
+    static RenderBuffer SetupGBuffer(Controller& controller, const UINT& width, const UINT& height);
     static Scene SetupScene(Controller& controller);
     static Shader* SetupShader(Controller& controller, ShaderType shaderType, std::wstring hlslFilename);
 	static Rasterizer SetupRasterizer(Controller& controller);

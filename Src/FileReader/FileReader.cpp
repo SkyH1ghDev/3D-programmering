@@ -43,6 +43,26 @@ int FileReader::ReadFilesFromConfig(std::vector<MeshData> &meshDataList)
     return 0;
 }
 
+int FileReader::ReadFileFromFilename(MeshData& meshData, const std::string& filename)
+{
+    
+    MeshConfig meshConfig;
+
+    for (size_t i = 0; i < meshConfig.GetNumFiles(); ++i)
+    {
+        // Reads OBJ + MTL Data
+        if (ReadFile(filename, meshData) == -1)
+        {
+            std::cerr << "Could not read file: \"" << filename << "\" \n";
+
+            return -1;
+        }
+    }
+    
+    return 0;
+}
+
+
 
 int FileReader::ReadFile(const std::string& filename, MeshData &meshData)
 {

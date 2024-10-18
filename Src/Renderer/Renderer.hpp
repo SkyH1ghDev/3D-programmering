@@ -3,12 +3,13 @@
 #include <d3d11.h>
 #include "Controller.hpp"
 #include "InputLayout.hpp"
-#include "RenderTargetView.hpp"
+#include "RenderBuffer.hpp"
 #include "Sampler.hpp"
 #include "Scene.hpp"
 #include "SwapChain.hpp"
 #include "SpotLight.hpp"
 #include "ShadowMapCollection.hpp"
+#include "CubeMapCollection.hpp"
 
 #include "VertexShader.hpp"
 #include "HullShader.hpp"
@@ -24,17 +25,25 @@ class Renderer
 public:
     
     // Forward Rendering
-    void RenderForward(Controller& controller, RenderTargetView& rtv, VertexShader& vertexShader, Rasterizer& rasterizer, PixelShader& pixelShader, InputLayout& inputLayout, Scene& scene, Sampler& samplerState);
+    void RenderForward(Controller& controller, RenderBuffer& rtv, VertexShader& vertexShader, Rasterizer& rasterizer, PixelShader& pixelShader, InputLayout& inputLayout, Scene& scene, Sampler& samplerState);
     
     // Deferred Rendering
-    void RenderDeferred(Controller &controller, SwapChain& swapChain, RenderTargetView& rtv, std::vector<RenderTargetView>& gBuffers, VertexShader &geometryVertexShader, HullShader& geometryHullShader, DomainShader& geometryDomainShader, Rasterizer& rasterizer, PixelShader &geometryPixelShader, ComputeShader& lightComputeShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState, int& outputMode, ComputeShader& particleComputeShader, VertexShader& particleVertexShader, GeometryShader& particleGeometryShader, PixelShader& particlePixelShader, StructuredBuffer& particleBuffer, std::vector<SpotLight>& spotlights, ShadowMapCollection& shadowMaps, StructuredBuffer& spotlightsBuffer, Sampler& depthSampler);
+    void RenderDeferred(Controller &controller, SwapChain& swapChain, RenderBuffer& rtv, std::vector<RenderBuffer>& gBuffers, VertexShader &geometryVertexShader, HullShader& geometryHullShader, DomainShader& geometryDomainShader, Rasterizer& rasterizer, PixelShader &geometryPixelShader, ComputeShader& lightComputeShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState, int& outputMode, ComputeShader& particleComputeShader, VertexShader& particleVertexShader, GeometryShader& particleGeometryShader, PixelShader& particlePixelShader, StructuredBuffer& particleBuffer, std::vector<SpotLight>& spotlights, ShadowMapCollection& shadowMaps, StructuredBuffer& spotlightsBuffer, Sampler& depthSampler, D3D11_VIEWPORT cubeMapViewport, std::vector<Camera>& cubeMapCameras, CubeMapCollection& cubeMaps, std::vector<RenderBuffer>& cubeMapGBuffers, PixelShader& reflectionPixelShader, ComputeShader& reflectionComputeShader);
 
 private:
     void PerformShadowPass(Controller& controller, InputLayout& inputLayout, VertexShader& vertexShader, std::vector<SpotLight>& spotlights, ShadowMapCollection& shadowMaps, Scene& scene);
-    void PerformGeometryPass(Controller &controller, std::vector<RenderTargetView>& rtv, VertexShader &vertexShader, HullShader& hullShader, DomainShader& domainShader, Rasterizer& rasterizer, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState);
-    void PerformLightPass(Controller& controller, SwapChain& swapChain, std::vector<RenderTargetView>& gBuffers, ComputeShader& computeShader, Scene& scene, int& outputMode, StructuredBuffer& spotlights, ShadowMapCollection& shadowMaps, Sampler& depthSampler);
-    void PerformParticlePass(Controller& controller, ComputeShader& computeShader, VertexShader& vertexShader, GeometryShader& geometryShader, PixelShader& pixelShader, StructuredBuffer& particleBuffer, Camera& camera, RenderTargetView& renderTargetView);
+    void PerformShadowPass(Controller& controller, InputLayout& inputLayout, VertexShader& vertexShader, std::vector<SpotLight>& spotlights, ShadowMapCollection& shadowMaps, Scene& scene, D3D11_VIEWPORT viewport);
+    
+    void PerformGeometryPass(Controller &controller, std::vector<RenderBuffer>& rtv, VertexShader &vertexShader, HullShader& hullShader, DomainShader& domainShader, Rasterizer& rasterizer, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState, PixelShader& reflectionPixelShader, CubeMapCollection& cubeMap);
+    void PerformGeometryPass(Controller &controller, std::vector<RenderBuffer>& rtv, VertexShader &vertexShader, HullShader& hullShader, DomainShader& domainShader, Rasterizer& rasterizer, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState, Camera& currCamera, D3D11_VIEWPORT viewport);
+    
+    void PerformLightPass(Controller& controller, SwapChain& swapChain, std::vector<RenderBuffer>& gBuffers, ComputeShader& computeShader, Scene& scene, int& outputMode, StructuredBuffer& spotlights, ShadowMapCollection& shadowMaps, Sampler& depthSampler);
+    void PerformLightPass(Controller& controller, SwapChain& swapChain, std::vector<RenderBuffer>& gBuffers, ComputeShader& computeShader, Scene& scene, int& outputMode, StructuredBuffer& spotlights, ShadowMapCollection& shadowMaps, Sampler& depthSampler, Camera& currCamera, ID3D11UnorderedAccessView* uav, const int& cubeMapIndex);
+    
+    void PerformParticlePass(Controller& controller, ComputeShader& computeShader, VertexShader& vertexShader, GeometryShader& geometryShader, PixelShader& pixelShader, StructuredBuffer& particleBuffer, Camera& camera, RenderBuffer& renderTargetView);
 
+    void PerformReflectionPass();
+    
     void ClearScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv);
     void ClearScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv, std::vector<ID3D11RenderTargetView*> gBuffers);
     

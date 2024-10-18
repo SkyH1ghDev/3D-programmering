@@ -11,6 +11,7 @@ class DepthBuffer
 public:
 	DepthBuffer() = delete;
 	DepthBuffer(HRESULT& hr, ID3D11Device* device);
+	DepthBuffer(HRESULT& hr, ID3D11Device* device, const UINT& width, const UINT& height);
 	~DepthBuffer() = default;
 	DepthBuffer(const DepthBuffer& other) = default;
 	DepthBuffer& operator=(const DepthBuffer& other) = default;

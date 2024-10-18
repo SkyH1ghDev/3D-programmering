@@ -7,12 +7,14 @@
 #include "DSGeometryData.hpp"
 #include "PSGeometryData.hpp"
 #include "CSLightData.hpp"
+#include "CSReflectionData.hpp"
 #include "GSParticleData.hpp"
 
 #include "LightConfig.hpp"
 #include "MatrixCreator.hpp"
+#include "PSReflectionData.hpp"
 
-void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, VertexShader &vertexShader, Rasterizer& rasterizer, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
+void Renderer::RenderForward(Controller &controller, RenderBuffer &rtv, VertexShader &vertexShader, Rasterizer& rasterizer, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	ID3D11RenderTargetView* rTargetView = rtv.GetRTV();
@@ -67,12 +69,14 @@ void Renderer::RenderForward(Controller &controller, RenderTargetView &rtv, Vert
 	}
 }
 
-void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, RenderTargetView& rtv, std::vector<RenderTargetView>& gBuffers,
+void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, RenderBuffer& rtv, std::vector<RenderBuffer>& gBuffers,
                               VertexShader &geometryVertexShader, HullShader& geometryHullShader, DomainShader& geometryDomainShader,
                               Rasterizer& rasterizer, PixelShader &geometryPixelShader, ComputeShader& lightComputeShader,
                               InputLayout &inputLayout, Scene& scene, Sampler& samplerState, int& outputMode, ComputeShader& particleComputeShader,
                               VertexShader& particleVertexShader, GeometryShader& particleGeometryShader, PixelShader& particlePixelShader,
-                              StructuredBuffer& particleBuffer, std::vector<SpotLight>& spotlights, ShadowMapCollection& shadowMaps, StructuredBuffer& spotlightsBuffer, Sampler& depthSampler)
+                              StructuredBuffer& particleBuffer, std::vector<SpotLight>& spotlights, ShadowMapCollection& shadowMaps,
+                              StructuredBuffer& spotlightsBuffer, Sampler& depthSampler, D3D11_VIEWPORT cubeMapViewport,
+                              std::vector<Camera>& cubeMapCameras, CubeMapCollection& cubeMaps, std::vector<RenderBuffer>& cubeMapGBuffers, PixelShader& reflectionPixelShader, ComputeShader& reflectionComputeShader)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	ID3D11RenderTargetView* rTargetView = rtv.GetRTV();
@@ -80,21 +84,103 @@ void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, Rend
 	DepthBuffer depthBuffer = currCamera.GetDepthBuffer();
 
 	std::vector<ID3D11RenderTargetView*> gBufferRTVVec;
-	for (RenderTargetView renderTargetView : gBuffers)
+	for (RenderBuffer renderTargetView : gBuffers)
 	{
 		gBufferRTVVec.emplace_back(renderTargetView.GetRTV());
 	}
 	
+	PerformShadowPass(controller, inputLayout, geometryVertexShader, spotlights, shadowMaps, scene, cubeMapViewport);
+	UnbindPipeline(context);
+	
+	for (int i = 0; i < 6; ++i)
+	{
+		
+		std::vector<ID3D11RenderTargetView*> cubeMapGBuffersRTVVec;
+		for (RenderBuffer renderTargetView : cubeMapGBuffers)
+		{
+			cubeMapGBuffersRTVVec.emplace_back(renderTargetView.GetRTV());
+		}
+		
+		ClearScreen(context, cubeMaps.GetRenderTargetViewAt(i), cubeMapCameras.at(i).GetDepthBuffer().GetDSV(), cubeMapGBuffersRTVVec);
+
+	
+		PerformGeometryPass(controller, cubeMapGBuffers, geometryVertexShader, geometryHullShader, geometryDomainShader, rasterizer, geometryPixelShader, inputLayout, scene, samplerState, cubeMapCameras.at(i), cubeMapViewport);
+		UnbindPipeline(context);
+		PerformLightPass(controller, swapChain, cubeMapGBuffers, reflectionComputeShader, scene, outputMode, spotlightsBuffer, shadowMaps, depthSampler, cubeMapCameras.at(0), cubeMaps.GetUnorderedAccessViewAt(i), i);
+		UnbindPipeline(context);
+		//PerformParticlePass(controller, particleComputeShader, particleVertexShader, particleGeometryShader, particlePixelShader, particleBuffer, TODO, rtv);
+		//UnbindPipeline(context);
+	}
+
 	ClearScreen(context, rTargetView, depthBuffer.GetDSV(), gBufferRTVVec);
 
 	PerformShadowPass(controller, inputLayout, geometryVertexShader, spotlights, shadowMaps, scene);
 	UnbindPipeline(context);
-	PerformGeometryPass(controller, gBuffers, geometryVertexShader, geometryHullShader, geometryDomainShader, rasterizer, geometryPixelShader, inputLayout, scene, samplerState);
+	PerformGeometryPass(controller, gBuffers, geometryVertexShader, geometryHullShader, geometryDomainShader, rasterizer, geometryPixelShader, inputLayout, scene, samplerState, reflectionPixelShader, cubeMaps);
 	UnbindPipeline(context);
 	PerformLightPass(controller, swapChain, gBuffers, lightComputeShader, scene, outputMode, spotlightsBuffer, shadowMaps, depthSampler);
 	UnbindPipeline(context);
 	PerformParticlePass(controller, particleComputeShader, particleVertexShader, particleGeometryShader, particlePixelShader, particleBuffer, scene.GetMainCamera(), rtv);
 	UnbindPipeline(context);
+}
+
+void Renderer::PerformShadowPass(Controller& controller, InputLayout& inputLayout, VertexShader& vertexShader, std::vector<SpotLight>& spotlights, ShadowMapCollection& shadowMaps, Scene& scene, D3D11_VIEWPORT viewport)
+{
+	ID3D11DeviceContext* context = controller.GetContext();
+	
+	context->IASetInputLayout(inputLayout.GetInputLayout());
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->RSSetViewports(1, &viewport);
+
+	for (size_t i = 0; i < spotlights.size(); ++i)
+	{
+		ID3D11DepthStencilView* dsv = shadowMaps.GetDepthStencilViewAt(i).GetDSV();
+		context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH, 1, 0);
+		context->OMSetRenderTargets(0, nullptr, dsv);
+
+		for (size_t j = 0; j < scene.GetNumMeshes(); ++j)
+		{
+			std::shared_ptr<Mesh> mesh = scene.GetMeshPtrAt(j);
+
+			ID3D11Buffer* vBuffer = mesh->GetVertexBuffer().GetBuffer();
+			UINT stride = sizeof(Vertex);
+			UINT offset = 0;
+			context->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
+			
+			MatrixCreator matrixCreator;
+
+			ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
+			context->VSSetShader(vShader, nullptr, 0);
+			
+			DX::XMMATRIX worldPositionMatrix = matrixCreator.CreateTranslationMatrix(mesh->GetCurrentPosition().x, mesh->GetCurrentPosition().y, mesh->GetCurrentPosition().z);
+			DX::XMFLOAT4X4 worldMatrix;
+			DX::XMStoreFloat4x4(&worldMatrix, worldPositionMatrix);
+
+			VSGeometryData vsGeometryData;
+			vsGeometryData.WorldMatrix = worldMatrix;
+			vsGeometryData.ViewProjectionMatrix = spotlights.at(i).GetSpotlightData().vpMatrix;
+
+			std::vector<ConstantBuffer> buffers = vertexShader.GetConstantBuffers();
+			buffers.at(0).UpdateBuffer(context, &vsGeometryData, sizeof(vsGeometryData));
+		
+			std::vector<ID3D11Buffer*> ID3D11Buffers;
+			for (ConstantBuffer cb : buffers)
+			{
+				ID3D11Buffers.push_back(cb.GetBuffer());
+			}
+	
+			ID3D11Buffer** buffersArr = ID3D11Buffers.data();
+			context->VSSetConstantBuffers(0, buffers.size(), buffersArr);
+
+			
+			for (size_t k = 0; k < mesh->GetNrOfSubMeshes(); ++k)
+			{
+				SubMesh& subMesh = mesh->GetSubMeshAt(k);
+				
+				context->Draw(subMesh.GetNumIndices(), subMesh.GetStartIndex());
+			}
+		}
+	}
 }
 
 void Renderer::PerformShadowPass(Controller& controller, InputLayout& inputLayout, VertexShader& vertexShader, std::vector<SpotLight>& spotlights, ShadowMapCollection& shadowMaps, Scene& scene)
@@ -158,7 +244,8 @@ void Renderer::PerformShadowPass(Controller& controller, InputLayout& inputLayou
 	}
 }
 
-void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTargetView>& gBuffers, VertexShader &vertexShader, HullShader& hullShader, DomainShader& domainShader, Rasterizer& rasterizer, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState)
+
+void Renderer::PerformGeometryPass(Controller& controller, std::vector<RenderBuffer>& gBuffers, VertexShader& vertexShader, HullShader& hullShader, DomainShader& domainShader, Rasterizer& rasterizer, PixelShader& pixelShader, InputLayout& inputLayout, Scene& scene, Sampler& samplerState, PixelShader& reflectionPixelShader, CubeMapCollection& cubeMap)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	Camera& currCamera = scene.GetCurrentCamera();
@@ -166,14 +253,98 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 	const QuadTree<Mesh>& quadTree = scene.GetQuadTree();
 
 	std::vector<std::shared_ptr<Mesh>> meshesToRender = quadTree.CheckTree(scene.GetMainCamera().GetBoundingFrustum());
-	
+    	
 	for (size_t i = 0; i < scene.GetNumOscillatingMeshes(); ++i)
 	{
 		meshesToRender.push_back(scene.GetOscillatingMeshPtrAt(i));
 	}
+
+	meshesToRender.push_back(scene.GetMeshPtrAt(scene.GetNumMeshes() - 1));
 	
-	for (std::shared_ptr<Mesh> meshPtr : meshesToRender)
+	for (size_t i = 0; i < meshesToRender.size(); ++i)
 	{
+		// Setup InputAssembler
+		std::shared_ptr<Mesh> meshPtr = meshesToRender.at(i);
+		
+		VertexBuffer vertexBuffer = meshPtr->GetVertexBuffer();
+		
+		ID3D11Buffer* vBuffer = vertexBuffer.GetBuffer();
+		ID3D11InputLayout* iLayout = inputLayout.GetInputLayout();
+	
+		SetupInputAssembler(context, vBuffer, iLayout, D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+
+		// Setup Vertex Shader
+		
+		ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
+		std::vector<ConstantBuffer> vertexShaderBuffers = vertexShader.GetConstantBuffers();
+		
+		SetupVertexShader(context, vShader, vertexShaderBuffers, meshPtr->GetCurrentPosition(), currCamera);
+
+		// Setup Hull Shader
+		
+		ID3D11HullShader* hShader = hullShader.GetHullShader();
+		std::vector<ConstantBuffer> hullShaderBuffers = hullShader.GetConstantBuffers();
+		
+		SetupHullShader(context, hShader, hullShaderBuffers, meshPtr->GetCurrentPosition(), scene.GetMainCamera().GetPosition());
+
+		// Setup Domain Shader
+		
+		ID3D11DomainShader* dShader = domainShader.GetDomainShader();
+		std::vector<ConstantBuffer> domainShaderBuffers = domainShader.GetConstantBuffers();
+		
+		SetupDomainShader(context, dShader, domainShaderBuffers, scene.GetCurrentCamera());
+		
+		// Setup Rasterizer
+		
+		ID3D11RasterizerState* rasterizerState = rasterizer.GetRasterizerState();
+		D3D11_VIEWPORT viewport = controller.GetViewPort();
+		SetupRasterizer(context, rasterizerState, viewport);
+
+		// Setup G-Buffers
+		
+		ID3D11DepthStencilView* dsv = depthBuffer.GetDSV();
+		std::vector<ID3D11RenderTargetView*> gBuffersVec;
+
+		for (RenderBuffer& gBuffer : gBuffers)
+		{
+			gBuffersVec.emplace_back(gBuffer.GetRTV());
+		}
+
+		ID3D11RenderTargetView** gBuffersArray = gBuffersVec.data();
+		SetupGBuffers(context, dsv, gBuffersArray, gBuffersVec.size());
+
+		// Render to G-Buffers
+		
+		ID3D11PixelShader* pShader = pixelShader.GetPixelShader();
+		ID3D11SamplerState* sState = samplerState.GetSamplerState();
+		std::vector<ConstantBuffer> pixelShaderBuffers = pixelShader.GetConstantBuffers();
+
+		for (size_t j = 0; j < meshPtr->GetNrOfSubMeshes(); ++j)
+		{
+			std::vector<ID3D11ShaderResourceView*> tShaderResourceViews = {meshPtr->GetTextureSRV(j), meshPtr->GetAmbientSRV(j), meshPtr->GetDiffuseSRV(j), meshPtr->GetSpecularSRV(j)};
+
+			SubMesh& subMesh = meshPtr->GetSubMeshAt(j);
+			
+			SetupPixelShader(context, pShader, sState, tShaderResourceViews, pixelShaderBuffers, subMesh.GetSpecularExponent());
+			
+			if (subMesh.GetNumIndices() == 0)
+			{
+				continue;
+			}
+			context->Draw(subMesh.GetNumIndices(),subMesh.GetStartIndex());
+		}
+	}
+}
+
+void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderBuffer>& gBuffers, VertexShader &vertexShader, HullShader& hullShader, DomainShader& domainShader, Rasterizer& rasterizer, PixelShader &pixelShader, InputLayout &inputLayout, Scene& scene, Sampler& samplerState, Camera& currCamera, D3D11_VIEWPORT viewport)
+{
+	ID3D11DeviceContext* context = controller.GetContext();
+	DepthBuffer depthBuffer = currCamera.GetDepthBuffer();
+	
+	for (size_t i = 0; i < scene.GetNumMeshes(); ++i)
+	{
+		std::shared_ptr<Mesh> meshPtr = scene.GetMeshPtrAt(i);
+		
 		// Setup InputAssembler
 		
 		VertexBuffer vertexBuffer = meshPtr->GetVertexBuffer();
@@ -190,19 +361,22 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 		
 		SetupVertexShader(context, vShader, vertexShaderBuffers, meshPtr->GetCurrentPosition(), currCamera);
 
+		// Setup Hull Shader
+		
 		ID3D11HullShader* hShader = hullShader.GetHullShader();
 		std::vector<ConstantBuffer> hullShaderBuffers = hullShader.GetConstantBuffers();
 		
-		SetupHullShader(context, hShader, hullShaderBuffers, meshPtr->GetCurrentPosition(), scene.GetMainCamera().GetPosition());
+		SetupHullShader(context, hShader, hullShaderBuffers, meshPtr->GetCurrentPosition(), currCamera.GetPosition());
 
+		// Setup Domain Shader
+		
 		ID3D11DomainShader* dShader = domainShader.GetDomainShader();
 		std::vector<ConstantBuffer> domainShaderBuffers = domainShader.GetConstantBuffers();
 		
-		SetupDomainShader(context, dShader, domainShaderBuffers, scene.GetCurrentCamera());
+		SetupDomainShader(context, dShader, domainShaderBuffers, currCamera);
 		
 		// Setup Rasterizer
 		
-		D3D11_VIEWPORT viewport = controller.GetViewPort();
 		ID3D11RasterizerState* rasterizerState = rasterizer.GetRasterizerState();
 		
 		SetupRasterizer(context, rasterizerState, viewport);
@@ -212,7 +386,7 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 		ID3D11DepthStencilView* dsv = depthBuffer.GetDSV();
 		std::vector<ID3D11RenderTargetView*> gBuffersVec;
 
-		for (RenderTargetView& gBuffer : gBuffers)
+		for (RenderBuffer& gBuffer : gBuffers)
 		{
 			gBuffersVec.emplace_back(gBuffer.GetRTV());
 		}
@@ -242,9 +416,9 @@ void Renderer::PerformGeometryPass(Controller &controller, std::vector<RenderTar
 	}
 }
 
-void Renderer::PerformLightPass(Controller& controller, SwapChain& swapChain, std::vector<RenderTargetView>& gBuffers, ComputeShader& computeShader, Scene& scene, int& outputMode, StructuredBuffer& spotlights, ShadowMapCollection& shadowMaps, Sampler& depthSampler)
-{
 
+void Renderer::PerformLightPass(Controller& controller, SwapChain& swapChain, std::vector<RenderBuffer>& gBuffers, ComputeShader& computeShader, Scene& scene, int& outputMode, StructuredBuffer& spotlights, ShadowMapCollection& shadowMaps, Sampler& depthSampler)
+{
 	ID3D11DeviceContext* context = controller.GetContext();
 	
 	size_t numGBuffers = gBuffers.size();
@@ -273,7 +447,62 @@ void Renderer::PerformLightPass(Controller& controller, SwapChain& swapChain, st
 	context->Dispatch(160, 90, 1);
 }
 
-void Renderer::PerformParticlePass(Controller& controller, ComputeShader& computeShader, VertexShader& vertexShader, GeometryShader& geometryShader, PixelShader& pixelShader, StructuredBuffer& particleBuffer, Camera& camera, RenderTargetView& renderTargetView)
+void Renderer::PerformLightPass(Controller& controller, SwapChain& swapChain, std::vector<RenderBuffer>& gBuffers, ComputeShader& computeShader, Scene& scene, int& outputMode, StructuredBuffer& spotlights, ShadowMapCollection& shadowMaps, Sampler& depthSampler, Camera& currCamera, ID3D11UnorderedAccessView* uav, const int& cubeMapIndex)
+{
+	ID3D11DeviceContext* context = controller.GetContext();
+    	
+	size_t numGBuffers = gBuffers.size();
+	std::vector<ID3D11ShaderResourceView*> SRVs;
+	
+	for (size_t i = 0; i < numGBuffers ; ++i)
+	{
+		SRVs.emplace_back(gBuffers.at(i).GetSRV());
+	}
+
+	ID3D11ShaderResourceView* spotlightSrv = spotlights.GetSRV();
+	context->CSSetShaderResources(6, 1, &spotlightSrv);
+	ID3D11ShaderResourceView* shadowMapSrv = shadowMaps.GetShaderResourceView().GetSRV();
+	context->CSSetShaderResources(7, 1, &shadowMapSrv);
+	
+	ID3D11ComputeShader* cShader = computeShader.GetComputeShader();
+	ID3D11ShaderResourceView** SRVarr = SRVs.data();
+	std::vector<ConstantBuffer> buffers = computeShader.GetConstantBuffers();
+	
+	context->CSSetShader(cShader, nullptr, 0);
+	context->CSSetShaderResources(0, SRVs.size(), SRVarr);
+	context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+
+	LightConfig lightConfig;
+	CSReflectionData csReflectionData;
+
+	csReflectionData.LightColour = lightConfig.GetLightColour();
+	csReflectionData.LightPosition = lightConfig.GetLightPosition();
+	csReflectionData.AmbientLightIntensity = lightConfig.GetAmbientLightIntensity();
+	csReflectionData.GeneralLightIntensity = lightConfig.GetGeneralLightIntensity();
+	csReflectionData.CamPosition = currCamera.GetPosition();
+	csReflectionData.OutputMode = outputMode;
+	csReflectionData.CubeMapIndex = cubeMapIndex;
+	
+	buffers.at(0).UpdateBuffer(context, &csReflectionData, sizeof(csReflectionData));
+
+	std::vector<ID3D11Buffer*> ID3D11Buffers;
+	for (ConstantBuffer cb : buffers)
+	{
+		ID3D11Buffers.push_back(cb.GetBuffer());
+	}
+	
+	ID3D11Buffer** buffersArr = ID3D11Buffers.data();
+	context->CSSetConstantBuffers(0, buffers.size(), buffersArr);
+
+
+	ID3D11SamplerState* sampler = depthSampler.GetSamplerState();
+	context->CSSetSamplers(0, 1, &sampler);
+
+	context->Dispatch(256, 256, 1);
+}
+
+
+void Renderer::PerformParticlePass(Controller& controller, ComputeShader& computeShader, VertexShader& vertexShader, GeometryShader& geometryShader, PixelShader& pixelShader, StructuredBuffer& particleBuffer, Camera& camera, RenderBuffer& renderTargetView)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
 	
@@ -352,7 +581,7 @@ void Renderer::ClearScreen(ID3D11DeviceContext *context, ID3D11RenderTargetView 
 	{
 		context->ClearRenderTargetView(gBuffers.at(i), clearColour);
 	}
-	context->ClearRenderTargetView(rtv, clearColour);
+	//context->ClearRenderTargetView(rtv, clearColour);
 	context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
@@ -500,7 +729,7 @@ void Renderer::SetupComputeShader(ID3D11DeviceContext* context, ID3D11ComputeSha
 	csLightData.AmbientLightIntensity = lightConfig.GetAmbientLightIntensity();
 	csLightData.GeneralLightIntensity = lightConfig.GetGeneralLightIntensity();
 	csLightData.CamPosition = camera.GetPosition();
-	csLightData.outputMode = outputMode;
+	csLightData.OutputMode = outputMode;
 	
 	buffers.at(0).UpdateBuffer(context, &csLightData, sizeof(csLightData));
 

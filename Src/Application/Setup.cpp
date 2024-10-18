@@ -72,7 +72,7 @@ SwapChain Setup::SetupSwapChain(Controller& controller, HWND window)
 }
 
 
-RenderTargetView Setup::SetupRenderTargetView(Controller &controller, SwapChain& swapChain)
+RenderBuffer Setup::SetupRenderTargetView(Controller &controller, SwapChain& swapChain)
 {
     D3D11Helper d3d11Helper;
 
@@ -84,10 +84,10 @@ RenderTargetView Setup::SetupRenderTargetView(Controller &controller, SwapChain&
 		throw std::runtime_error("Failed to create RTV");
 	}
 
-	return RenderTargetView(rtv);
+	return RenderBuffer(rtv);
 }
 
-RenderTargetView Setup::SetupGBuffer(Controller& controller)
+RenderBuffer Setup::SetupGBuffer(Controller& controller, const UINT& width, const UINT& height)
 {
 	D3D11Helper d3d11Helper;
 	WindowConfig windowConfig;
@@ -96,7 +96,7 @@ RenderTargetView Setup::SetupGBuffer(Controller& controller)
 	ID3D11RenderTargetView* rtv = nullptr;
 	ID3D11ShaderResourceView* srv = nullptr;
 	ID3D11Texture2D* texture = nullptr;
-	if (!d3d11Helper.CreateGBuffer(controller.GetDevice(), rtv, texture, srv, windowConfig.GetWidth(), windowConfig.GetHeight()))
+	if (!d3d11Helper.CreateGBuffer(controller.GetDevice(), rtv, texture, srv, width, height))
 	{
 		if (rtv != nullptr) { rtv->Release(); }
 		if (texture != nullptr) { texture->Release(); }
@@ -104,7 +104,7 @@ RenderTargetView Setup::SetupGBuffer(Controller& controller)
 		throw std::runtime_error("Failed to create GBuffer");
 	}
 
-	return RenderTargetView(rtv, texture, srv);
+	return RenderBuffer(rtv, texture, srv);
 }
 
 

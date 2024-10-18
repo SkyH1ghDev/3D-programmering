@@ -32,21 +32,27 @@ public:
     
 private:
     std::vector<std::string> _filenameList = {"cube.obj", "Floor.obj", "suzanne.obj", "suzanne.obj", "suzanne.obj",
-                                                "suzanne.obj", "cube.obj", "cube.obj", "cube.obj", "cube.obj"};
+                                              "suzanne.obj", "cube.obj", "cube.obj", "cube.obj", "cube.obj",
+                                              "cube.obj"};
     
     std::vector<DX::XMFLOAT4> _positionList = {{-2.0f, -7.0f, -7.0f, 1.0f}, {0.0f, -10.0f, 0.0f, 1.0f}, {-5.0f, 5.0f, 5.0f, 1.0f}, {6.0f, 20.0f, 0.0f, 1.0f}, {12.0f, 17.0f, 13.0f, 1.0f},
-                                                  {-10.0f, 15.0f, -10.0f, 1.0f}, {-15.0f, 20.0f, -15.0f, 1.0f}, {30.0f, 5.0f, 0.0f, 1.0f}, {0.0f, 7.0f, 25.0f, 1.0f}, {-17.0f, 23.0f, 23.0f, 1.0f}};
+                                                  {-10.0f, 15.0f, -10.0f, 1.0f}, {-15.0f, 20.0f, -15.0f, 1.0f}, {30.0f, 5.0f, 0.0f, 1.0f}, {0.0f, 7.0f, 25.0f, 1.0f}, {-17.0f, 23.0f, 23.0f, 1.0f},
+                                                    {0.0f, -5.0f, -15.0f, 1.0f}};
 
     // bit 1 : Oscillation
     std::vector<std::bitset<1>> _meshFlagList = {{1}, {0}, {0}, {0}, {0},
-                                                    {0}, {0}, {0}, {0}, {0}};
+                                                    {0}, {0}, {0}, {0}, {0},
+                                                    {0}};
 
     std::vector<DX::XMFLOAT4> _oscillationPositionList = {{2.0f, -7.0f, -7.0f, 1.0f}, DX::XMFLOAT4(), DX::XMFLOAT4(), DX::XMFLOAT4(), DX::XMFLOAT4(),
-                                                            DX::XMFLOAT4(), DX::XMFLOAT4(), DX::XMFLOAT4(), DX::XMFLOAT4(), DX::XMFLOAT4()};
+                                                            DX::XMFLOAT4(), DX::XMFLOAT4(), DX::XMFLOAT4(), DX::XMFLOAT4(), DX::XMFLOAT4(),
+                                                            DX::XMFLOAT4()};
     
     std::vector<float> _periodList = {10.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                                        0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+                                        0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                                        0.0f};
     
     std::vector<float> _timeList = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+                                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                                    0.0f};
 };

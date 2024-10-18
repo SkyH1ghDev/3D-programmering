@@ -5,7 +5,7 @@
 namespace DX = DirectX;
 
 __declspec(align(16))
-class CSLightData
+class CSReflectionData
 {
 public:
 	DX::XMFLOAT4 LightColour;
@@ -14,16 +14,5 @@ public:
 	float AmbientLightIntensity;
 	float GeneralLightIntensity;
 	int OutputMode;
-	
-};
-
-class CSLightData2
-{
-public:
-	DX::XMFLOAT4X4 vpMatrix;
-	DX::XMFLOAT4 colour;
-	DX::XMFLOAT4 direction;
-	DX::XMFLOAT4 position;
-	float angle = 0.0f;
-	
+	int CubeMapIndex;
 };

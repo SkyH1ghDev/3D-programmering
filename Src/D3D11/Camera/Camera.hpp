@@ -12,7 +12,8 @@ class Camera
 {
 public:
 	Camera() = delete;
-	Camera(HRESULT& hr, ID3D11Device* device, const ProjectionInfo& projectionInfo, const DX::XMFLOAT4& initialPosition);
+	Camera(HRESULT& hr, ID3D11Device* device, const ProjectionInfo& projInfo, const DX::XMFLOAT4& initialPosition);
+	Camera(HRESULT& hr, ID3D11Device* device, const ProjectionInfo& projInfo, const DX::XMFLOAT4& initialPosition, const UINT& width, const UINT& height);
 	
 	~Camera() = default;
 	Camera(const Camera& other) = default;

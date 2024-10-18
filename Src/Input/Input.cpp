@@ -138,7 +138,7 @@ void Input::HandleRotation(Camera& camera, HWND& window)
     float deltaYaw = static_cast<float>(currPoint.x - this->_prevPoint.x) * sensitivity * radiansPerPixel;
     float deltaPitch = static_cast<float>(currPoint.y - this->_prevPoint.y) * sensitivity * radiansPerPixel;
 
-    camera.ApplyRotation(deltaPitch, deltaYaw);
+    camera.ApplyRotation(-deltaPitch, deltaYaw);
     
     if (this->_lockMouse)
     {

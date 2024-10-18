@@ -24,9 +24,22 @@ Camera::Camera(HRESULT& hr, ID3D11Device* device, const ProjectionInfo& projInfo
 	this->_boundingFrustum = DX::BoundingFrustum(matrixCreator.CreateViewProjectionMatrix(*this));
 }
 
+Camera::Camera(HRESULT& hr, ID3D11Device* device, const ProjectionInfo& projInfo, const DX::XMFLOAT4& initialPosition, const UINT& width, const UINT& height):
+	_depthBuffer(hr, device, width, height)
+{
+	MatrixCreator matrixCreator;
+	
+	this->_position = initialPosition;
+	this->_projInfo = projInfo;
+	this->_boundingFrustum = DX::BoundingFrustum(matrixCreator.CreateViewProjectionMatrix(*this));
+}
+
+
 void Camera::ApplyRotation(const float& deltaPitch, const float& deltaYaw)
 {
-	this->_pitch = std::max<float>(-DX::XM_PIDIV2, std::min<float>(DX::XM_PIDIV2, this->_pitch + deltaPitch));
+	float pitch = -deltaPitch;
+	
+	this->_pitch = std::max<float>(-DX::XM_PIDIV2, std::min<float>(DX::XM_PIDIV2, this->_pitch + pitch));
 	this->_yaw = std::fmod(this->_yaw + deltaYaw, 2 * DX::XM_PI);
 	
 	DX::XMVECTOR quaternion = DX::XMQuaternionRotationRollPitchYaw(this->_pitch, this->_yaw, 0.0f);

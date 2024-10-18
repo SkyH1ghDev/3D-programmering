@@ -18,7 +18,7 @@ Texture2D& Texture2D::operator=(const Texture2D& other)
         return *this;
     }
 
-    this->_texture2D = other._texture2D;
+    this->_texture2D = other._texture2D; this->_texture2D->AddRef();
 
     return *this;
 }

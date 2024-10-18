@@ -5,11 +5,15 @@
 #include "MatrixCreator.hpp"
 #include "RenderConfig.hpp"
 #include "CSLightData.hpp"
+#include "CSReflectionData.hpp"
+#include "CubeMapCollection.hpp"
+#include "FileReader.hpp"
 #include "ShadowMapCollection.hpp"
 #include "GSParticleData.hpp"
 #include "LightConfig.hpp"
 #include "Particle.hpp"
 #include "PSGeometryData.hpp"
+#include "PSReflectionData.hpp"
 #include "SpotLight.hpp"
 #include "VSGeometryData.hpp"
 
@@ -59,7 +63,9 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
 		(static_cast<DomainShader*>
 		(Setup::SetupShader(this->_controller, ShaderType::DOMAIN_SHADER, L"Deferred/GeometryPass/dsDeferredGeometry.hlsl")))),
 
-    
+    _psDeferredReflection(std::unique_ptr<PixelShader>
+    	(static_cast<PixelShader*>
+    	(Setup::SetupShader(this->_controller, ShaderType::PIXEL_SHADER, L"Deferred/GeometryPass/psDeferredReflection.hlsl")))),
 
     _psDeferredGeometry(std::unique_ptr<PixelShader>
 		(static_cast<PixelShader*>
@@ -72,6 +78,11 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
     _csDeferredLight(std::unique_ptr<ComputeShader>
     	(static_cast<ComputeShader*>
     	(Setup::SetupShader(this->_controller, ShaderType::COMPUTE_SHADER, L"Deferred/LightPass/csDeferredLight.hlsl")))),
+
+	_csDeferredReflection
+		(std::unique_ptr<ComputeShader>
+		(static_cast<ComputeShader*>
+		(Setup::SetupShader(this->_controller, ShaderType::COMPUTE_SHADER, L"Deferred/LightPass/csDeferredReflection.hlsl")))),
 
 	/*
 	 * Particle Pass
@@ -98,10 +109,13 @@ Application::Application(HINSTANCE hInstance, int nCmdShow) :
     _inputLayout(Setup::SetupInputLayout(this->_controller, *this->_vsDeferredGeometry)),
     _sampler(Setup::SetupSampler(this->_controller))
 {
+
+	WindowConfig windowConfig;
+	
 	const size_t numGBuffers = 6;
 	for (size_t i = 0; i < numGBuffers; ++i )
 	{
-		this->_gBuffers.emplace_back(Setup::SetupGBuffer(this->_controller));
+		this->_gBuffers.push_back(Setup::SetupGBuffer(this->_controller, windowConfig.GetWidth(), windowConfig.GetHeight()));
 	}
 }
 
@@ -290,6 +304,14 @@ void Application::SetupDeferredBuffers()
 
 	this->_psDeferredGeometry->AddConstantBuffer(Setup::CreateConstantBuffer<PSGeometryData>(this->_controller, pixelShaderBufferDesc, &specularExpData));
 
+	BufferDescData reflectionPixelShaderBufferDesc;
+	reflectionPixelShaderBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	reflectionPixelShaderBufferDesc.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+
+	PSReflectionData psReflectionData;
+	psReflectionData.SpecularExponent = 10000.0f;
+	psReflectionData.CameraPosition = this->_scene.GetCurrentCamera().GetPosition();
+
 	// Compute Shader
 	
 	BufferDescData computeShaderBufferDesc;
@@ -303,9 +325,24 @@ void Application::SetupDeferredBuffers()
 	csLightData.CamPosition = this->_scene.GetCurrentCamera().GetPosition();
 	csLightData.AmbientLightIntensity = 0.1f;
 	csLightData.GeneralLightIntensity = 1.2f;
-	csLightData.outputMode = _outputMode;
+	csLightData.OutputMode = _outputMode;
 	
 	this->_csDeferredLight->AddConstantBuffer(Setup::CreateConstantBuffer<CSLightData>(this->_controller, computeShaderBufferDesc, &csLightData));
+
+	BufferDescData reflectionComputeShaderDesc;
+	reflectionComputeShaderDesc.Usage = D3D11_USAGE_DYNAMIC;
+	reflectionComputeShaderDesc.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+
+	CSReflectionData csReflectionData;
+	csReflectionData.LightColour = {1.0f, 1.0f, 1.0f, 1.0f};
+	csReflectionData.LightPosition = {0.0f, -7.5f, -10.0f, 1.0f};
+	csReflectionData.CamPosition = this->_scene.GetCurrentCamera().GetPosition();
+	csReflectionData.AmbientLightIntensity = 0.1f;
+	csReflectionData.GeneralLightIntensity = 1.2f;
+	csReflectionData.OutputMode = _outputMode;
+	csReflectionData.CubeMapIndex = 0;
+
+	this->_csDeferredReflection->AddConstantBuffer(Setup::CreateConstantBuffer<CSReflectionData>(this->_controller, reflectionComputeShaderDesc, &csReflectionData));
 }
 
 void Application::Render()
@@ -324,17 +361,17 @@ void Application::Render()
 
 	// SHADOW MAP STUFFS
 
-	ProjectionInfo projectionInfo;
+	ProjectionInfo spotLightProjectionInfo;
 	
-	SpotLight spotLight1(hr, this->_controller.GetDevice(), projectionInfo, {-4.0f, -5.0f, -7.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, 20.0f);
-	SpotLight spotLight2(hr, this->_controller.GetDevice(), projectionInfo, {5.0f, -7.0f, -5.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, 20.0f);
-	SpotLight spotLight3(hr, this->_controller.GetDevice(), projectionInfo, {-5.0f, -7.0f, -5.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}, 30.0f);
-	SpotLight spotLight4(hr, this->_controller.GetDevice(), projectionInfo, {-5.0f, 50.0f, 5.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 180.0f);
+	SpotLight spotLight1(hr, this->_controller.GetDevice(), spotLightProjectionInfo, {-4.0f, -5.0f, -7.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, 20.0f);
+	SpotLight spotLight2(hr, this->_controller.GetDevice(), spotLightProjectionInfo, {5.0f, -7.0f, -5.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, 20.0f);
+	SpotLight spotLight3(hr, this->_controller.GetDevice(), spotLightProjectionInfo, {-5.0f, -7.0f, -5.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}, 30.0f);
+	SpotLight spotLight4(hr, this->_controller.GetDevice(), spotLightProjectionInfo, {-5.0f, 50.0f, 5.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 180.0f);
 
 	spotLight1.GetCamera().ApplyRotation(0, DX::XMConvertToRadians(90));
-	spotLight2.GetCamera().ApplyRotation(DX::XMConvertToRadians(45), 0);
-	spotLight3.GetCamera().ApplyRotation(DX::XMConvertToRadians(30), DX::XMConvertToRadians(240));
-	spotLight4.GetCamera().ApplyRotation(DX::XMConvertToRadians(90), 0);
+	spotLight2.GetCamera().ApplyRotation(DX::XMConvertToRadians(-45), 0);
+	spotLight3.GetCamera().ApplyRotation(DX::XMConvertToRadians(-30), DX::XMConvertToRadians(240));
+	spotLight4.GetCamera().ApplyRotation(DX::XMConvertToRadians(-90), 0);
 	
 	std::vector<SpotLight> spotLights = { spotLight1, spotLight2, spotLight3, spotLight4 };
 
@@ -399,30 +436,49 @@ void Application::Render()
 
 	// DYNAMIC CUBE MAPPING STUFFS
 
-	WindowConfig windowConfig;
+	CubeMapCollection dynamicCubeMap(hr, this->_controller.GetDevice());
+
+	ProjectionInfo cubeMapProjectionInfo;
+		cubeMapProjectionInfo.FovAngleY = 90.0f;
+		cubeMapProjectionInfo.AspectRatio = 1.0f;
+		cubeMapProjectionInfo.NearZ = 0.1f;
+		cubeMapProjectionInfo.FarZ = 100.0f;
+
+	float yawRotations[6] = { DX::XM_PIDIV2, -DX::XM_PIDIV2, 0.0f, 0.0f, 0.0f, DX::XM_PI };
+	float pitchRotations[6] = { 0.0f, 0.0f, DX::XM_PIDIV2, -DX::XM_PIDIV2, 0.0f, 0.0f };
+	DX::XMFLOAT4 meshPosition = {0.0f, -5.0f, -15.0f, 1.0f};
+
+	D3D11_VIEWPORT cubeMapViewport;
+		cubeMapViewport.TopLeftX = 0;
+		cubeMapViewport.TopLeftY = 0;
+		cubeMapViewport.Width = 2048;
+		cubeMapViewport.Height = 2048;
+		cubeMapViewport.MinDepth = 0;
+		cubeMapViewport.MaxDepth = 1;
 	
-	D3D11_TEXTURE2D_DESC dynamicCubeMapTextureDesc;
-	ZeroMemory(&dynamicCubeMapTextureDesc, sizeof(dynamicCubeMapTextureDesc));
-	dynamicCubeMapTextureDesc.Width = 2048;
-	dynamicCubeMapTextureDesc.Height = 2048;
-	dynamicCubeMapTextureDesc.MipLevels = 1;
-	dynamicCubeMapTextureDesc.ArraySize = 6;
-	dynamicCubeMapTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	dynamicCubeMapTextureDesc.SampleDesc.Count = 1;
-	dynamicCubeMapTextureDesc.SampleDesc.Quality = 0;
-	dynamicCubeMapTextureDesc.Usage = D3D11_USAGE_DEFAULT;
-	dynamicCubeMapTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	dynamicCubeMapTextureDesc.CPUAccessFlags = 0;
-	dynamicCubeMapTextureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
-
-	ID3D11Texture2D* dynamicCubeMapTexture;
-	hr = this->_controller.GetDevice()->CreateTexture2D(&dynamicCubeMapTextureDesc, nullptr, &dynamicCubeMapTexture);
-
-	if (FAILED(hr))
+	std::vector<Camera> cubeMapCameras;
+	for (int i = 0; i < 6; ++i)
 	{
-		throw std::runtime_error("Failed to create texture cube");
+		cubeMapCameras.push_back(Camera(hr, this->_controller.GetDevice(), cubeMapProjectionInfo, meshPosition, 2048, 2048));
+		cubeMapCameras.at(i).ApplyRotation(pitchRotations[i], yawRotations[i]);
 	}
-	
+
+	enum TEXTURE_CUBE_FACE_INDEX
+	{
+		POSITIVE_X = 0,
+		NEGATIVE_X = 1,
+		POSITIVE_Y = 2,
+		NEGATIVE_Y = 3,
+		POSITIVE_Z = 4,
+		NEGATIVE_Z = 5
+	};
+
+	std::vector<RenderBuffer> cubeMapGBuffers;
+
+	for (int i = 0; i < 6; ++i)
+	{
+		cubeMapGBuffers.push_back(Setup::SetupGBuffer(this->_controller, 2048, 2048));
+	}
 	
 	while (running)
 	{
@@ -458,7 +514,8 @@ void Application::Render()
 			                               *this->_hsDeferredGeometry, *this->_dsDeferredGeometry, this->_rasterizer, *this->_psDeferredGeometry,
 			                               *this->_csDeferredLight, this->_inputLayout, this->_scene, this->_sampler, this->_outputMode, *this->_csDeferredParticle,
 			                               *this->_vsDeferredParticle, *this->_gsDeferredParticle, *this->_psDeferredParticle, particleStructuredBuffer,
-			                               spotLights, shadowMaps, spotLightStructuredBuffer, depthSampler);
+			                               spotLights, shadowMaps, spotLightStructuredBuffer, depthSampler, cubeMapViewport, cubeMapCameras, dynamicCubeMap, cubeMapGBuffers,
+			                               *this->_psDeferredReflection, *this->_csDeferredReflection);
 		}
 		
 		this->_swapChain.GetSwapChain()->Present(0, 0);

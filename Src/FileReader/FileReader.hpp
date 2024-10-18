@@ -12,6 +12,7 @@ public:
     FileReader();
     
     int ReadFilesFromConfig(std::vector<MeshData> &meshDataList);
+    int ReadFileFromFilename(MeshData& meshData, const std::string& filename);
     ~FileReader();
     
 private:

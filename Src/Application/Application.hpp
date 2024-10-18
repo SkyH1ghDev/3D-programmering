@@ -35,8 +35,8 @@ private:
     HWND _window;
     Controller _controller;
     SwapChain _swapChain;
-    RenderTargetView _windowRTV;
-    std::vector<RenderTargetView> _gBuffers;
+    RenderBuffer _windowRTV;
+    std::vector<RenderBuffer> _gBuffers;
     Scene _scene;
 
     /*
@@ -53,11 +53,13 @@ private:
     // Geometry
     std::unique_ptr<VertexShader> _vsDeferredGeometry;
     std::unique_ptr<PixelShader> _psDeferredGeometry;
+    std::unique_ptr<PixelShader> _psDeferredReflection;
     std::unique_ptr<HullShader> _hsDeferredGeometry;
     std::unique_ptr<DomainShader> _dsDeferredGeometry;
 
     // Light
     std::unique_ptr<ComputeShader> _csDeferredLight;
+    std::unique_ptr<ComputeShader> _csDeferredReflection;
 
     // Particle
     std::unique_ptr<VertexShader> _vsDeferredParticle;
