@@ -5,7 +5,6 @@
 #include "MatrixCreator.hpp"
 #include "RenderConfig.hpp"
 #include "CSLightData.hpp"
-#include "CSReflectionData.hpp"
 #include "CubeMapCollection.hpp"
 #include "FileReader.hpp"
 #include "ShadowMapCollection.hpp"
@@ -312,6 +311,7 @@ void Application::SetupDeferredBuffers()
 	psReflectionData.SpecularExponent = 10000.0f;
 	psReflectionData.CameraPosition = this->_scene.GetCurrentCamera().GetPosition();
 
+	this->_psDeferredReflection->AddConstantBuffer(Setup::CreateConstantBuffer<PSReflectionData>(this->_controller, reflectionPixelShaderBufferDesc, &psReflectionData));
 	// Compute Shader
 	
 	BufferDescData computeShaderBufferDesc;
@@ -333,16 +333,15 @@ void Application::SetupDeferredBuffers()
 	reflectionComputeShaderDesc.Usage = D3D11_USAGE_DYNAMIC;
 	reflectionComputeShaderDesc.CpuAccess = D3D11_CPU_ACCESS_WRITE;
 
-	CSReflectionData csReflectionData;
+	CSLightData csReflectionData;
 	csReflectionData.LightColour = {1.0f, 1.0f, 1.0f, 1.0f};
 	csReflectionData.LightPosition = {0.0f, -7.5f, -10.0f, 1.0f};
 	csReflectionData.CamPosition = this->_scene.GetCurrentCamera().GetPosition();
 	csReflectionData.AmbientLightIntensity = 0.1f;
 	csReflectionData.GeneralLightIntensity = 1.2f;
 	csReflectionData.OutputMode = _outputMode;
-	csReflectionData.CubeMapIndex = 0;
 
-	this->_csDeferredReflection->AddConstantBuffer(Setup::CreateConstantBuffer<CSReflectionData>(this->_controller, reflectionComputeShaderDesc, &csReflectionData));
+	this->_csDeferredReflection->AddConstantBuffer(Setup::CreateConstantBuffer<CSLightData>(this->_controller, reflectionComputeShaderDesc, &csReflectionData));
 }
 
 void Application::Render()
