@@ -22,7 +22,7 @@ DX::XMMATRIX MatrixCreator::CreateViewMatrix(const DX::XMFLOAT4& cameraPosition,
 
 DX::XMMATRIX MatrixCreator::CreateOrthographicProjectionMatrix()
 {
-	return DX::XMMatrixOrthographicLH(400, 400.0f, 0.1, 100.0f);
+	return DX::XMMatrixOrthographicLH(100, 100.0f, 0.1, 100.0f);
 }
 
 DX::XMMATRIX MatrixCreator::CreateProjectionMatrix(const ProjectionInfo& projInfo)

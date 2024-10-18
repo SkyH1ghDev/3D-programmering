@@ -43,7 +43,7 @@ void Camera::ApplyRotation(const float& deltaPitch, const float& deltaYaw)
 	DX::XMVECTOR newUp = DX::XMQuaternionMultiply(DX::XMQuaternionMultiply(quaternionConjugate, {0.0f, 1.0f, 0.0f, 0.0f}), quaternion);
 	newUp = DX::XMVectorSetW(newUp, 0.0f);
 	newUp = DX::XMVector4Normalize(newUp);
-	
+
 	DX::XMStoreFloat4(&this->_forward, newForward);
 	DX::XMStoreFloat4(&this->_up, newUp);
 	DX::XMStoreFloat4(&this->_right, newRight);

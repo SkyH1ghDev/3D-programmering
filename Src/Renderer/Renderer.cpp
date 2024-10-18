@@ -122,7 +122,31 @@ void Renderer::PerformShadowPass(Controller& controller, InputLayout& inputLayou
 			UINT offset = 0;
 			context->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 			
-			SetupVertexShader(context, vertexShader.GetVertexShader(), vertexShader.GetConstantBuffers(), mesh->GetCurrentPosition(), spotlights.at(i).GetCamera());
+			MatrixCreator matrixCreator;
+
+			ID3D11VertexShader* vShader = vertexShader.GetVertexShader();
+			context->VSSetShader(vShader, nullptr, 0);
+			
+			DX::XMMATRIX worldPositionMatrix = matrixCreator.CreateTranslationMatrix(mesh->GetCurrentPosition().x, mesh->GetCurrentPosition().y, mesh->GetCurrentPosition().z);
+			DX::XMFLOAT4X4 worldMatrix;
+			DX::XMStoreFloat4x4(&worldMatrix, worldPositionMatrix);
+
+			VSGeometryData vsGeometryData;
+			vsGeometryData.WorldMatrix = worldMatrix;
+			vsGeometryData.ViewProjectionMatrix = spotlights.at(i).GetSpotlightData().vpMatrix;
+
+			std::vector<ConstantBuffer> buffers = vertexShader.GetConstantBuffers();
+			buffers.at(0).UpdateBuffer(context, &vsGeometryData, sizeof(vsGeometryData));
+		
+			std::vector<ID3D11Buffer*> ID3D11Buffers;
+			for (ConstantBuffer cb : buffers)
+			{
+				ID3D11Buffers.push_back(cb.GetBuffer());
+			}
+	
+			ID3D11Buffer** buffersArr = ID3D11Buffers.data();
+			context->VSSetConstantBuffers(0, buffers.size(), buffersArr);
+
 			
 			for (size_t k = 0; k < mesh->GetNrOfSubMeshes(); ++k)
 			{

@@ -19,6 +19,6 @@ private:
     
     DX::XMFLOAT4 _lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
     DX::XMFLOAT4 _lightPosition = {0.0f, -7.0f, -10.0f, 1.0f};
-    float _ambientLightIntensity = 0.2f;
-    float _generalLightIntensity = 2.0f;
+    float _ambientLightIntensity = 0.0f;
+    float _generalLightIntensity = 10.0f;
 };

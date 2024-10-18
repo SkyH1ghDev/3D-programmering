@@ -329,12 +329,12 @@ void Application::Render()
 	SpotLight spotLight1(hr, this->_controller.GetDevice(), projectionInfo, {-4.0f, -5.0f, -7.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, 20.0f);
 	SpotLight spotLight2(hr, this->_controller.GetDevice(), projectionInfo, {5.0f, -7.0f, -5.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, 20.0f);
 	SpotLight spotLight3(hr, this->_controller.GetDevice(), projectionInfo, {-5.0f, -7.0f, -5.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}, 30.0f);
-	SpotLight spotLight4(hr, this->_controller.GetDevice(), projectionInfo, {-5.0f, 15.0f, 5.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 180.0f);
+	SpotLight spotLight4(hr, this->_controller.GetDevice(), projectionInfo, {-5.0f, 50.0f, 5.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, 180.0f);
 
 	spotLight1.GetCamera().ApplyRotation(0, DX::XMConvertToRadians(90));
 	spotLight2.GetCamera().ApplyRotation(DX::XMConvertToRadians(45), 0);
 	spotLight3.GetCamera().ApplyRotation(DX::XMConvertToRadians(30), DX::XMConvertToRadians(240));
-	spotLight4.GetCamera().ApplyRotation(DX::XMConvertToDegrees(90), 0);
+	spotLight4.GetCamera().ApplyRotation(DX::XMConvertToRadians(90), 0);
 	
 	std::vector<SpotLight> spotLights = { spotLight1, spotLight2, spotLight3, spotLight4 };
 
@@ -397,6 +397,33 @@ void Application::Render()
 
 	StructuredBuffer particleStructuredBuffer = StructuredBuffer(hr, this->_controller.GetDevice(), sizeof(particle), particles.size(), particles.data(), 0, 0);
 
+	// DYNAMIC CUBE MAPPING STUFFS
+
+	WindowConfig windowConfig;
+	
+	D3D11_TEXTURE2D_DESC dynamicCubeMapTextureDesc;
+	ZeroMemory(&dynamicCubeMapTextureDesc, sizeof(dynamicCubeMapTextureDesc));
+	dynamicCubeMapTextureDesc.Width = 2048;
+	dynamicCubeMapTextureDesc.Height = 2048;
+	dynamicCubeMapTextureDesc.MipLevels = 1;
+	dynamicCubeMapTextureDesc.ArraySize = 6;
+	dynamicCubeMapTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	dynamicCubeMapTextureDesc.SampleDesc.Count = 1;
+	dynamicCubeMapTextureDesc.SampleDesc.Quality = 0;
+	dynamicCubeMapTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	dynamicCubeMapTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	dynamicCubeMapTextureDesc.CPUAccessFlags = 0;
+	dynamicCubeMapTextureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+	ID3D11Texture2D* dynamicCubeMapTexture;
+	hr = this->_controller.GetDevice()->CreateTexture2D(&dynamicCubeMapTextureDesc, nullptr, &dynamicCubeMapTexture);
+
+	if (FAILED(hr))
+	{
+		throw std::runtime_error("Failed to create texture cube");
+	}
+	
+	
 	while (running)
 	{
 		this->_clock.Start();

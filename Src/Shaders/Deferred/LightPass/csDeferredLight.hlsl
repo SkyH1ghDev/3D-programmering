@@ -43,7 +43,7 @@ float4 GetDiffuseComponent(float4 lightColour, float4 lightDirection, float gene
 
 float4 GetSpecularComponent(float4 lightColour, float4 lightDirection, float generalLightIntensity, float shininess, float4 camPosition, float4 fragmentPosition, float4 fragmentNormal)
 {
-	float4 camDirection = normalize(fragmentPosition + camPosition);
+	float4 camDirection = normalize(camPosition - fragmentPosition);
 	float4 halfway = normalize(lightDirection + camDirection);
 	float specularIntensity = pow(max(dot(normalize(fragmentNormal), halfway), 0.0f), shininess) * generalLightIntensity;
 	return lightColour * specularIntensity;
@@ -78,9 +78,18 @@ void main(uint3 DTid : SV_DispatchThreadID)
 
 		// Ambient
 		float4 spotLightAmbient = GetAmbientComponent(spotLight.colour, ambientLightIntensity);
-        
+
+		float4 lightDirection;
 		float4 lightVector = spotLight.position - fragmentPosition;
-		float4 lightDirection = normalize(lightVector);
+		
+		if (spotLight.angle >= 180.0f)
+		{
+			lightDirection = normalize(-spotLight.direction);
+		}
+		else
+		{
+			lightDirection = normalize(lightVector);
+		}
 		
 		// Diffuse
 		float4 spotLightDiffuse = GetDiffuseComponent(spotLight.colour, lightDirection, generalLightIntensity, fragmentNormal);
@@ -90,9 +99,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
         	
 		float actualDepthValue = shadowMaps.SampleLevel(shadowMapSampler, shadowMapUV, 0);
 
-		float4 lightDistance = spotLight.position - fragmentPosition;
-
-		float distanceScalingFactor = 1 / sqrt(dot(lightDistance, lightDistance));
+		float distanceScalingFactor = 1 / sqrt(dot(lightVector, lightVector));
 		
 		if (depthValueBetweenLightAndFragment < actualDepthValue && abs(dot(normalize(lightDirection), normalize(spotLight.direction))) > cos(radians(spotLight.angle)))
 		{
