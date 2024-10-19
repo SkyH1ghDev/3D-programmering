@@ -86,17 +86,17 @@ Texture2D CubeMapCollection::GetTexture2DArray()
 
 ShaderResourceView CubeMapCollection::GetShaderResourceView()
 {
-    return this->_srv.GetSRV();
+    return this->_srv;
 }
 
-ID3D11UnorderedAccessView* CubeMapCollection::GetUnorderedAccessViewAt(UINT index)
+UnorderedAccessView CubeMapCollection::GetUnorderedAccessViewAt(UINT index)
 {
-    return this->_uavs.at(index).GetUAV();
+    return this->_uavs.at(index);
 }
 
-ID3D11RenderTargetView* CubeMapCollection::GetRenderTargetViewAt(UINT index)
+RenderTargetView CubeMapCollection::GetRenderTargetViewAt(UINT index)
 {
-	return this->_rtvs.at(index).GetRTV();
+	return this->_rtvs.at(index);
 }
 
 

@@ -15,8 +15,8 @@ public:
 public:
     Texture2D GetTexture2DArray();
     ShaderResourceView GetShaderResourceView();
-    ID3D11UnorderedAccessView* GetUnorderedAccessViewAt(UINT index);
-    ID3D11RenderTargetView* GetRenderTargetViewAt(UINT index);
+    UnorderedAccessView GetUnorderedAccessViewAt(UINT index);
+    RenderTargetView GetRenderTargetViewAt(UINT index);
 
 private:
     Texture2D _texture;

@@ -107,7 +107,7 @@ void Renderer::RenderDeferred(Controller &controller, SwapChain& swapChain, Rend
 	
 		PerformGeometryPass(controller, cubeMapGBuffers, geometryVertexShader, geometryHullShader, geometryDomainShader, rasterizer, geometryPixelShader, inputLayout, scene, samplerState, cubeMapCameras.at(i), cubeMapViewport);
 		UnbindPipeline(context);
-		PerformLightPass(controller, swapChain, cubeMapGBuffers, reflectionComputeShader, scene, outputMode, spotlightsBuffer, shadowMaps, depthSampler, cubeMapCameras.at(i), cubeMaps.GetUnorderedAccessViewAt(i));
+		PerformLightPass(controller, swapChain, cubeMapGBuffers, reflectionComputeShader, scene, outputMode, spotlightsBuffer, shadowMaps, depthSampler, cubeMapCameras.at(i), cubeMaps.GetUnorderedAccessViewAt(i).GetUAV());
 		UnbindPipeline(context);
 	}
 
