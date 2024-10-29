@@ -489,7 +489,7 @@ void Application::Render()
 		DX::BoundingFrustum boundingFrustum = DX::BoundingFrustum(matrixCreator.CreateProjectionMatrix(this->_scene.GetCurrentCamera().GetProjectionInfo()));
 		
 		this->_scene.GetCurrentCamera().SetBoundingFrustum(boundingFrustum);
-	
+
 		// Oscillate first mesh
 		for (size_t i = 0; i < this->_scene.GetNumOscillatingMeshes(); ++i)
 		{

@@ -8,6 +8,6 @@ __declspec(align(16))
 class PSReflectionData
 {
 public:
-    float SpecularExponent;
     DX::XMFLOAT4 CameraPosition;
+    float SpecularExponent;
 };

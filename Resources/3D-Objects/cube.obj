@@ -20,22 +20,31 @@ vn -1.000000 0.000000 0.000000
 vn 0.000000 -1.000000 0.000000
 vn 0.000000 0.000000 -1.000000
 
-usemtl test
+#usemtl test
+usemtl wood
 f 1/3/6 2/1/6 3/2/6
 f 1/3/6 3/2/6 4/4/6
 
-usemtl blue
+#usemtl blue
+usemtl wood
 f 8/3/3 7/1/3 6/2/3
 f 8/3/3 6/2/3 5/4/3
+
 usemtl wood
 f 5/3/4 6/1/4 2/2/4
 f 5/3/4 2/2/4 1/4/4
-usemtl red
+
+#usemtl red
+usemtl wood
 f 4/3/1 3/1/1 7/2/1
 f 4/3/1 7/2/1 8/4/1
-usemtl matt_gray 
+
+#usemtl matt_gray 
+usemtl wood
 f 2/3/2 6/1/2 7/2/2
 f 2/3/2 7/2/2 3/4/2
-usemtl green
+
+#usemtl green
+usemtl wood
 f 5/3/5 1/1/5 4/2/5
 f 5/3/5 4/2/5 8/4/5

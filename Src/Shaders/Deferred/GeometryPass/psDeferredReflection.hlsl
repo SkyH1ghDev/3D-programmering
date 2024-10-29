@@ -7,8 +7,8 @@ SamplerState sState;
 
 cbuffer PSBuffer : register(b0)
 {
-    float specularExponent;
     float4 cameraPosition;
+    float specularExponent;
 }
 
 struct PSInput
@@ -35,13 +35,13 @@ PSOutput main(PSInput input)
 
     output.worldPosition = input.worldPosition;
     output.normal = input.normal;
-    output.ambient = float4(1, 1, 1, 1);
+    output.ambient = float4(1, 1, 1, 1); //ambientTexture.Sample(sState, input.uv);
     output.diffuse = diffuseTexture.Sample(sState, input.uv);
     output.specular = specularTexture.Sample(sState, input.uv);
     output.specular.w = specularExponent;
 
     float3 normal = normalize(input.normal.xyz);
-    float3 incomingView = normalize(input.worldPosition - cameraPosition);
+    float3 incomingView = normalize(input.worldPosition.xyz - cameraPosition.xyz);
     float3 reflectedView = reflect(incomingView, normal);
     float4 sampledValue = reflectionTexture.Sample(sState, reflectedView);
 
