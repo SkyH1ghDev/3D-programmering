@@ -254,12 +254,12 @@ void Renderer::PerformGeometryPass(Controller& controller, std::vector<RenderBuf
 
 	std::vector<std::shared_ptr<Mesh>> meshesToRender = quadTree.CheckTree(scene.GetMainCamera().GetBoundingFrustum());
     	
-	for (size_t i = 0; i < scene.GetNumOscillatingMeshes(); ++i)
+	/* for (size_t i = 0; i < scene.GetNumOscillatingMeshes(); ++i)
 	{
 		meshesToRender.push_back(scene.GetOscillatingMeshPtrAt(i));
-	}
+	}*/
 
-	meshesToRender.push_back(scene.GetMeshPtrAt(scene.GetNumMeshes() - 1));
+	//meshesToRender.push_back(scene.GetMeshPtrAt(scene.GetNumMeshes() - 1));
 	
 	for (size_t i = 0; i < meshesToRender.size(); ++i)
 	{
@@ -330,7 +330,8 @@ void Renderer::PerformGeometryPass(Controller& controller, std::vector<RenderBuf
 			{
 				pShader = reflectionPixelShader.GetPixelShader();
 				pixelShaderBuffers = reflectionPixelShader.GetConstantBuffers();
-
+				tShaderResourceViews.push_back(cubeMap.GetShaderResourceView().GetSRV());
+				
 				SetupPixelShader(context, pShader, sState, tShaderResourceViews, pixelShaderBuffers, subMesh.GetSpecularExponent(), currCamera.GetPosition());
 			}
 			else
@@ -713,25 +714,25 @@ void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader*
 void Renderer::SetupPixelShader(ID3D11DeviceContext* context, ID3D11PixelShader* pixelShader, ID3D11SamplerState* samplerState, std::vector<ID3D11ShaderResourceView*> textureSRVs, std::vector<ConstantBuffer> buffers, const float& specularExponent, const DX::XMFLOAT4& cameraPosition)
 {
 	context->PSSetShader(pixelShader, nullptr, 0);
-    	context->PSSetSamplers(0, 1, &samplerState);
+	context->PSSetSamplers(0, 1, &samplerState);
     
-    	ID3D11ShaderResourceView** textures = textureSRVs.data();
-    	//context->PSSetShaderResources(0, textureSRVs.size(), textures);
+	ID3D11ShaderResourceView** textures = textureSRVs.data();
+	context->PSSetShaderResources(0, textureSRVs.size(), textures);
     
-    	PSReflectionData psReflectionData;
-    	psReflectionData.SpecularExponent = specularExponent;
-		psReflectionData.CameraPosition = cameraPosition;
+	PSReflectionData psReflectionData;
+	psReflectionData.SpecularExponent = specularExponent;
+	psReflectionData.CameraPosition = cameraPosition;
 	
-    	buffers.at(0).UpdateBuffer(context, &psReflectionData, sizeof(psReflectionData));
+	buffers.at(0).UpdateBuffer(context, &psReflectionData, sizeof(psReflectionData));
     	
-    	std::vector<ID3D11Buffer*> ID3D11Buffers;
-    	for (ConstantBuffer cb : buffers)
-    	{
-    		ID3D11Buffers.push_back(cb.GetBuffer());
-    	}
+	std::vector<ID3D11Buffer*> ID3D11Buffers;
+	for (ConstantBuffer cb : buffers)
+	{
+		ID3D11Buffers.push_back(cb.GetBuffer());
+	}
     	
-    	ID3D11Buffer** buffersArr = ID3D11Buffers.data();
-    	context->PSSetConstantBuffers(0, buffers.size(), buffersArr);
+	ID3D11Buffer** buffersArr = ID3D11Buffers.data();
+	context->PSSetConstantBuffers(0, buffers.size(), buffersArr);
 }
 
 
