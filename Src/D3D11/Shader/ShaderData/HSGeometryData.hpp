@@ -3,7 +3,7 @@
 
 namespace DX = DirectX;
 
-_declspec(align(16))
+__declspec(align(16))
 class HSGeometryData
 {
 public:

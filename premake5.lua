@@ -10,8 +10,8 @@ workspace "3D Projekt - Christoffer Bohman"
         language "C++"
         targetdir "Build"
         objdir "Binaries"
-        includedirs {"Src/**"}
-        files {"Src/**"}
+        includedirs {"Src/**", "Resources/Libraries", "Resources/Libraries/**"}
+        files {"Src/**", "Resources/Libraries/**"}
         links {"d3d11", "d3dcompiler", "DXGI"}
         filter { "files:**.hlsl"}
             shadermodel("5.0")
@@ -29,5 +29,5 @@ workspace "3D Projekt - Christoffer Bohman"
         filter {"files:cs**.hlsl"}
 
 
-        local projectPath = path.getabsolute(project().location or "./")
-        prebuildcommands {"python prebuild.py \"" .. projectPath .. "/\""}
+        --local projectPath = path.getabsolute(project().location or "./")
+        --prebuildcommands {"python prebuild.py \"" .. projectPath .. "/\""}

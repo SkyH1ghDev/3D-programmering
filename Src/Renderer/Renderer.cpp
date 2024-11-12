@@ -7,6 +7,7 @@
 #include "DSGeometryData.hpp"
 #include "PSGeometryData.hpp"
 #include "CSLightData.hpp"
+#include "CSParticleData.hpp"
 #include "GSParticleData.hpp"
 
 #include "LightConfig.hpp"
@@ -517,11 +518,35 @@ void Renderer::PerformLightPass(Controller& controller, SwapChain& swapChain, st
 void Renderer::PerformParticlePass(Controller& controller, ComputeShader& computeShader, VertexShader& vertexShader, GeometryShader& geometryShader, PixelShader& pixelShader, StructuredBuffer& particleBuffer, Camera& camera, RenderBuffer& renderTargetView)
 {
 	ID3D11DeviceContext* context = controller.GetContext();
+
+	// Compute Shader
 	
 	ID3D11ComputeShader* cShader = computeShader.GetComputeShader();
 	ID3D11UnorderedAccessView* uav = particleBuffer.GetUAV();
 	context->CSSetShader(cShader, nullptr, 0);
 	context->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+
+	CSParticleData csParticleData;
+	csParticleData.randomizedVector =
+		{
+		(-0.1f) + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX / (0.1f - (-0.1f))),
+		(-0.1f) + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX / (0.1f - (-0.1f))),
+		(-0.1f) + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX / (0.1f - (-0.1f))),
+		0.0f
+		};
+
+
+	std::vector<ConstantBuffer> csBuffers = computeShader.GetConstantBuffers();
+	csBuffers.at(0).UpdateBuffer(context, &csParticleData, sizeof(csParticleData));
+
+	std::vector<ID3D11Buffer*> csID3D11Buffers;
+	for (ConstantBuffer cb : csBuffers)
+	{
+		csID3D11Buffers.push_back(cb.GetBuffer());
+	}
+	
+	ID3D11Buffer** csBuffersArr = csID3D11Buffers.data();
+	context->CSSetConstantBuffers(0, csBuffers.size(), csBuffersArr);
 	
 	context->Dispatch(particleBuffer.GetNrOfElements(), 1, 1);
 	
@@ -557,14 +582,14 @@ void Renderer::PerformParticlePass(Controller& controller, ComputeShader& comput
 	std::vector<ConstantBuffer> gsBuffers = geometryShader.GetConstantBuffers();
 	gsBuffers.at(0).UpdateBuffer(context, &gsParticleData, sizeof(gsParticleData));
 
-	std::vector<ID3D11Buffer*> ID3D11Buffers;
+	std::vector<ID3D11Buffer*> gsID3D11Buffers;
 	for (ConstantBuffer cb : gsBuffers)
 	{
-		ID3D11Buffers.push_back(cb.GetBuffer());
+		gsID3D11Buffers.push_back(cb.GetBuffer());
 	}
 	
-	ID3D11Buffer** buffersArr = ID3D11Buffers.data();
-	context->GSSetConstantBuffers(0, gsBuffers.size(), buffersArr);
+	ID3D11Buffer** gsBuffersArr = gsID3D11Buffers.data();
+	context->GSSetConstantBuffers(0, gsBuffers.size(), gsBuffersArr);
 
 	// RS
 	D3D11_VIEWPORT viewport = controller.GetViewPort();

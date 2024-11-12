@@ -5,6 +5,7 @@
 #include "MatrixCreator.hpp"
 #include "RenderConfig.hpp"
 #include "CSLightData.hpp"
+#include "CSParticleData.hpp"
 #include "CubeMapCollection.hpp"
 #include "FileReader.hpp"
 #include "ShadowMapCollection.hpp"
@@ -312,6 +313,7 @@ void Application::SetupDeferredBuffers()
 	psReflectionData.CameraPosition = this->_scene.GetCurrentCamera().GetPosition();
 
 	this->_psDeferredReflection->AddConstantBuffer(Setup::CreateConstantBuffer<PSReflectionData>(this->_controller, reflectionPixelShaderBufferDesc, &psReflectionData));
+	
 	// Compute Shader
 	
 	BufferDescData computeShaderBufferDesc;
@@ -342,6 +344,23 @@ void Application::SetupDeferredBuffers()
 	csReflectionData.OutputMode = _outputMode;
 
 	this->_csDeferredReflection->AddConstantBuffer(Setup::CreateConstantBuffer<CSLightData>(this->_controller, reflectionComputeShaderDesc, &csReflectionData));
+
+	BufferDescData particleComputeShaderDesc;
+	particleComputeShaderDesc.Usage = D3D11_USAGE_DYNAMIC;
+	particleComputeShaderDesc.CpuAccess = D3D11_CPU_ACCESS_WRITE;
+
+	std::srand(std::time(nullptr));
+	
+	CSParticleData csParticleData;
+	csParticleData.randomizedVector =
+		{
+		(-0.1f) + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX / (0.1f - (-0.1f))),
+		(-0.1f) + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX / (0.1f - (-0.1f))),
+		(-0.1f) + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX / (0.1f - (-0.1f))),
+		0.0f
+		};
+	
+	this->_csDeferredParticle->AddConstantBuffer(Setup::CreateConstantBuffer<CSParticleData>(this->_controller, particleComputeShaderDesc, &csParticleData));
 }
 
 void Application::Render()

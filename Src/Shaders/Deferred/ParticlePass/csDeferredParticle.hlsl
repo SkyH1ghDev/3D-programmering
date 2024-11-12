@@ -1,3 +1,8 @@
+cbuffer csBuffer : register(b0)
+{
+    float4 randomizedVector;
+}
+
 struct Particle
 {
     float4 ParticlePosition;
@@ -11,5 +16,8 @@ void main (uint3 DTid : SV_DispatchThreadID )
 {
     Particle gettingProcessed = Particles[DTid.x];
 
+    // Will make the particle vibrate
+    gettingProcessed.ParticlePosition += randomizedVector;
+    
     Particles[DTid.x] = gettingProcessed;
 }

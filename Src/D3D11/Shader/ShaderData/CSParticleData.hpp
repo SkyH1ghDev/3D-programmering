@@ -1,11 +1,12 @@
 ﻿#pragma once
+
 #include <DirectXMath.h>
 
 namespace DX = DirectX;
 
 __declspec(align(16))
-class DSGeometryData
+class CSParticleData
 {
 public:
-    DX::XMFLOAT4X4 ViewProjectionMatrix;
+    DX::XMFLOAT4 randomizedVector;
 };
